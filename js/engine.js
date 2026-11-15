@@ -82,23 +82,24 @@
     return { v: 1, stars: {}, streak: { count: 0, last: '', best: 0 }, sound: true, agent: null, review: {}, blitz: 0 };
   }
 
-  function cleanName(raw) {
+  /* Letters and digits of any script (so "Jörg" stays "Jörg"), plus space, _ and -. Nothing that is markup,
+     punctuation, a control or a direction-flipping character survives. Cut by character, not by code unit. */
+  function plainName(raw) {
     var s = typeof raw === 'string' ? raw : '';
-    s = s.replace(/[^A-Za-z0-9 _-]/g, '').replace(/\s+/g, ' ').trim().slice(0, NAME_MAX).trim();
-    return s || 'Bit';
+    s = s.replace(/[^\p{L}\p{M}\p{N} _-]/gu, '').replace(/\s+/g, ' ').trim();
+    return Array.from(s).slice(0, NAME_MAX).join('').trim();
   }
+  function cleanName(raw) { return plainName(raw) || 'Bit'; }
 
   /* ---------- profiles: several learners in one browser ---------- */
-  var PROFILE_MAX = 6, PROFILE_MAIN = 'main';
+  var PROFILE_MAX = 6, PROFILE_MAIN = 'main', PROFILE_LAST = 9999; /* ids run p1 to p9999 */
 
-  function profileName(raw) {
-    var s = typeof raw === 'string' ? raw : '';
-    s = s.replace(/[^A-Za-z0-9 _-]/g, '').replace(/\s+/g, ' ').trim().slice(0, NAME_MAX).trim();
-    return s || 'Player';
-  }
+  function profileName(raw) { return plainName(raw) || 'Player'; }
   /* The first profile keeps the app's original key, so progress saved before profiles existed is its progress. */
+  /* null for anything that is not a real profile id, so a bad id can never read or erase the first profile. */
   function profileKey(id) {
-    return id === PROFILE_MAIN || !/^p[1-9]\d{0,3}$/.test(String(id)) ? 'agentcraft.v1' : 'agentcraft.v1.' + id;
+    if (id === PROFILE_MAIN) return 'agentcraft.v1';
+    return typeof id === 'string' && /^p[1-9]\d{0,3}$/.test(id) ? 'agentcraft.v1.' + id : null;
   }
   function sanitizeProfiles(raw) {
     var list = [{ id: PROFILE_MAIN, name: 'Player 1' }], seen = {};
@@ -112,17 +113,20 @@
       list.push({ id: p.id, name: profileName(p.name) });
     });
     var active = raw && typeof raw === 'object' && typeof raw.active === 'string' && seen[raw.active] ? raw.active : PROFILE_MAIN;
-    return { active: active, list: list };
+    /* next: the number the next new profile gets. It never goes back, so a deleted profile's id is not reused. */
+    var next = 1;
+    list.forEach(function (p) { if (p.id !== PROFILE_MAIN) next = Math.max(next, +p.id.slice(1) + 1); });
+    if (raw && typeof raw === 'object' && Number.isInteger(raw.next) && raw.next > next && raw.next <= PROFILE_LAST + 1) next = raw.next;
+    return { active: active, list: list, next: next };
   }
   /* Each returns a new, sanitised profiles object. addProfile returns null when the list is full. */
   function addProfile(P, name) {
     P = sanitizeProfiles(P);
-    if (P.list.length >= PROFILE_MAX) return null;
-    var n = 0;
-    P.list.forEach(function (p) { if (p.id !== PROFILE_MAIN) n = Math.max(n, +p.id.slice(1)); });
-    var id = 'p' + (n + 1);
+    if (P.list.length >= PROFILE_MAX || P.next > PROFILE_LAST) return null;
+    var id = 'p' + P.next;
     P.list.push({ id: id, name: profileName(name) });
     P.active = id;
+    P.next++;
     return P;
   }
   function renameProfile(P, id, name) {
@@ -311,10 +315,11 @@
     if (!has(allIds(C), id) || !has([1, 2, 3], stars)) {
       return { state: state, gained: 0, newBadges: [], rankUp: false };
     }
-    var next = {
-      v: 1, stars: {}, streak: touchStreak(state, today), sound: state.sound, agent: state.agent,
-      review: state.review || {}, blitz: state.blitz || 0
-    };
+    /* Copy every field, as recordReview and touchSession do, so a field added later is never dropped here. */
+    var next = {};
+    Object.keys(state).forEach(function (k) { next[k] = state[k]; });
+    next.v = 1; next.stars = {}; next.streak = touchStreak(state, today);
+    next.review = state.review || {}; next.blitz = state.blitz || 0;
     Object.keys(state.stars).forEach(function (k) { next.stars[k] = state.stars[k]; });
     next.stars[id] = Math.max(starsOf(state, id), stars);
     var before = badgesOf(C, state);
@@ -361,6 +366,9 @@
       .sort(function (a, b) { return box(a) - box(b); });
   }
 
+  /* An answer is recorded even when the idea's level is not finished yet (the check at the end of a Learn
+     level, a failed Master). That is on purpose: the idea is not asked again until its level is done,
+     because only learnedConcepts are ever due. */
   function recordReview(C, state, id, correct, today) {
     if (!has(conceptIds(C), id) || !validDay(today)) return state;
     var cur = own(state.review || {}, id) ? state.review[id] : null;

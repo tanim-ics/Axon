@@ -73,7 +73,7 @@ a { color: inherit; }
 small { font-size: 12px; color: var(--muted); font-weight: 400; }
 code, pre { font-family: var(--mono); letter-spacing: 0; }
 :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
-#app:focus, .label:focus { outline: none; }
+#app:focus, .label:focus, .task p:focus { outline: none; }
 
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .skip { position: absolute; left: var(--s4); top: -64px; z-index: 50; padding: var(--s2) var(--s4); background: var(--blue); color: var(--bg); border-radius: var(--pill); font-weight: 600; }

@@ -15,7 +15,7 @@
     var fill = h('div', { class: 'blitz-fill' });
     var bar = h('div', { class: 'blitz-bar', 'aria-hidden': 'true' }, fill);
     var clock = h('span', { class: 'blitz-clock', role: 'timer', 'aria-label': 'Seconds left' });
-    var score = h('span', { class: 'pill blitz-score' });
+    var score = h('span', { class: 'pill blitz-score', role: 'img' });
     var combo = h('span', { class: 'blitz-combo', 'aria-hidden': 'true' });
     var slot = h('div', { class: 'blitz-q' });
     var onKey = null;

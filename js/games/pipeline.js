@@ -87,7 +87,7 @@
       render();
       var board = root.querySelector('.board');
       var liveCols = board.querySelectorAll('.stage-col');
-      var order = p.loop ? [0, 1, 0, 1] : p.stages.map(function (_, i) { return i; });
+      var order = UI.reducedMotion() ? [] : p.loop ? [0, 1, 0, 1] : p.stages.map(function (_, i) { return i; }); /* reduced motion: no sweep */
       order.forEach(function (ci, j) {
         api.later(function () {
           for (var k = 0; k < liveCols.length; k++) liveCols[k].classList.toggle('lit', k === ci);

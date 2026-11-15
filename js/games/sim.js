@@ -8,7 +8,7 @@
   var STEP_MS = 520;
 
   Games.sim = function (root, api) {
-    var sim = api.level.sim, choices = {}, runs = 0, busy = false, lastFail = null;
+    var sim = api.level.sim, choices = {}, runs = 0, busy = false;
 
     var trace = h('ol', { class: 'sim-trace', 'aria-label': 'The run, step by step', 'aria-live': 'polite' });
     var verdict = h('div', { class: 'why', role: 'status' });
@@ -37,6 +37,7 @@
 
     function refresh() {
       runBtn.disabled = busy || !E.simReady(sim, choices);
+      Object.keys(slotEls).forEach(function (id) { slotEls[id].buttons.forEach(function (b) { b.disabled = busy; }); });
       counter.textContent = runs ? 'Runs: ' + runs : 'Not run yet';
     }
 
@@ -59,15 +60,16 @@
       Object.keys(slotEls).forEach(function (id) { slotEls[id].wrap.classList.remove('flag'); });
       refresh();
       api.say('Running…', 'idle');
+      var stepMs = UI.reducedMotion() ? 0 : STEP_MS; /* reduced motion: the whole run at once */
       res.steps.forEach(function (st, i) {
         api.later(function () {
           var node = stepNode(st, i + 1);
           trace.appendChild(node);
           node.scrollIntoView({ block: 'nearest' }); /* on a phone the trace starts below the fold: follow it */
           api.sfx(st.ok ? 'tap' : 'bad');
-        }, i * STEP_MS);
+        }, i * stepMs);
       });
-      api.later(function () { finish(res); }, res.steps.length * STEP_MS + 150);
+      api.later(function () { finish(res); }, res.steps.length * stepMs + 150);
     }
 
     function finish(res) {
@@ -92,7 +94,6 @@
         done.focus();
         return;
       }
-      lastFail = res.slot;
       var slot = sim.slots.filter(function (sl) { return sl.id === res.slot; })[0];
       var change = h('button', { class: 'btn', type: 'button', onclick: function () {
         var target = slotEls[res.slot];

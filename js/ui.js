@@ -20,7 +20,10 @@ var Course = (function () {
     if (waiting[no]) { waiting[no].push({ ok: ok, fail: fail }); return; }
     waiting[no] = [{ ok: ok, fail: fail }];
     var tag = document.createElement('script');
-    tag.src = 'course/addy/' + no + '.js';
+    /* Carry the app's ?v= number, so a rebuilt lesson is not served from the browser's cache. */
+    var me = document.querySelector('script[src*="js/ui.js"]');
+    var ver = me && /\?v=\d+$/.exec(me.getAttribute('src') || '');
+    tag.src = 'course/addy/' + no + '.js' + (ver ? ver[0] : '');
     var giveUp = function () {
       (waiting[no] || []).forEach(function (w) { w.fail(); });
       delete waiting[no];
@@ -243,6 +246,6 @@ var UI = (function () {
 
   return {
     h: h, fill: fill, svg: svg, diagram: diagram, bot: bot, stars: stars, dots: dots, meter: meter, shake: shake,
-    setPressed: setPressed, sfx: sfx, setSound: setSound, confetti: confetti
+    setPressed: setPressed, sfx: sfx, setSound: setSound, confetti: confetti, reducedMotion: reducedMotion
   };
 })();

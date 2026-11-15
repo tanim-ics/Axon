@@ -63,6 +63,10 @@ test('cleanName: strips markup, caps length, never empty', () => {
   assert.equal(E.cleanName('  Robo   Cop  '), 'Robo Cop');
   assert.equal(E.cleanName('"><svg/onload=1>'), 'svgonload1');
   assert.equal(E.cleanName('💥💥'), 'Bit');
+  assert.equal(E.cleanName('Jörg Müller'), 'Jörg Müller', 'letters of any script are kept');
+  assert.equal(E.cleanName('Анна'), 'Анна');
+  assert.equal(E.cleanName('a\u202Eb\u200Fc<d>'), 'abcd', 'direction-flipping characters and markup are not');
+  assert.equal(Array.from(E.cleanName('𝒜'.repeat(40))).length, E.NAME_MAX, 'cut by character, never through one');
   assert.equal(E.cleanName(null), 'Bit');
   assert.ok(E.cleanName('a'.repeat(99)).length <= E.NAME_MAX);
 });
@@ -890,24 +894,26 @@ test('solutions: a level whose solution was seen gives one star', () => {
 
 test('profiles: bad storage is repaired, names are cleaned, the first profile keeps the old key', () => {
   const d = E.sanitizeProfiles(null);
-  assert.deepEqual(d, { active: 'main', list: [{ id: 'main', name: 'Player 1' }] });
+  assert.deepEqual(d, { active: 'main', list: [{ id: 'main', name: 'Player 1' }], next: 1 });
   assert.deepEqual(E.sanitizeProfiles('x'), d);
   assert.deepEqual(E.sanitizeProfiles({ active: 'p9', list: 'no' }), d);
   const dirty = E.sanitizeProfiles({ active: 'p2', list: [
     { id: 'p2', name: '<b>Ana</b>' }, { id: 'p2', name: 'twice' }, { id: '../x', name: 'path' },
     { id: 'main', name: '  Tom  ' }, null, { id: 'p0', name: 'zero' }, { id: 7 }
   ] });
-  assert.deepEqual(dirty, { active: 'p2', list: [{ id: 'main', name: 'Tom' }, { id: 'p2', name: 'bAnab' }] });
+  assert.deepEqual(dirty, { active: 'p2', list: [{ id: 'main', name: 'Tom' }, { id: 'p2', name: 'bAnab' }], next: 3 });
   assert.equal(E.profileKey('main'), 'agentcraft.v1');
   assert.equal(E.profileKey('p3'), 'agentcraft.v1.p3');
-  assert.equal(E.profileKey('../evil'), 'agentcraft.v1');
+  assert.equal(E.profileKey('../evil'), null, 'a bad id has no key, so it can never touch the first profile');
+  assert.equal(E.profileKey('p10000'), null);
+  assert.equal(E.profileKey(3), null);
   assert.equal(E.profileName(''), 'Player');
   assert.equal(E.profileName('x'.repeat(40)).length, E.NAME_MAX);
 });
 
 test('profiles: add, rename, switch and remove', () => {
   let P = E.addProfile(null, 'Ana');
-  assert.deepEqual(P, { active: 'p1', list: [{ id: 'main', name: 'Player 1' }, { id: 'p1', name: 'Ana' }] });
+  assert.deepEqual(P, { active: 'p1', list: [{ id: 'main', name: 'Player 1' }, { id: 'p1', name: 'Ana' }], next: 2 });
   P = E.addProfile(P, 'Ben');
   assert.equal(P.active, 'p2');
   P = E.removeProfile(P, 'p1');
@@ -923,6 +929,14 @@ test('profiles: add, rename, switch and remove', () => {
   for (let i = 0; i < E.PROFILE_MAX - 1; i++) full = E.addProfile(full, 'P' + i);
   assert.equal(full.list.length, E.PROFILE_MAX);
   assert.equal(E.addProfile(full, 'one too many'), null);
+
+  /* The highest id is deleted: its number is not handed out again, even after a save and a reload. */
+  let Q = E.addProfile(E.addProfile(null, 'A'), 'B');
+  Q = JSON.parse(JSON.stringify(E.removeProfile(Q, 'p2')));
+  assert.equal(E.addProfile(Q, 'C').active, 'p3');
+  assert.equal(E.sanitizeProfiles({ list: [{ id: 'p4', name: 'x' }], next: 2 }).next, 5, 'next is never at or below an id in use');
+  assert.equal(E.sanitizeProfiles({ list: [], next: 99999 }).next, 1, 'a next beyond the last id is ignored');
+  assert.equal(E.addProfile({ list: [{ id: 'p9999', name: 'last' }] }, 'more'), null, 'ids stop at p9999');
 });
 
 /* ---------- audit of 2026-11-15: clock skew, the DOM builder, and the security rules ---------- */
@@ -1010,4 +1024,12 @@ test('security rules: no banned DOM calls, the CSP is unchanged, one version num
   fs.readdirSync(path.join(ROOT, 'js/games')).forEach((n) => {
     assert.ok(html.includes('js/games/' + n + '?v='), n + ' is loaded by index.html');
   });
+});
+
+test('awardLevel: a field it does not know about survives a finished level', () => {
+  const s = Object.assign(E.defaultState(), { later: 'kept' });
+  const res = E.awardLevel(C, s, 'loop', 2, '2026-01-01');
+  assert.equal(res.state.later, 'kept');
+  assert.equal(res.state.stars.loop, 2);
+  assert.equal(s.stars.loop, undefined, 'the input is not changed');
 });

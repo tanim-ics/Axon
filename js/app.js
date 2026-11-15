@@ -1,6 +1,11 @@
 /* Axon — app shell: storage, routing, HUD, journey hub, trails, level frame, review, results, codex. */
 (function () {
   'use strict';
+  /* A file that failed to load would otherwise leave a blank page with no word of why. */
+  if (typeof UI === 'undefined' || typeof Content === 'undefined' || typeof Engine === 'undefined' || typeof Markdown === 'undefined') {
+    document.getElementById('app').textContent = 'Axon could not load all of its files. Check your connection and reload the page.';
+    return;
+  }
   var h = UI.h, C = Content, E = Engine;
   var PROFILES_KEY = 'agentcraft.profiles';
   var profiles = loadProfiles();
@@ -31,7 +36,9 @@
     catch (e) { /* private mode or full disk: keep playing in memory */ }
   }
   function stateOf(id) {
-    try { return E.sanitizeState(C, JSON.parse(window.localStorage.getItem(E.profileKey(id)))); }
+    var key = E.profileKey(id);
+    if (!key) return E.defaultState();
+    try { return E.sanitizeState(C, JSON.parse(window.localStorage.getItem(key))); }
     catch (e) { return E.defaultState(); }
   }
   function activeProfile() {
@@ -152,7 +159,11 @@
     else if (parts[0] === 'read' && lessonByNo(parts[1])) viewRead(lessonByNo(parts[1]));
     else if (parts[0] === 'codex') viewCodex();
     else if (parts[0] === 'profile') viewProfile();
-    else viewHub();
+    else {
+      /* A locked level or an unknown address: show the hub, and make the address say so too. */
+      if (parts[0] && parts[0] !== 'map' && window.history && window.history.replaceState) window.history.replaceState(null, '', '#/map');
+      viewHub();
+    }
     renderHud();
     window.scrollTo(0, 0);
     app.focus({ preventScroll: true });
@@ -471,6 +482,10 @@
     };
 
     function start() {
+      if (typeof game !== 'function') {
+        UI.fill(stage, h('div', { class: 'intro' }, h('h2', { text: 'This level could not be loaded.' }), h('p', { text: 'Reload the page and try again.' })));
+        return;
+      }
       tools.hidden = false;
       UI.fill(stage);
       api.say(L.play, 'idle');
@@ -653,7 +668,7 @@
       return;
     }
     if (e.key !== 'Tab') return;
-    var f = overlay.querySelectorAll('a[href], button:not([disabled])');
+    var f = overlay.querySelectorAll('a[href], button:not([disabled]), [tabindex="0"]');
     if (!f.length) return;
     var first = f[0], last = f[f.length - 1];
     if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
@@ -884,9 +899,14 @@
     function twice(label, confirmLabel, act, id) {
       var armed = false;
       var b = h('button', { class: 'btn danger', type: 'button', id: id || null, onclick: function () {
-        if (!armed) { armed = true; b.textContent = confirmLabel; return; }
+        if (!armed) { armed = true; b.textContent = confirmLabel; status.textContent = confirmLabel + '.'; return; }
         act();
       } }, label);
+      /* Moving away disarms it, so a later stray tap cannot erase anything. */
+      b.addEventListener('blur', function () {
+        if (!armed) return;
+        armed = false; b.textContent = label; status.textContent = '';
+      });
       return b;
     }
     function nameField(id, label, value) {
@@ -920,8 +940,9 @@
 
     var rename = nameField('profile-name', 'Name', me.name);
     function doRename() {
-      useProfiles(E.renameProfile(profiles, me.id, rename.input.value));
-      redraw('Name saved.', 'profile-name');
+      var typed = rename.input.value.replace(/\s+/g, ' ').trim(), kept = E.profileName(typed);
+      useProfiles(E.renameProfile(profiles, me.id, typed));
+      redraw(kept === typed ? 'Name saved.' : 'Saved as "' + kept + '". A name is up to ' + E.NAME_MAX + ' letters, numbers, spaces, - and _.', 'profile-name');
     }
     onEnter(rename.input, doRename);
 
@@ -930,6 +951,8 @@
     function doAdd() {
       var P = E.addProfile(profiles, fresh.input.value);
       if (!P) return;
+      /* Start clean even if an old save was left under this key. */
+      try { window.localStorage.removeItem(E.profileKey(P.active)); } catch (e) { /* nothing to remove */ }
       useProfiles(P);
       redraw('New profile added. It starts with no progress.');
     }

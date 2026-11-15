@@ -38,7 +38,7 @@
       var name = h('input', { class: 'name-input', type: 'text', id: 'agent-name', maxlength: E.NAME_MAX, value: agent.name,
         autocomplete: 'off', spellcheck: 'false', 'aria-label': 'Agent name (letters and numbers)',
         oninput: function () {
-          var kept = name.value.replace(/[^A-Za-z0-9 _-]/g, '');
+          var kept = name.value.replace(/[^\p{L}\p{M}\p{N} _-]/gu, '');
           if (kept !== name.value) name.value = kept;
         } });
       var face = h('span', { class: 'face', 'aria-hidden': 'true', text: agent.avatar });
@@ -96,13 +96,14 @@
       window.scrollTo(0, 0);
       api.say('Trials running…', 'idle');
 
+      var gap = UI.reducedMotion() ? 0 : 650; /* reduced motion: all results at once */
       results.forEach(function (r, i) {
         api.later(function () {
           rows[i].classList.add('shown', r.pass ? 'pass' : 'fail');
           rows[i].querySelector('.trial-mark').textContent = r.pass ? '✓ Passed' : '✗ Failed';
           if (!r.pass) rows[i].querySelector('.trial-hint').textContent = '💡 ' + r.hint;
           api.sfx(r.pass ? 'good' : 'bad');
-        }, 500 + i * 650);
+        }, 500 + i * gap);
       });
 
       api.later(function () {
@@ -114,7 +115,7 @@
           stars ? blueprint() : null);
         api.say(stars === 3 ? 'Flawless. That\'s an agent you can trust.' : stars ? 'It flies! Fix the 💡 hints for more stars.' : 'Not ready yet. Follow the 💡 hints and relaunch.', stars ? 'happy' : 'oops');
         (finish || tweak).focus();
-      }, 500 + results.length * 650 + 200);
+      }, 500 + results.length * gap + 200);
     }
 
     function blueprint() {

@@ -86,7 +86,7 @@
       }
       UI.fill(root, h('div', { class: 'game narrow' },
         UI.dots(ROUNDS.length, round),
-        h('div', { class: 'task' }, h('span', { class: 'task-tag', text: M.icon + ' ' + M.idea }), h('p', { text: ROUNDS[round] })),
+        h('div', { class: 'task' }, h('span', { class: 'task-tag', text: M.icon + ' ' + M.idea }), h('p', { tabindex: '-1', text: ROUNDS[round] })),
         h('ol', { class: 'mrows' }, rows),
         round < 2 ? [h('h2', { class: 'label', text: round === 0 ? 'Steps' : 'Tools' }), h('div', { class: 'chips palette' }, palette())] : null,
         solved ? h('p', { class: 'mwhy', text: '🙋 ' + M.gateWhy }) : null,
@@ -102,7 +102,7 @@
         mistakes++;
         res.wrong.forEach(function (i) { placed[i] = null; });
         api.sfx('bad');
-        api.say(res.wrong.length + (res.wrong.length > 1 ? ' bounced back. ' : ' bounced back. ') +
+        api.say(res.wrong.length + ' bounced back. ' +
           (round === 0 ? 'What has to exist before the next step can start?' : 'Read the step: what job is it?'), 'oops');
         render('.palette .chip:not([disabled])');
         UI.shake(root.querySelector('.mrows'));
@@ -111,7 +111,7 @@
       busy = true;
       api.sfx('good');
       api.say(round === 0 ? '✅ That\'s the pipeline. Now give each step its tool.' : '✅ That\'s a real stack. One last thing…', 'happy');
-      render();
+      render('.task p'); /* the buttons are off for a moment: keep focus in the level */
       api.later(function () {
         round++; busy = false;
         if (round === 1) resetRound();
@@ -135,15 +135,15 @@
       solved = true; busy = true;
       api.sfx('good');
       api.say('Exactly. Automate the rest, guard that one.', 'happy');
-      render();
-      var lis = root.querySelectorAll('.mrow');
+      render('.task p');
+      var lis = UI.reducedMotion() ? [] : root.querySelectorAll('.mrow'); /* reduced motion: no sweep */
       for (var i = 0; i < lis.length; i++) (function (k) {
         api.later(function () {
           for (var j = 0; j < lis.length; j++) lis[j].classList.toggle('lit', j === k);
           api.sfx('tap');
         }, 300 + k * 260);
       })(i);
-      api.later(function () { busy = false; render('.cta-row .btn'); }, 300 + n * 260 + 200);
+      api.later(function () { busy = false; render('.cta-row .btn'); }, 300 + lis.length * 260 + 200);
     }
 
     resetRound();

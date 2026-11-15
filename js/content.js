@@ -1465,7 +1465,7 @@
       'LoopAgent repeats until done.'),
     Q('a13-habits-1', 'a13-habits', 'What is the right way to grow a first agent?', 'One agent, one tool, one eval case at a time', ['Everything at once', 'Tools first, agent later'],
       'Get each piece working before adding the next.'),
-    Q('a13-habits-2', 'a13-habits', 'Where should an API key never go?', 'In the code', ['In a secret manager', 'In an environment variable'],
+    Q('a13-habits-2', 'a13-habits', 'A first agent needs an API key. Which place for it leaks the key as soon as the project is shared?', 'In the code', ['In a secret manager', 'In an environment variable'],
       'Putting secrets in code is a common and costly beginner mistake.'),
 
     Q('a14-mcp-1', 'a14-mcp', 'What does MCP connect?', 'Agents to tools', ['Agents to agents', 'Users to models'],
