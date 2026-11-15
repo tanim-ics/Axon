@@ -10,7 +10,7 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 > empty. Git: Rounds 1–26 are pushed (2026-11-15). Ask the user before pushing
 > anything new. Ideas for what could come next are under "Ideas" below; none is approved.
 >
-> Round 27 (2026-11-15) was a read-only audit: no code changed. Its top findings are listed under "Ideas";
+> Round 27 (2026-11-15) was a read-only audit: no code changed. The full report is `docs/audit-2026-11-15.md` (62 findings: 0 critical, 2 high, 19 medium, 41 low). Its top findings are listed under "Ideas";
 > none is approved. Ask the user which to fix before touching code.
 
 ## Planned next (approved)

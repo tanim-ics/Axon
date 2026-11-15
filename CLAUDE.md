@@ -52,6 +52,7 @@ No build step, no dependencies, no network calls. `.claude/launch.json` defines 
 | `tools/build-course.js` | Cleans `md/NN.md` in place (removes embedded HTML and scripts) and writes `NN.js`. Not part of the running app |
 | `TASKS.md` | Task list and resume point. Read first |
 | `design/landing.html` | A standalone landing-page design mock (remote fonts, inline CSS). Not loaded by the app and exempt from its CSP rules; do not copy its fonts or inline styles into the app |
+| `docs/` | Dated audit reports (`audit-YYYY-MM-DD.md`). A record of findings at one commit, not kept up to date |
 | `README.md` | For people: what it is, how to run it, sources and limits. Update its counts when levels or questions are added |
 | `tests/engine.test.js` | Unit tests |
 
