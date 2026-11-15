@@ -18,6 +18,11 @@
     var score = h('span', { class: 'pill blitz-score' });
     var combo = h('span', { class: 'blitz-combo', 'aria-hidden': 'true' });
     var slot = h('div', { class: 'blitz-q' });
+    var onKey = null;
+    slot.addEventListener('keydown', function (e) {
+      if (e.ctrlKey || e.metaKey || e.altKey || !onKey) return;
+      if (/^[1-9]$/.test(e.key)) { e.preventDefault(); onKey(+e.key); }
+    });
 
     function draw() {
       var ms = Math.max(0, left);
@@ -55,10 +60,14 @@
       var buttons = q.options.map(function (o) {
         var mark = h('span', { class: 'answer-mark' });
         marks.push(mark);
-        var b = h('button', { class: 'answer', type: 'button', onclick: function () { pick(o, b); } },
+        var n = marks.length;
+        var b = h('button', { class: 'answer', type: 'button', 'aria-keyshortcuts': String(n), onclick: function () { pick(o, b); } },
+          h('span', { class: 'answer-key', 'aria-hidden': 'true', text: String(n) }),
           h('span', { class: 'answer-text', text: o.text }), mark);
         return b;
       });
+      /* Keys 1, 2, 3 answer at once, so a keyboard player is not racing the Tab key as well as the clock. */
+      onKey = function (n) { if (n >= 1 && n <= buttons.length) pick(q.options[n - 1], buttons[n - 1]); };
 
       function pick(o, chosen) {
         if (answered || over) return;

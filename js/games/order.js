@@ -25,7 +25,7 @@
         var fin = h('button', { class: 'btn primary', type: 'button', onclick: function () { api.done(E.starsFromMistakes(mistakes)); } }, 'Finish');
         tail = h('div', { class: 'why shown', role: 'status' },
           h('span', { class: 'eyebrow', text: 'Why this order' }), h('p', { text: P.why }), fin);
-        api.say('That is the loop.', 'happy');
+        api.say('That is the right order.', 'happy');
       } else {
         tail = h('div', { class: 'order-pool', role: 'group', 'aria-label': 'Which step comes next?' },
           h('p', { class: 'order-ask', text: placed ? 'What comes next?' : 'What comes first?' }), buttons);

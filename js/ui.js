@@ -1,6 +1,6 @@
 /* Axon — tiny DOM toolkit shared by every screen.
-   SECURITY: the DOM is only ever built through h(), which writes text via text nodes.
-   There is no innerHTML anywhere in this app, so no string can become markup. */
+   SECURITY: the DOM is only ever built through h(), which writes text via text nodes and sets
+   only the attributes on its allow list. No markup is ever parsed from a string. */
 var Games = {};
 
 /* Full-read lesson text. Each course/addy/NN.js file calls Course.add(); the reader asks for a
@@ -38,7 +38,13 @@ var UI = (function () {
   'use strict';
 
   var SVG_NS = 'http://www.w3.org/2000/svg';
-  var BLOCKED = { style: 1, innerHTML: 1, outerHTML: 1, srcdoc: 1 };
+  /* An allow list, not a block list: an attribute this app has no use for can never be set by mistake. */
+  var ALLOWED = { 'class': 1, id: 1, type: 1, href: 1, target: 1, rel: 1, role: 1, tabindex: 1, disabled: 1, hidden: 1,
+    'for': 1, maxlength: 1, autocomplete: 1, spellcheck: 1, value: 1, scope: 1,
+    viewBox: 1, d: 1, preserveAspectRatio: 1, focusable: 1 };
+  function allowed(k) {
+    return Object.prototype.hasOwnProperty.call(ALLOWED, k) || /^aria-[a-z]{1,24}$/.test(k) || /^data-[a-z-]{1,24}$/.test(k);
+  }
 
   function add(el, kid) {
     if (kid == null || kid === false) return;
@@ -50,16 +56,15 @@ var UI = (function () {
     if (!props) return;
     Object.keys(props).forEach(function (k) {
       var v = props[k];
-      if (v == null || v === false || BLOCKED[k]) return;
+      if (v == null || v === false) return;
       if (k.slice(0, 2) === 'on') {
         if (typeof v === 'function') el.addEventListener(k.slice(2).toLowerCase(), v);
         return; /* handlers are functions only — never attribute strings */
       }
       /* Links may only point inside the app or at a plain web address, whatever the caller passes. */
       if (k === 'href' && !/^(#|https?:\/\/)/i.test(String(v))) return;
-      if (k === 'src') return;
       if (k === 'text') el.textContent = String(v);
-      else el.setAttribute(k, v === true ? '' : String(v));
+      else if (allowed(k)) el.setAttribute(k, v === true ? '' : String(v));
     });
   }
 

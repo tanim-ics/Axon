@@ -49,9 +49,17 @@
     try { return E.sanitizeState(C, JSON.parse(window.localStorage.getItem(STORE_KEY))); }
     catch (e) { return E.defaultState(); }
   }
+  var saveWarned = false;
   function save() {
     try { window.localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
-    catch (e) { /* private mode or full disk: keep playing in memory */ }
+    catch (e) {
+      /* Private mode or full storage: keep playing in memory, and say so once. */
+      if (saveWarned) return;
+      saveWarned = true;
+      var note = document.getElementById('notice');
+      note.textContent = 'This browser is not saving your progress (private mode or full storage). You can keep playing, but it will be gone when the page closes.';
+      note.hidden = false;
+    }
   }
   function today() {
     var d = new Date(), p = function (n) { return (n < 10 ? '0' : '') + n; };

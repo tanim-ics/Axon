@@ -36,21 +36,27 @@
           guarded.setAttribute('data-mood', 'happy');
           api.sfx('good');
           api.say('Blocked! ' + s.line, 'happy');
-          api.later(function () {
+          /* The learner moves on when they have read why, not when a timer says so. */
+          var last = round === C.ATTACKS.length - 1;
+          var next = h('button', { class: 'btn primary', type: 'button', onclick: function () {
             round++;
-            if (round >= C.ATTACKS.length) api.done(E.starsFromMistakes(mistakes)); else render();
-          }, 1600);
+            if (last) api.done(E.starsFromMistakes(mistakes)); else render();
+          } }, last ? '🏁 Finish' : 'Next threat ▶');
+          UI.fill(cta, next);
+          next.focus();
         } }, h('span', { class: 'shield-icon', 'aria-hidden': 'true', text: s.icon }), h('span', { class: 'shield-name', text: s.name }));
         return b;
       });
 
       var heading = h('h2', { class: 'label', tabindex: '-1', text: 'Raise a shield' });
+      var cta = h('div', { class: 'cta-row' });
       UI.fill(root, h('div', { class: 'game narrow' },
         UI.dots(C.ATTACKS.length, round),
         scene,
         h('div', { class: 'task alert' }, h('span', { class: 'task-tag', text: '🚨 Incoming' }), h('p', { text: a.scene })),
         heading,
-        h('div', { class: 'shields' }, buttons)));
+        h('div', { class: 'shields' }, buttons),
+        cta));
       if (round > 0) { heading.focus(); api.say('New threat: ' + a.threat + '.', 'oops'); }
     }
 

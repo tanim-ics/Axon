@@ -924,3 +924,90 @@ test('profiles: add, rename, switch and remove', () => {
   assert.equal(full.list.length, E.PROFILE_MAX);
   assert.equal(E.addProfile(full, 'one too many'), null);
 });
+
+/* ---------- audit of 2026-11-15: clock skew, the DOM builder, and the security rules ---------- */
+
+test('review: a due day further off than the longest gap counts as due now', () => {
+  let st = E.awardLevel(C, E.defaultState(), 'loop', 3, '2026-01-01').state;
+  st = E.sanitizeState(C, Object.assign({}, st, { review: { 'loop-cycle': { box: 4, due: '9999-12-31' }, 'loop-ground': { box: 4, due: '2026-01-22' } } }));
+  assert.ok(E.dueConcepts(C, st, '2026-01-01').includes('loop-cycle'), 'a wrong clock must not hide an idea for ever');
+  assert.ok(!E.dueConcepts(C, st, '2026-01-01').includes('loop-ground'), '21 days ahead is a real wait');
+  const m = E.masteryOf(C, st, '2026-01-01').filter((x) => x.id === 'loop-cycle')[0];
+  assert.equal(m.status, 'due');
+  assert.equal(m.due, '2026-01-01');
+  const after = E.recordReview(C, st, 'loop-cycle', true, '2026-01-01');
+  assert.deepEqual(after.review['loop-cycle'], { box: 4, due: '2026-01-22' }, 'answering it puts it back on a real schedule');
+});
+
+test('streak: a clock that moves back one day keeps the streak; further back starts again', () => {
+  const s = E.defaultState();
+  s.streak = { count: 5, last: '2026-03-10', best: 5 };
+  assert.equal(E.touchStreak(s, '2026-03-09'), s.streak, 'one day back is the same learning day');
+  assert.equal(E.liveStreak(s, '2026-03-09'), 5);
+  assert.deepEqual(E.touchStreak(s, '2026-03-01'), { count: 1, last: '2026-03-01', best: 5 });
+  assert.equal(E.liveStreak(s, '2026-03-01'), 0);
+});
+
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+const ROOT = path.join(__dirname, '..');
+const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');
+const jsFiles = () => ['content', 'engine', 'markdown', 'ui', 'app'].map((n) => 'js/' + n + '.js')
+  .concat(fs.readdirSync(path.join(ROOT, 'js/games')).map((n) => 'js/games/' + n));
+
+/* ui.js is a browser script. It is run here against the smallest stand-in for a document that h() needs. */
+function loadUI() {
+  class Node {}
+  class El extends Node {
+    constructor(tag) { super(); this.tag = tag; this.attrs = {}; this.kids = []; this.handlers = {}; this.text = null; }
+    setAttribute(k, v) { this.attrs[k] = v; }
+    addEventListener(k, f) { this.handlers[k] = f; }
+    appendChild(k) { this.kids.push(k); return k; }
+    set textContent(v) { this.text = v; }
+  }
+  const document = { createElement: (t) => new El(t), createElementNS: (ns, t) => new El(t), createTextNode: (t) => ({ textNode: String(t) }) };
+  const ctx = vm.createContext({ Node, document, window: {} });
+  vm.runInContext(read('js/ui.js'), ctx);
+  return vm.runInContext('UI', ctx);
+}
+
+test('UI.h: only safe attributes, links and handlers reach the DOM', () => {
+  const UI = loadUI();
+  assert.equal(UI.h('a', { href: 'javascript:alert(1)' }).attrs.href, undefined);
+  assert.equal(UI.h('a', { href: 'data:text/html,x' }).attrs.href, undefined);
+  assert.equal(UI.h('a', { href: '//evil.example' }).attrs.href, undefined);
+  assert.equal(UI.h('a', { href: '#/map' }).attrs.href, '#/map');
+  assert.equal(UI.h('a', { href: 'https://example.com/' }).attrs.href, 'https://example.com/');
+  ['src', 'style', 'innerHTML', 'outerHTML', 'srcdoc', 'action', 'formaction', 'srcset', 'xlink:href', 'ping'].forEach((k) => {
+    assert.deepEqual(Object.keys(UI.h('div', { [k]: 'x' }).attrs), [], k + ' must never be set');
+  });
+  const el = UI.h('button', { onclick: 'alert(1)', class: 'btn', 'aria-label': 'Go', 'data-slot': 2, disabled: true, hidden: false });
+  assert.deepEqual({ ...el.attrs }, { class: 'btn', 'aria-label': 'Go', 'data-slot': '2', disabled: '' });
+  assert.deepEqual(Object.keys(el.handlers), [], 'a handler given as a string is dropped');
+  const fn = () => {};
+  assert.equal(UI.h('button', { onclick: fn }).handlers.click, fn);
+  const p = UI.h('p', { text: '<b>x</b>' }, '<i>y</i>', [null, false, 3]);
+  assert.equal(p.text, '<b>x</b>');
+  assert.deepEqual(p.kids.map((k) => k.textNode), ['<i>y</i>', '3'], 'children are text nodes, never markup');
+});
+
+test('security rules: no banned DOM calls, the CSP is unchanged, one version number on every asset', () => {
+  const banned = /\.(innerHTML|outerHTML|cssText)\s*=|insertAdjacentHTML\s*\(|\beval\s*\(|new Function\s*\(|document\.write\s*\(|setAttribute\(\s*['"](style|on\w+)['"]/;
+  jsFiles().forEach((f) => {
+    read(f).split('\n').forEach((line, i) => {
+      assert.ok(!banned.test(line), f + ':' + (i + 1) + ' uses a banned call');
+    });
+  });
+  const html = read('index.html');
+  assert.ok(html.includes('content="default-src \'none\'; script-src \'self\'; style-src \'self\'; font-src \'self\'; img-src \'self\' data:; base-uri \'none\'; form-action \'none\'"'),
+    'the Content Security Policy must stay as it is');
+  assert.ok(!/<script(?![^>]*\bsrc=)/.test(html) && !/\son\w+="/.test(html) && !/\sstyle="/.test(html), 'no inline script, handler or style');
+  const assets = html.match(/(?:src|href)="(?:js|css)\/[^"]+"/g);
+  const versions = new Set(assets.map((a) => (/\?v=(\d+)"$/.exec(a) || [])[1]));
+  assert.equal(versions.size, 1, 'every script and style link carries the same ?v= number');
+  assert.ok(!versions.has(undefined), 'every script and style link has a ?v= number');
+  fs.readdirSync(path.join(ROOT, 'js/games')).forEach((n) => {
+    assert.ok(html.includes('js/games/' + n + '?v='), n + ' is loaded by index.html');
+  });
+});

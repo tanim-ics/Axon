@@ -37,14 +37,19 @@
         if (busy) return;
         var s = E.scoreTools(C.TOOLS, r, selected);
         if (s.ok) {
-          busy = true; runBtn.disabled = true;
+          busy = true;
+          chips.forEach(function (c) { c.disabled = true; });
           belt.classList.add('won');
           api.sfx('good');
           api.say('✅ ' + r.why, 'happy');
-          api.later(function () {
+          /* The learner moves on when they have read why, not when a timer says so. */
+          var last = round === rounds.length - 1;
+          var next = h('button', { class: 'btn primary', type: 'button', onclick: function () {
             round++;
-            if (round >= rounds.length) api.done(E.starsFromMistakes(mistakes)); else render();
-          }, 2200);
+            if (last) api.done(E.starsFromMistakes(mistakes)); else render();
+          } }, last ? '🏁 Finish' : 'Next job ▶');
+          UI.fill(cta, next);
+          next.focus();
           return;
         }
         mistakes++;
@@ -57,6 +62,7 @@
       }
 
       var heading = h('h2', { class: 'label', tabindex: '-1', text: 'Pick tools' });
+      var cta = h('div', { class: 'cta-row' }, runBtn);
       drawBelt();
       UI.fill(root, h('div', { class: 'game narrow' },
         UI.dots(rounds.length, round),
@@ -64,7 +70,7 @@
         h('div', { class: 'belt-row' }, UI.bot('idle', 'mini-bot'), belt),
         heading,
         h('div', { class: 'chips' }, chips),
-        h('div', { class: 'cta-row' }, runBtn)));
+        cta));
       if (round > 0) { heading.focus(); api.say('Next job. Pack again.', 'idle'); }
     }
 

@@ -284,6 +284,8 @@
   function touchStreak(state, today) {
     if (!validDay(today) || state.streak.last === today) return state.streak;
     var gap = state.streak.last ? dayNumber(today) - dayNumber(state.streak.last) : 0;
+    /* The clock moved back one day (a corrected clock, travel west): the same learning day, not a break. */
+    if (gap === -1) return state.streak;
     var count = gap === 1 ? state.streak.count + 1 : 1;
     return { count: count, last: today, best: Math.max(state.streak.best || 0, count) };
   }
@@ -301,7 +303,7 @@
   function liveStreak(state, today) {
     if (!validDay(today) || !state.streak.last) return 0;
     var gap = dayNumber(today) - dayNumber(state.streak.last);
-    return gap === 0 || gap === 1 ? state.streak.count : 0;
+    return gap >= -1 && gap <= 1 ? state.streak.count : 0;
   }
 
   /* Record a finished level. Stars never go down. Returns a new state + what changed. */
@@ -341,9 +343,13 @@
     return conceptIds(C).filter(function (id) { return starsOf(state, C.CONCEPTS[id].level) > 0; });
   }
 
+  /* No idea ever waits longer than the longest gap. A due day further away than that was set by a
+     wrong clock or edited storage, so it counts as due now instead of never coming back. */
+  function farAhead(r, today) { return dayNumber(r.due) - dayNumber(today) > REVIEW_GAPS[REVIEW_GAPS.length - 1]; }
+
   function isDue(state, id, today) {
     var r = own(state.review || {}, id) ? state.review[id] : null;
-    return !r || dayNumber(r.due) <= dayNumber(today);
+    return !r || dayNumber(r.due) <= dayNumber(today) || farAhead(r, today);
   }
 
   /* Due today, weakest first. */
@@ -380,9 +386,9 @@
     var rank = { due: 0, 'new': 1, learning: 2, strong: 3 };
     return learnedConcepts(C, state).map(function (id) {
       var r = own(state.review || {}, id) ? state.review[id] : null;
-      var status = !r ? 'new' : dayNumber(r.due) <= dayNumber(today) ? 'due' : r.box >= 3 ? 'strong' : 'learning';
+      var status = !r ? 'new' : isDue(state, id, today) ? 'due' : r.box >= 3 ? 'strong' : 'learning';
       return { id: id, name: C.CONCEPTS[id].name, level: C.CONCEPTS[id].level, box: r ? r.box : 0,
-        due: r ? r.due : today, status: status };
+        due: r && !farAhead(r, today) ? r.due : today, status: status };
     }).sort(function (a, b) {
       return rank[a.status] - rank[b.status] || a.box - b.box || dayNumber(a.due) - dayNumber(b.due);
     });
