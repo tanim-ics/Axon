@@ -6,9 +6,9 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Rounds 1–25 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
-> empty. Git: Rounds 1–24 are pushed; Round 25 is committed locally only. Ask the user before pushing.
-> Ideas for what could come next are under "Ideas" below; none is approved.
+> Rounds 1–26 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
+> empty. Git: Rounds 1–24 are pushed; Rounds 25 and 26 are committed locally only. Ask the user before
+> pushing. Ideas for what could come next are under "Ideas" below; none is approved.
 
 ## Planned next (approved)
 
@@ -17,7 +17,7 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Ideas (not approved; pick with the user)
 
-- Rewrite the next batch of weak questions (about 100 short "why" lines remain; see Round 25)
+- Rewrite the next batch of weak questions (81 short "why" lines remain; see Rounds 25 and 26)
 
 - Named cloud products in the Python + cloud journey, once they are checked against official sites
 
@@ -25,6 +25,18 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 
 ## Done
+
+### Round 26 — the next 24 weak questions rewritten (complete, verified)
+- [x] 24 more bank questions rewritten to the Round 25 brief (6 Academy, 11 Addy, 4 LLM, 3 Python + cloud):
+      44 of the 290 hand-written questions are now done. Ids, concepts and counts are unchanged
+- [x] 59 tests pass; every question text is still unique. Right answer longest in 34% and shortest in 34%
+      of the bank (limit 45%). Browser at 375px (`?v=33`): seven rewritten questions answered wrong in
+      their Master levels; the right option was marked, the stored "why" showed, no page overflow, console
+      clean
+- Limits: no second reader. The Addy rewrites keep the facts of the old "why" lines (model tiers, ADK
+  agent types, the 5-to-20 tool range) and were not re-checked against the lesson text. By the Round 25
+  measure, 81 questions still have a "why" under 60 characters and 11 a wrong option under 12
+  characters. Boss decisions are still not audited
 
 ### Round 25 — the 20 weakest questions rewritten (complete, verified)
 - [x] Audit by script of the 290 hand-written bank questions (the 42 mission questions are generated and
