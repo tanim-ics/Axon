@@ -6,18 +6,31 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Rounds 1–20 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
-> empty. Git: Rounds 1–20 are pushed to `origin/main` (2026-11-15). Ask the user before pushing anything new.
-> Ideas for what could come next are under "Ideas" below; none is approved.
+> Round 21, step 1: add the engine rules for Blitz (`BLITZ`, `recordBlitz`, `state.blitz` in `defaultState`,
+> `sanitizeState` and `awardLevel`) with tests. Nothing of this round is in the code yet. A background agent
+> may be reading the 12 debug runs (step 4); if the session ended, rerun it.
+> Git: Rounds 1–20 are pushed. Ask the user before pushing anything new.
 
-## Planned next (approved)
+## Round 21 — timed Arena ("Blitz") and a second reader for the debug runs (in progress; user said
+## "next task" 2026-11-15, Claude picked timed Arena from Ideas and added the reader to close Round 20's limit)
 
-- Nothing further is approved. See the Backlog.
+Blitz: 60 seconds, one question after another from everything learned. A right answer scores a point, a wrong
+one costs 3 seconds and shows the right answer briefly. The best score is saved. Misses are listed with their
+"why" at the end and come back in tomorrow's review. The untimed Arena stays as it is.
 
+- [ ] 1. Engine: `BLITZ = { seconds: 60, penalty: 3 }`, `state.blitz` (best score, sanitized), `recordBlitz`
+      (pure, returns state + whether it is a record); tests
+- [ ] 2. Game: `js/games/blitz.js` (timer bar, score, streak, quick feedback, clock paused during feedback)
+- [ ] 3. App: route `#/blitz`, entry buttons on the hub review card and the Arena end panel, end summary with
+      the missed questions; styles; script tag; `?v=`
+- [ ] 4. Second reader over the 12 debug runs in `a-fix-1`, `l-fix-1`, `p-fix-1`; apply findings
+- [ ] 5. Verify at 375px: play a Blitz round (right, wrong, time running out, record saved, misses listed,
+      Go again); console clean; `npm test`
+- [ ] 6. Docs (`CLAUDE.md`: routes, review section, layout), move the round to Done, commit
 
 ## Ideas (not approved; pick with the user)
 
-- More labs for the run simulator (Round 16 built four), timed Arena rounds
+- More labs for the run simulator (Round 16 built four)
 - Named cloud products in the Python + cloud journey, once they are checked against official sites
 
 ## Backlog (not started, needs the user's OK)
