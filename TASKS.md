@@ -6,9 +6,19 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Rounds 1–16 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
-> empty. Git: `main` is ahead of `origin/main` by local commits; ask the user before pushing.
-> Ideas for what could come next are under "Ideas" below; none is approved.
+> **Round 17 in progress** (user said "start next task" on 2026-11-15 with an empty backlog; Claude chose the
+> two verification gaps from the Ideas list). Git: `main` matched `origin/main` at commit c08f613 (pushed with
+> the user's OK); ask before any later push. Next step: the first unticked box in "Round 17" below.
+
+## Round 17 — play every level, and a second reader for the questions (in progress)
+
+- [ ] 17.1 Play every level of all four journeys to its result dialog in a real browser at 375px, driven by a
+      script that reads the right answers from `Content`; record failures, page overflow and console errors
+- [ ] 17.2 Fix what the play-through finds
+- [ ] 17.3 A background agent reads every question, boss decision, sort card and lab setting, looking for wrong
+      options that are arguably right. If the session is lost, redo this step
+- [ ] 17.4 Fix what the second reader flags; tests still pass
+- [ ] 17.5 Docs, commit
 
 ## Planned next (approved)
 
@@ -19,9 +29,6 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 - More labs for the run simulator (Round 16 built four), a "fix the trace" game for the course lessons,
   timed Arena rounds
-- A real play-through of every level by a person: most levels are verified only by tests that prove they can
-  be won
-- A second reader for the rewritten wrong answers (Round 9), looking for options that are arguably right
 - Python and cloud basics, which top the job-market tally and are not taught
 
 ## Backlog (not started, needs the user's OK)
