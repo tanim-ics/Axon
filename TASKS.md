@@ -6,14 +6,12 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Rounds 1–29 are complete (Round 14 was dropped by the user). Nothing is in progress. What is left of the
-> audit (`docs/audit-2026-11-15.md`, last section) is content work, listed under "Ideas"; none is approved.
-> Git: Rounds 1–29 are pushed (2026-11-15). Ask the user before pushing anything new.
+> Rounds 1-30 are complete (Round 30 is committed, not pushed). Nothing is in progress and nothing further is
+> approved. See "Ideas". Git: Rounds 1-29 are pushed; Round 30 is not. Ask the user before pushing.
 
 ## Planned next (approved)
 
-- Nothing further is approved. See the Backlog.
-
+- Nothing approved.
 
 ## Ideas (not approved; pick with the user)
 
@@ -34,6 +32,19 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 
 ## Done
+
+### Round 30 - harder questions and a summary on every lesson (complete, verified)
+- [x] All 290 hand-written bank questions rewritten by six parallel writers as scenarios, failures to diagnose or
+      choices between close ideas, with four options of similar length. Ids, concepts and counts unchanged
+- [x] `SUMMARY` in `content.js` (`<lesson id or Academy id>` -> `{ scope, learn: [3] }`): 51 entries (8 Academy,
+      43 lessons; a lesson's Learn, Apply and Master share one). Shown on the intro screen before Play under
+      "You will be able to"
+- [x] Test: every Academy and lesson level has a scope and three distinct lines. 65 tests pass. Right answer is
+      the longest option in 41% and the shortest in 22%; no option is more than twice another's length
+- [x] Browser at 375px (`?v=39`): The Loop intro shows scope and three lines, no page overflow, console clean
+- Limits: no second reader for the rewrites; the writers flagged a few weaker distractors (loop-cycle-2,
+  a12-tiers-2) and light rewording of three Academy questions. `tools/playthrough.js` was not re-run, and no
+  question was answered wrong in the browser. Longest-is-right (41%) is close to the 45% test limit
 
 ### Round 29 — a third wrong option for every bank question (audit C-1; complete, verified)
 - [x] 290 hand-written questions each gained one more wrong option (32 Academy, 114 Addy, 96 LLM, 48 Python +

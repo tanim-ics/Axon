@@ -75,6 +75,8 @@ No build step, no dependencies, no network calls. `.claude/launch.json` defines 
 
 ## Spaced review (the retention layer)
 
+- Every Academy level and lesson has a summary in `SUMMARY` (`content.js`): `scope` and three `learn` lines ("You will be able to…"), shown on the intro screen. A new lesson or level needs an entry; a test fails without one.
+
 - `Content.CONCEPTS` maps a concept id to `{ level, name }`. `Content.BANK` holds questions built with `Q(id, concept, q, a, x, why)`: one right answer `a`, exactly three wrong answers `x` (a test requires three, so a blind guess is right one time in four), and a `why` shown after every answer. Tests require two or more questions per concept.
 - A concept enters review when its level is finished. `state.review[concept] = { box, due }`.
 - Rules live in `engine.js`: right when due waits 1, 3, 7, then 21 days; wrong at any time resets to tomorrow; right before it is due changes nothing (so Arena practice cannot fake mastery).

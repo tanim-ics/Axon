@@ -268,6 +268,11 @@ a.node:active .node-disc { transform: scale(0.94); }
 
 .intro { display: grid; justify-items: center; gap: var(--s3); max-width: 560px; margin: var(--s7) auto; text-align: center; animation: rise 0.6s var(--ease) backwards; }
 .intro-icon { display: grid; place-items: center; width: 128px; height: 128px; background: var(--surface-2); border: 1px solid var(--line-2); border-radius: var(--r-lg); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16); font-size: 3.75rem; margin-bottom: var(--s3); }
+.intro-sum { width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md, 12px); padding: var(--s4); display: grid; gap: var(--s2); }
+.intro .intro-scope { color: var(--text); font-size: 1rem; margin: 0; }
+.intro-sum h3 { font-size: 0.9375rem; color: var(--muted); font-weight: 600; margin: var(--s2) 0 0; }
+.intro-sum ul { margin: 0; padding-left: 1.25rem; display: grid; gap: var(--s1, 4px); }
+.intro-sum li { font-size: 1rem; line-height: 1.4; }
 .intro h2 { font-size: clamp(1.75rem, 5.4vw, 2.75rem); line-height: 1.08; letter-spacing: -0.01em; }
 .intro p { color: var(--muted); font-size: 1.1875rem; margin-bottom: var(--s4); }
 

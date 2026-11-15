@@ -501,6 +501,10 @@
       h('div', { class: 'intro-icon', 'aria-hidden': 'true', text: L.icon }),
       h('h2', { text: L.idea }),
       h('p', { text: L.play }),
+      L.scope ? h('div', { class: 'intro-sum' },
+        h('p', { class: 'intro-scope', text: L.scope }),
+        h('h3', { text: 'You will be able to' }),
+        h('ul', null, (L.learn || []).map(function (t) { return h('li', { text: t }); }))) : null,
       go));
   }
 

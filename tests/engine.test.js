@@ -1037,3 +1037,20 @@ test('awardLevel: a field it does not know about survives a finished level', () 
   assert.equal(res.state.stars.loop, 2);
   assert.equal(s.stars.loop, undefined, 'the input is not changed');
 });
+
+/* ---------- summaries: what a level covers and what the learner will be able to do ---------- */
+
+test('summaries: every Academy and lesson level has a scope and three distinct "you will be able to" lines', () => {
+  const lessonLevels = [].concat(C.ADDY, C.LLM, C.PY).filter((l) => ['learn', 'sort', 'order', 'quiz'].includes(l.game) && l.lesson);
+  const all = C.LEVELS.concat(lessonLevels);
+  assert.ok(lessonLevels.length >= 43 * 3, 'every lesson has Learn, Apply and Master');
+  all.forEach((l) => {
+    assert.ok(typeof l.scope === 'string' && l.scope.length >= 20 && l.scope.length <= 180, l.id + ' scope');
+    assert.equal(l.learn.length, 3, l.id + ' learn');
+    assert.equal(new Set(l.learn).size, 3, l.id + ' learn lines are distinct');
+    l.learn.forEach((t) => assert.ok(t.length >= 8 && t.length <= 100 && !/[<>]/.test(t), l.id + ': ' + t));
+  });
+  const byLesson = {};
+  lessonLevels.forEach((l) => { const k = l.id.split('-')[0]; (byLesson[k] = byLesson[k] || new Set()).add(l.scope); });
+  Object.keys(byLesson).forEach((k) => assert.equal(byLesson[k].size, 1, k + ': its three levels share one summary'));
+});
