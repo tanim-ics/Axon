@@ -9,6 +9,9 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 > Rounds 1–26 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
 > empty. Git: Rounds 1–26 are pushed (2026-11-15). Ask the user before pushing
 > anything new. Ideas for what could come next are under "Ideas" below; none is approved.
+>
+> Round 27 (2026-11-15) was a read-only audit: no code changed. Its top findings are listed under "Ideas";
+> none is approved. Ask the user which to fix before touching code.
 
 ## Planned next (approved)
 
@@ -19,12 +22,33 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 - Rewrite the next batch of weak questions (81 short "why" lines remain; see Rounds 25 and 26)
 
+- Round 27 audit findings, most useful first (none fixed yet):
+  1. `css/styles.css`: `.mrow` is defined twice (field missions, line 475; mastery map, line 733), so mission
+     rows take the mastery grid, padding and background
+  2. `--muted` (#6b7a99) is 4.38:1 on `--bg`, 4.00 on `--surface`, 3.56 on `--surface-2`, about 3.0 on the tints
+  3. Reader and source lists: `ol, ul { list-style: none }` is never undone for `.prose` and `.market-sources`
+  4. `js/games/order.js` says "That is the loop." after every order puzzle
+  5. `js/games/tools.js`, `guard.js`: the explanation is replaced after 2.2s / 1.6s
+  6. Engine: a valid far-future `due` is kept for ever; a clock that moves back a day resets the streak
+  7. `app.js` `save()`: a failed write is silent
+  8. 320px: the first-visit hub hero is 24px too wide; the armed reset button is wider than its card
+  9. Every question has two wrong options, and a Master clears at 60%: guessing passes about 1 time in 5
+  10. No test covers `ui.js`, `app.js` or the games, or checks the banned DOM calls and the `?v=` numbers
+
 - Named cloud products in the Python + cloud journey, once they are checked against official sites
 
 ## Backlog (not started, needs the user's OK)
 
 
 ## Done
+
+### Round 27 — read-only audit of every source file (complete, no code changed)
+- [x] Read `index.html`, `css/styles.css`, `engine.js`, `ui.js`, `app.js`, `markdown.js`, all 16 game files and
+      the test list; profiled the 332 bank questions by script; 59 tests pass
+- [x] Checked in the browser by computed style and page width at 320px and 375px: the `.mrow` collision, the
+      missing list markers in the reader, the hub hero overflow at 320px, the reset button width
+- Limits: `content.js` was profiled by script, not read line by line, so the content findings are heuristic.
+  No level was played. Line lengths at desktop width are estimated (the preview pane is 375px wide)
 
 ### Round 26 — the next 24 weak questions rewritten (complete, verified)
 - [x] 24 more bank questions rewritten to the Round 25 brief (5 Academy, 13 Addy, 3 LLM, 3 Python + cloud):
