@@ -2001,13 +2001,370 @@
       'Fine-tuning appeared in 5 of 23 postings. It is the last and dearest step, not the first.')
   ], 'Capstone');
 
+  /* ---------- Python + cloud journey: write the agent, then run it somewhere real ----------
+     Written for this app from general, well-established practice (no source text). The three big clouds
+     are named; individual cloud products are not, because their names change and are not verified here. */
+  TRACK = track('p', 'Topic', false);
+  var PY = TRACK.list;
+
+  lesson('01', '🐍', 'Python for agents', {
+    idea: 'Agents are written in Python. You need less of it than you think.',
+    key: 'A list holds many things, a dict holds named things, a function does one job. JSON from a model becomes a dict.',
+    cards: [
+      K('🐍', 'Why Python', 'Model SDKs, agent frameworks and data tools are Python-first. Reading it is a job requirement, and the basics go a long way.'),
+      K('📦', 'Lists and dicts', 'A list is an ordered row of items. A dict maps names to values. A chat history is a list of dicts.',
+        ['stack', ['messages = [ … ]   a list', '{"role": "user", "content": "Hi"}   a dict', 'messages[0]["role"]   gives "user"']]),
+      K('🔧', 'Functions', 'A function takes inputs, does one job and returns a result. Every tool an agent calls is a function.',
+        ['flow', ['Inputs', 'def get_weather(city)', 'return result'], false]),
+      K('🔁', 'JSON in, dict out', 'Models and APIs speak JSON text. json.loads turns that text into a dict you can use. json.dumps turns a dict back into text.',
+        ['flow', ['JSON text', 'json.loads', 'dict', 'json.dumps', 'JSON text'], false])
+    ],
+    concepts: [['p01-data', 'Lists and dicts'], ['p01-func', 'Functions'], ['p01-json', 'JSON and dicts']],
+    apply: { kind: 'order', icon: '📞', title: 'Handle a tool call', idea: 'The model asked for a tool. Put the Python steps in order.',
+      key: 'Parse → read the name → find the function → call it → turn the result into JSON → send it back.',
+      why: 'The reply is text, so it is parsed first. The name picks the function, the arguments are passed in, and the result goes back to the model as JSON text.',
+      steps: [
+        { id: 'parse', icon: '📥', text: 'call = json.loads(reply_text)' },
+        { id: 'name', icon: '🏷️', text: 'name = call["name"]' },
+        { id: 'find', icon: '🔎', text: 'tool = TOOLS[name]' },
+        { id: 'run', icon: '▶️', text: 'result = tool(**call["arguments"])' },
+        { id: 'dump', icon: '📤', text: 'text = json.dumps(result)' },
+        { id: 'send', icon: '💬', text: 'messages.append(tool_message(text))' }
+      ] }
+  });
+
+  lesson('02', '📦', 'Environments and secrets', {
+    idea: 'A project that only runs on your laptop is not finished.',
+    key: 'One virtual environment per project. Dependencies pinned in a file. Secrets in the environment, never in code.',
+    cards: [
+      K('🧪', 'Virtual environments', 'A virtual environment is a private set of packages for one project. Two projects can then need different versions without clashing.',
+        ['vs', 'Without', ['One shared set of packages', 'Upgrading for one project breaks another'], 'With', ['A set of packages per project', 'Each project picks its own versions']]),
+      K('📌', 'Pin your dependencies', 'List every package and its version in a file kept in version control. Any person, or any server, can then install the exact same set.',
+        ['flow', ['Dependency file', 'pip install', 'Same packages everywhere'], false]),
+      K('🔑', 'Secrets live in the environment', 'API keys go in environment variables, read when the program runs. A key written in code ends up in version control, and from there anywhere.',
+        ['vs', 'In code', ['Visible to everyone with the repository', 'Stays in the history'], 'In the environment', ['Set per machine', 'Replaced without a code change']]),
+      K('🙈', 'Ignore the secret file', 'A local .env file is a handy place for keys while developing. List it in .gitignore so it is never committed.')
+    ],
+    concepts: [['p02-venv', 'Virtual environments'], ['p02-pin', 'Pinned dependencies'], ['p02-secrets', 'Secrets in the environment']],
+    apply: { kind: 'sort', icon: '🗂️', title: 'Where does it go?', idea: 'Each line belongs in exactly one place.',
+      key: 'Packages in the dependency file. Keys and passwords in the environment. Logic and settings in code.',
+      buckets: [{ id: 'dep', icon: '📌', name: 'Dependency file' }, { id: 'env', icon: '🔑', name: 'Environment (.env)' }, { id: 'code', icon: '🐍', name: 'Source code' }],
+      items: [
+        I('a', 'MODEL_API_KEY=sk-live-…', 'env', 'A key is a secret. It is read from the environment and never committed.'),
+        I('b', 'requests==2.32.3', 'dep', 'A package and its exact version: that is what the dependency file is for.'),
+        I('c', 'def search_docs(query): …', 'code', 'Logic is code. It is safe to commit and to review.'),
+        I('d', 'DATABASE_PASSWORD=…', 'env', 'A password is a secret, the same as a key.'),
+        I('e', 'pytest==8.3.2', 'dep', 'Test tools are dependencies too. Pin them so tests behave the same everywhere.'),
+        I('f', 'MAX_STEPS = 12', 'code', 'A limit is not a secret. Keep it in code where a reviewer can see it.')
+      ] }
+  });
+
+  lesson('03', '📨', 'Calling a model API', {
+    idea: 'Calling a model is an HTTP request. Requests fail, so plan for it.',
+    key: 'Send JSON with the key in a header. Read the status code. Retry 429 and 5xx with backoff, fix other 4xx, always set a timeout.',
+    cards: [
+      K('📨', 'A request and a response', 'Your code sends a POST request: a URL, headers carrying the API key, and a JSON body with the model name and the messages. JSON comes back.',
+        ['flow', ['Your code', 'POST + key + JSON', 'Model API', 'JSON reply'], false]),
+      K('🚦', 'Status codes', 'The three-digit code says what happened, before you read anything else.',
+        ['stack', ['2xx: it worked', '4xx: the request is wrong', '429: too many requests, slow down', '5xx: the server failed']]),
+      K('⏳', 'Retry with backoff', 'Rate limits and server errors are often temporary. Wait, try again, and double the wait each time, up to a limit.',
+        ['flow', ['Fail', 'Wait 1s', 'Fail', 'Wait 2s', 'Fail', 'Wait 4s'], false]),
+      K('⏱️', 'Always set a timeout', 'A call with no timeout can hang and freeze the whole agent. Set one, and treat a timeout like any other failure.'),
+      K('🧰', 'The SDK does this for you', 'Provider SDKs build the request, parse the reply and often retry. Knowing what is underneath is how you debug them.')
+    ],
+    concepts: [['p03-request', 'Anatomy of an API call'], ['p03-status', 'Status codes'], ['p03-backoff', 'Retry with backoff']],
+    apply: { kind: 'sort', icon: '🚦', title: 'Read the status code', idea: 'The API answered. What does your code do next?',
+      key: '2xx: use it. 429 and 5xx: wait and retry. Other 4xx: fix the request, retrying will not help.',
+      buckets: [{ id: 'ok', icon: '✅', name: 'Use the reply' }, { id: 'fix', icon: '🛠️', name: 'Fix the request' }, { id: 'retry', icon: '⏳', name: 'Wait and retry' }],
+      items: [
+        I('a', '200 OK', 'ok', 'It worked. Parse the JSON and carry on.'),
+        I('b', '401 Unauthorized', 'fix', 'The key is missing or wrong. Sending the same request again changes nothing.'),
+        I('c', '429 Too Many Requests', 'retry', 'You hit a rate limit. Back off and try again later.'),
+        I('d', '400 Bad Request', 'fix', 'The body is malformed. Fix the JSON or the parameters.'),
+        I('e', '503 Service Unavailable', 'retry', 'The server is overloaded for now. A later retry often works.'),
+        I('f', '404 Not Found', 'fix', 'The URL or the model name is wrong. Correct it.'),
+        I('g', '500 Internal Server Error', 'retry', 'The fault is on their side. Retry with backoff, up to a limit.')
+      ] }
+  });
+
+  lesson('04', '🔧', 'Tools, async and tests', {
+    idea: 'A tool is a Python function the model is allowed to ask for.',
+    key: 'Type hints and a docstring become the tool schema. Use async to wait on many calls at once. Test tools like any other code.',
+    cards: [
+      K('🏷️', 'Hints and docstrings', 'Type hints say what each argument is. The docstring says what the function does. Frameworks turn both into the schema the model reads.',
+        ['flow', ['def search(query: str)', '"""Search the docs."""', 'Tool schema'], false]),
+      K('⚡', 'async is for waiting', 'An agent spends most of its time waiting on networks. With async and await, three slow calls wait at the same time instead of one after another.',
+        ['vs', 'One after another', ['Call A, wait', 'Call B, wait', 'Call C, wait'], 'Together', ['Start A, B and C', 'Wait once', 'All three return']]),
+      K('🧯', 'Catch errors and report them', 'Wrap a tool body in try and except. Return a clear error message instead of crashing, so the model can try something else.',
+        ['flow', ['Tool fails', 'except', '"Error: city not found"', 'Model adapts'], false]),
+      K('🧪', 'Test with pytest', 'A tool is ordinary code, so test it. Call the function with known inputs and assert on the output. No model is needed.',
+        ['flow', ['Known input', 'Call the function', 'assert the result'], false])
+    ],
+    concepts: [['p04-schema', 'Hints and docstrings become schemas'], ['p04-async', 'async is for waiting'], ['p04-test', 'Testing tools']],
+    apply: { kind: 'order', icon: '🛠️', title: 'From function to tool call', idea: 'Follow one tool from your editor to a finished call.',
+      key: 'Write it → describe it → send the schema → the model asks → check the arguments → run → return the result.',
+      why: 'The model can only ask for tools it was told about, so the schema goes out first. Its arguments are untrusted input and are checked before the function runs.',
+      steps: [
+        { id: 'write', icon: '⌨️', text: 'Write the function with type hints' },
+        { id: 'doc', icon: '📝', text: 'Add a docstring that says when to use it' },
+        { id: 'schema', icon: '📐', text: 'Send its schema along with the prompt' },
+        { id: 'ask', icon: '🤖', text: 'The model returns a name and arguments' },
+        { id: 'check', icon: '🔍', text: 'Validate the arguments' },
+        { id: 'run', icon: '▶️', text: 'Run the function' },
+        { id: 'back', icon: '💬', text: 'Send the result back to the model' }
+      ] }
+  });
+
+  mix(1, 'Python mix', 6);
+
+  BANK = BANK.concat([
+    Q('p01-data-1', 'p01-data', 'Which Python type maps names to values?', 'A dict', ['A list', 'A function'],
+      'A dict stores pairs of key and value. A list stores items in order.'),
+    Q('p01-data-2', 'p01-data', 'How is a chat history usually stored?', 'A list of dicts, one per message', ['One long string', 'A dict of lists, one per role'],
+      'Each message is a dict with a role and content. The list keeps them in order.'),
+    Q('p01-func-1', 'p01-func', 'In Python, what is every agent tool underneath?', 'A function', ['A separate program on a server', 'A special kind of prompt'],
+      'A tool is a function your code runs when the model asks for it.'),
+    Q('p01-func-2', 'p01-func', 'What does return do in a function?', 'Hands the result back to the caller', ['Prints the result on screen', 'Starts the function again from the top'],
+      'Whatever follows return is the value the caller receives.'),
+    Q('p01-json-1', 'p01-json', 'The model replies with JSON text. Which call turns it into a dict?', 'json.loads', ['json.dumps', 'print'],
+      'loads reads a string into Python data. dumps goes the other way.'),
+    Q('p01-json-2', 'p01-json', 'Why does json.loads sometimes raise an error on a model reply?', 'The text is not valid JSON', ['The reply is too short to parse', 'JSON can only be read once per program'],
+      'Models can add stray words or drop a bracket. Catch the error and ask again.'),
+    Q('p02-venv-1', 'p02-venv', 'What problem does a virtual environment solve?', 'Projects needing different package versions', ['Slow code', 'Running out of disk space'],
+      'Each project gets its own packages, so one upgrade cannot break another project.'),
+    Q('p02-venv-2', 'p02-venv', 'How many virtual environments should two unrelated projects share?', 'None: one each', ['One, to save space', 'One, so versions stay in step'],
+      'Sharing brings back the clash the environment was meant to remove.'),
+    Q('p02-pin-1', 'p02-pin', 'Why write exact versions in the dependency file?', 'So every machine installs the same set', ['So installs run faster', 'So the packages can never be upgraded later'],
+      'A pinned file makes the install repeatable. You can still raise a version on purpose.'),
+    Q('p02-pin-2', 'p02-pin', 'It runs on your laptop but fails on the server with an import error. First suspect?', 'A package missing from the dependency file', ['A bug in Python itself', 'The server is too slow'],
+      'You installed it by hand locally and never wrote it down, so the server does not have it.'),
+    Q('p02-secrets-1', 'p02-secrets', 'Where should an API key live?', 'In an environment variable', ['In the source code, near where it is used', 'In a comment, so it is easy to find'],
+      'Code is shared and kept in history. The environment is set per machine.'),
+    Q('p02-secrets-2', 'p02-secrets', 'A key was committed to the repository by mistake. What now?', 'Revoke it at once and issue a new key', ['Delete the line in a new commit', 'Make the repository private and carry on'],
+      'The key is still in the history and may already be copied. Only replacing it makes it safe.'),
+    Q('p03-request-1', 'p03-request', 'Where does the API key normally go in a request?', 'In a header', ['In the URL', 'In the first message'],
+      'Headers carry authentication. URLs are logged widely, and messages go to the model.'),
+    Q('p03-request-2', 'p03-request', 'What is in the body of a model API request?', 'JSON with the model name and the messages', ['Only the API key', 'The status code'],
+      'The body says which model to use and what to send it. The status code comes back in the reply.'),
+    Q('p03-status-1', 'p03-status', 'The API answers 401. What should your code do?', 'Stop and fix the key', ['Retry every second until it works', 'Wait a minute, then send it again'],
+      '401 means the key is missing or wrong. The same request will fail the same way.'),
+    Q('p03-status-2', 'p03-status', 'Which status code means "too many requests, slow down"?', '429', ['404', '500'],
+      '429 is the rate limit. 404 is not found, and 500 is a server error.'),
+    Q('p03-backoff-1', 'p03-backoff', 'What is exponential backoff?', 'Waiting longer after each failed try', ['Retrying at once', 'Sending two requests in parallel'],
+      'Doubling the wait gives an overloaded service room to recover.'),
+    Q('p03-backoff-2', 'p03-backoff', 'Why set a timeout on every API call?', 'A hung call would freeze the agent', ['Timeouts make the model answer faster', 'The provider bills less for short calls'],
+      'Without a timeout one stuck connection can block the whole run.'),
+    Q('p04-schema-1', 'p04-schema', 'What do frameworks build a tool schema from?', 'Type hints and the docstring', ['The function body', 'The file name and the folder it sits in'],
+      'The hints give the argument types. The docstring tells the model when to use the tool.'),
+    Q('p04-schema-2', 'p04-schema', 'The model keeps calling a tool with the wrong argument. Cheapest fix?', 'A clearer docstring and argument names', ['A bigger model', 'More retries'],
+      'The schema is all the model knows about the tool. Make it say what you mean.'),
+    Q('p04-async-1', 'p04-async', 'When does async help most?', 'When waiting on networks', ['During heavy maths on one processor', 'When the code has no input or output'],
+      'async lets other work continue while a call waits. It does not make calculation faster.'),
+    Q('p04-async-2', 'p04-async', 'Three independent tool calls take 2 seconds each. Awaited together, about how long?', '2 seconds', ['6 seconds', '8 seconds'],
+      'They wait at the same time, so the total is about the slowest one.'),
+    Q('p04-test-1', 'p04-test', 'Do you need a model to test a tool function?', 'No, call it directly with known inputs', ['Yes, tools only run inside an agent', 'Yes, but a small one is enough'],
+      'A tool is a plain function. Test it alone, then test the agent that uses it.'),
+    Q('p04-test-2', 'p04-test', 'What does a pytest test do?', 'Asserts on a result', ['Measures how fast the code runs', 'Formats the code'],
+      'A test calls the code and asserts that the output is what you expect.')
+  ]);
+
+  lesson('05', '☁️', 'Cloud building blocks', {
+    idea: 'The cloud is computers you rent by the minute instead of buying.',
+    key: 'Compute runs code, storage keeps files, databases answer queries. Managed services trade control for less work. You pay for what you use.',
+    cards: [
+      K('☁️', 'Rent, do not buy', 'A cloud provider runs the data centres. You rent what you need through an API and hand it back when you are done. The big three are AWS, Azure and Google Cloud.'),
+      K('🧱', 'Three building blocks', 'Almost every system is made of the same three kinds of service.',
+        ['stack', ['Compute: runs your code', 'Storage: keeps files and objects', 'Database: stores and queries records']]),
+      K('🤝', 'Managed or self-run', 'A managed service is run for you: patches, backups and scaling. Running it yourself gives more control and more work.',
+        ['vs', 'Managed', ['Provider patches and scales it', 'Less control', 'Ready in minutes'], 'Self-run', ['You patch and scale it', 'Full control', 'You are on call']]),
+      K('💶', 'Pay for what you use', 'Billing is by the second, the request or the gigabyte. That is cheap for small loads and a shock for forgotten ones. Set a budget alert on day one.',
+        ['flow', ['Usage', 'Meter', 'Bill', 'Budget alert'], false]),
+      K('🌍', 'Regions', 'Providers have data centres in many regions. Pick one near your users for speed, and one that meets your rules on where data may be kept.')
+    ],
+    concepts: [['p05-blocks', 'Compute, storage, database'], ['p05-managed', 'Managed or self-run'], ['p05-cost', 'Pay per use']],
+    apply: { kind: 'sort', icon: '🧱', title: 'Which building block?', idea: 'Each job needs one kind of cloud service.',
+      key: 'Running code is compute. Keeping files is storage. Looking records up is a database.',
+      buckets: [{ id: 'cmp', icon: '⚙️', name: 'Compute' }, { id: 'sto', icon: '🗂️', name: 'Storage' }, { id: 'db', icon: '🗄️', name: 'Database' }],
+      items: [
+        I('a', 'Run the agent loop when a request arrives', 'cmp', 'Running code is what compute is for.'),
+        I('b', 'Keep the PDFs customers upload', 'sto', 'Whole files go in object storage: cheap, durable and fetched by name.'),
+        I('c', 'Look up a customer and their open orders', 'db', 'Records you query by field belong in a database.'),
+        I('d', 'Find the five passages most like a question', 'db', 'Similarity search is a query. A vector database answers it.'),
+        I('e', 'Archive a year of conversation logs', 'sto', 'Large files that are rarely read are a storage job.'),
+        I('f', 'Run the eval set every night', 'cmp', 'A scheduled job is still code that needs somewhere to run.')
+      ] }
+  });
+
+  lesson('06', '🐳', 'Containers', {
+    idea: 'A container packs your code with everything it needs to run.',
+    key: 'An image is the package and a container is a running copy. A Dockerfile is the recipe. An orchestrator runs many containers.',
+    cards: [
+      K('🐳', 'It runs on my machine', 'A container bundles the code, the Python version and every package. The same bundle runs on a laptop, a test server and in production.'),
+      K('📀', 'Image and container', 'An image is a read-only package. A container is one running copy of it. One image can start many containers.',
+        ['flow', ['Dockerfile', 'build', 'Image', 'run', 'Container'], false]),
+      K('📜', 'The Dockerfile', 'A Dockerfile is the recipe, read top to bottom. Install the dependencies before copying your code: steps are cached, so a code change does not reinstall everything.',
+        ['stack', ['FROM a Python base image', 'COPY the dependency file', 'RUN the install', 'COPY your code', 'CMD: the start command']]),
+      K('🏬', 'Registries', 'A registry stores images, like a package index for containers. The build pushes an image there and servers pull it to run.',
+        ['flow', ['Build', 'Push to registry', 'Server pulls', 'Run'], false]),
+      K('🚢', 'Orchestrators', 'When there are many containers, an orchestrator such as Kubernetes starts them, restarts the ones that crash and adds copies under load.')
+    ],
+    concepts: [['p06-image', 'Image and container'], ['p06-dockerfile', 'The Dockerfile'], ['p06-orchestrate', 'Orchestrators']],
+    apply: { kind: 'order', icon: '📜', title: 'Write the Dockerfile', idea: 'Package the agent. Put the steps in order.',
+      key: 'Base image → dependency file → install → your code → start command → build → push.',
+      why: 'Each line builds on the one before. Dependencies are installed before the code is copied so that a code change reuses the cached install. Only a built image can be pushed.',
+      steps: [
+        { id: 'from', icon: '🧱', text: 'FROM a Python base image' },
+        { id: 'deps', icon: '📌', text: 'COPY the dependency file' },
+        { id: 'install', icon: '📦', text: 'RUN pip install' },
+        { id: 'code', icon: '🐍', text: 'COPY your code' },
+        { id: 'cmd', icon: '▶️', text: 'CMD: set the start command' },
+        { id: 'build', icon: '🔨', text: 'Build the image' },
+        { id: 'push', icon: '🏬', text: 'Push it to the registry' }
+      ] }
+  });
+
+  lesson('07', '🚀', 'Deploying an agent', {
+    idea: 'Deploying means putting your agent where users can reach it, safely.',
+    key: 'Match the runtime to the load. Keep secrets in a secret manager, give each service the least access, and keep state outside the process.',
+    cards: [
+      K('🧭', 'Three places to run code', 'Choose by how the work arrives and how long it runs.',
+        ['stack', ['Serverless function: short, occasional, scales to zero', 'Container service: steady traffic, long requests', 'Virtual machine: full control, GPUs']]),
+      K('🔐', 'Secrets and access', 'In the cloud, keys live in a secret manager and are handed to the service when it starts. Give each service an identity with only the permissions it needs.',
+        ['flow', ['Secret manager', 'Service identity', 'Only its own secrets'], false]),
+      K('🧊', 'Stateless services', 'Any copy of the service may get the next request, and copies come and go. Keep conversations and memory in a database, not in the process.',
+        ['vs', 'State in the process', ['Lost on restart', 'Breaks with two copies'], 'State in a database', ['Survives restarts', 'Any copy can answer']]),
+      K('❤️', 'Health checks', 'The platform calls a health endpoint to see whether a copy is alive. Copies that fail are replaced and get no traffic.')
+    ],
+    concepts: [['p07-runtime', 'Choosing where to run'], ['p07-access', 'Secrets and least access'], ['p07-stateless', 'Stateless services']],
+    apply: { kind: 'sort', icon: '🧭', title: 'Where should it run?', idea: 'Match each workload to a runtime.',
+      key: 'Short and occasional: a function. Steady or long-running: a container service. GPUs and full control: a virtual machine.',
+      buckets: [{ id: 'fn', icon: '⚡', name: 'Serverless function' }, { id: 'ctr', icon: '🐳', name: 'Container service' }, { id: 'vm', icon: '🖥️', name: 'Virtual machine' }],
+      items: [
+        I('a', 'A webhook that fires twenty times a day', 'fn', 'Rare, short work suits a function: it costs nothing while idle.'),
+        I('b', 'A chat API with steady traffic all day', 'ctr', 'Constant load is cheaper and steadier on containers that stay up.'),
+        I('c', 'Hosting an open model that needs a GPU', 'vm', 'GPU work needs a machine you choose and control.'),
+        I('d', 'Make a thumbnail whenever a file is uploaded', 'fn', 'A short job triggered by an event is the classic function.'),
+        I('e', 'An agent worker whose runs last several minutes', 'ctr', 'Functions have short time limits. Long runs need a container.'),
+        I('f', 'A fine-tuning run on hardware you configure', 'vm', 'Training needs GPUs and full control of the machine.')
+      ] }
+  });
+
+  lesson('08', '⚙️', 'Pipelines and operations', {
+    idea: 'Shipping is a pipeline, not an event. Then you watch it.',
+    key: 'Every change is tested, built and deployed by a pipeline. Roll out in stages, be ready to roll back, and watch logs, metrics and cost.',
+    cards: [
+      K('⚙️', 'The pipeline', 'Continuous integration runs the tests on every change. Continuous delivery builds and deploys what passed. Nobody copies files to a server by hand.',
+        ['flow', ['Commit', 'Test', 'Build image', 'Deploy'], false]),
+      K('🧪', 'Evals are tests too', 'For an agent, unit tests are not enough. Run the eval set in the pipeline and block the release when quality drops.'),
+      K('🪜', 'Staged rollout', 'Send a new version to staging, then to a small share of users, then to everyone. Problems show up while they are still small.',
+        ['flow', ['Staging', '5% of users', 'Everyone'], false]),
+      K('↩️', 'Rollback', 'Keep the previous version ready. When the new one misbehaves, switching back is faster and safer than repairing it under pressure.'),
+      K('📈', 'Watch it', 'Logs say what happened. Metrics say how much and how fast. Alerts tell someone when a limit is crossed. Track spending the same way.',
+        ['stack', ['Logs: what happened', 'Metrics: error rate, latency, tokens', 'Alerts: a limit was crossed', 'Budget: spend so far']])
+    ],
+    concepts: [['p08-pipeline', 'The delivery pipeline'], ['p08-rollout', 'Staged rollout and rollback'], ['p08-watch', 'Logs, metrics, alerts']],
+    apply: { kind: 'order', icon: '🛤️', title: 'The path to production', idea: 'One change, from your editor to every user.',
+      key: 'Commit → tests and evals → build → staging → a few users → everyone.',
+      why: 'Nothing is built until the tests and evals pass, nothing reaches users before staging, and a small share of users sees it before everyone does.',
+      steps: [
+        { id: 'commit', icon: '⌨️', text: 'Push the commit' },
+        { id: 'test', icon: '🧪', text: 'The pipeline runs tests and evals' },
+        { id: 'build', icon: '🔨', text: 'Build the image' },
+        { id: 'stage', icon: '🎭', text: 'Deploy to staging and check it' },
+        { id: 'few', icon: '🪜', text: 'Release to a small share of users' },
+        { id: 'all', icon: '🌍', text: 'Release to everyone' }
+      ] }
+  });
+
+  mix(2, 'Python + cloud mix', 8);
+
+  boss(1, '🚀', 'Ship the support agent',
+    'Your support agent works on your laptop. On Monday it must serve real customers. Make the calls.',
+    'Pin it, package it, keep secrets out of code, retry sensibly, keep state outside, ship through a pipeline and watch it.', [
+      D('p02-pin', 'A colleague cannot run the project: an import fails. What was missing?',
+        'A pinned dependency file', ['A faster laptop', 'A newer model'],
+        'You installed a package by hand and never recorded it. A pinned file makes the install repeatable.'),
+      D('p02-secrets', 'The API key is a string in agent.py. What comes first?',
+        'Move it to the environment and rotate it', ['Rename the variable so it is harder to find', 'Leave it until launch is over'],
+        'The key is already in the history. Take it out of code and replace it.'),
+      D('p03-backoff', 'Under load the model API starts answering 429. What does the code do?',
+        'Back off and retry', ['Retry at once, as fast as possible', 'Show every customer an error straight away'],
+        'A rate limit is temporary. Waiting longer between tries lets most requests through.'),
+      D('p06-image', 'How do you make sure production runs exactly what you tested?',
+        'Build one image and run that same image everywhere', ['Install by hand on each server', 'Copy the files over'],
+        'One image holds the code and every dependency, so test and production cannot drift apart.'),
+      D('p07-runtime', 'Chats arrive all day and one request can last a minute. Where does it run?',
+        'A container service', ['A serverless function with a short time limit', 'A laptop left on in the office'],
+        'Steady traffic and long requests suit containers that stay up.'),
+      D('p07-stateless', 'Two copies run behind a load balancer, and customers lose their chat history. Why?',
+        'History is kept in each process', ['The load balancer deletes old messages on purpose', 'The model forgot'],
+        'The next request may reach the other copy, which never saw the chat. Keep history in a database.'),
+      D('p08-rollout', 'A new prompt version is ready. How do you release it?',
+        'To a small share of users first', ['To everyone at once, at a quiet hour', 'To nobody until every bug is gone'],
+        'A staged rollout shows problems while few people are affected, and rollback stays easy.'),
+      D('p08-watch', 'What tells you on Tuesday that Monday went well?',
+        'Error rate, latency and cost on a dashboard', ['No one has complained yet', 'The deploy finished'],
+        'Silence is not evidence. Metrics are.')
+    ], 'Capstone');
+
+  BANK = BANK.concat([
+    Q('p05-blocks-1', 'p05-blocks', 'Which kind of service runs your agent code?', 'Compute', ['Storage', 'Database'],
+      'Compute runs code. Storage keeps files, and a database answers queries.'),
+    Q('p05-blocks-2', 'p05-blocks', 'Customers upload PDFs that must be kept for a year. Which building block holds them?', 'Storage', ['Compute, kept running all year', 'A larger context window'],
+      'Files go in object storage: durable, cheap and fetched by name.'),
+    Q('p05-managed-1', 'p05-managed', 'What do you give up with a managed service?', 'Some control over how it is run', ['Your data', 'The ability to stop paying'],
+      'The provider makes the operating choices. In return it patches, backs up and scales.'),
+    Q('p05-managed-2', 'p05-managed', 'A two-person team needs a database tomorrow. Sensible default?', 'A managed database', ['Build and patch their own database servers', 'Keep everything in text files for now'],
+      'A small team has no time to run servers. Let the provider do it.'),
+    Q('p05-cost-1', 'p05-cost', 'How is cloud usage typically billed?', 'By what you use: seconds, requests, gigabytes', ['A fixed yearly fee', 'Per employee'],
+      'You pay for use, which is why idle resources still cost money.'),
+    Q('p05-cost-2', 'p05-cost', 'What protects you from a forgotten test server running for a month?', 'A budget alert', ['Luck', 'A bigger instance, so it finishes sooner'],
+      'An alert tells you when spending passes a limit, before the bill does.'),
+    Q('p06-image-1', 'p06-image', 'What is a container image?', 'A read-only package of code and its dependencies', ['A running process', 'A screenshot of the server'],
+      'The image is the package. A container is a running copy of it.'),
+    Q('p06-image-2', 'p06-image', 'How many containers can start from one image?', 'Many', ['Exactly one', 'One per registry'],
+      'An image is a template. Start as many copies as the load needs.'),
+    Q('p06-dockerfile-1', 'p06-dockerfile', 'Why install dependencies before copying your code in a Dockerfile?', 'Code changes reuse the cached install', ['Python requires that order', 'It makes the final image smaller every time'],
+      'Build steps are cached. If only the code changed, the install step is not run again.'),
+    Q('p06-dockerfile-2', 'p06-dockerfile', 'What does the CMD line set?', 'The start command', ['The base image', 'The list of packages to install'],
+      'CMD is what runs when a container starts. FROM sets the base image.'),
+    Q('p06-orchestrate-1', 'p06-orchestrate', 'What does an orchestrator such as Kubernetes do?', 'Runs, restarts and scales containers', ['Writes the Dockerfile for you', 'Trains the model'],
+      'It keeps the wanted number of copies running and replaces the ones that fail.'),
+    Q('p06-orchestrate-2', 'p06-orchestrate', 'A container crashes at night under an orchestrator. What happens?', 'It is restarted', ['It stays down until someone logs in', 'The image is deleted from the registry'],
+      'Restarting failed containers is the main reason to use an orchestrator.'),
+    Q('p07-runtime-1', 'p07-runtime', 'A webhook fires twenty times a day and finishes in a second. Best fit?', 'A serverless function', ['A virtual machine with a GPU', 'A cluster of ten containers'],
+      'Short, rare work suits a function: nothing runs, and nothing is billed, between calls.'),
+    Q('p07-runtime-2', 'p07-runtime', 'You want to host an open model yourself. What does that usually need?', 'A machine with a GPU', ['A serverless function', 'Nothing special'],
+      'Running a model at useful speed needs GPU hardware that you choose.'),
+    Q('p07-access-1', 'p07-access', 'How much access should a service identity have?', 'Only what that service needs', ['Admin, to avoid errors', 'The same as the developer who wrote it'],
+      'Least access limits the damage if the service is tricked or broken into.'),
+    Q('p07-access-2', 'p07-access', 'Where do keys live for a deployed service?', 'In a secret manager, handed over at start', ['In the image', 'In the repository'],
+      'Anyone who can pull the image or read the repository could read a key stored there.'),
+    Q('p07-stateless-1', 'p07-stateless', 'Why keep conversation state out of the process?', 'Copies restart, and any copy may get the next request', ['Processes cannot hold data', 'Databases are always faster than memory'],
+      'State in one process is lost on restart and invisible to the other copies.'),
+    Q('p07-stateless-2', 'p07-stateless', 'Where should an agent keep long-term memory in production?', 'A database', ['A variable in the running process', 'A file inside the container'],
+      'Containers are replaced without warning. A database outlives them.'),
+    Q('p08-pipeline-1', 'p08-pipeline', 'What does continuous integration do on every change?', 'Runs the tests', ['Deploys to all users', 'Emails the team a summary of the diff'],
+      'Every change is checked automatically before it can be merged or released.'),
+    Q('p08-pipeline-2', 'p08-pipeline', 'For an agent, what belongs in the pipeline besides unit tests?', 'The eval set', ['A manual copy step', 'A meeting'],
+      'Unit tests check the code. Evals check that the agent still answers well.'),
+    Q('p08-rollout-1', 'p08-rollout', 'Why release to a small share of users first?', 'Problems show up while they are small', ['It is cheaper to run', 'Small groups complain less often than large ones'],
+      'If the new version is bad, few people meet it and you can switch back.'),
+    Q('p08-rollout-2', 'p08-rollout', 'The new version doubles the error rate. Fastest safe move?', 'Roll back to the previous version', ['Debug it live', 'Wait and see'],
+      'Restore the working version first. Find the cause afterwards, without the pressure.'),
+    Q('p08-watch-1', 'p08-watch', 'Which signal tells you how slow replies are?', 'A latency metric', ['The dependency file', 'The Dockerfile'],
+      'Latency is measured per request and watched over time.'),
+    Q('p08-watch-2', 'p08-watch', 'What is an alert for?', 'Telling someone a limit was crossed', ['Storing every log line', 'Fixing the bug'],
+      'An alert turns a metric into action: someone is told while it still matters.')
+  ]);
+
   /* ---------- what employers ask for: researched, sourced and dated ----------
      23 job postings read on the review date through page summaries, plus three larger analyses.
      Counts are postings out of 23 that ask for the skill ("nice to have" counts as asked). */
   var MARKET = {
     reviewed: '2026-11-15', postings: 23,
     summary: 'Counted from 23 job postings for agent and applied-AI engineer roles.',
-    caveat: 'A small sample, found by searching for "agentic" and "applied AI" titles, mostly senior and mostly US, and read through page summaries. Treat every count as roughly ±2 and as a direction, not a statistic. Three larger analyses agree on the top of the list: Python, RAG and evaluation. Python and cloud skills are not taught in this app. Fine-tuning has three topics in the LLM journey by design, although few postings ask for it.',
+    caveat: 'A small sample, found by searching for "agentic" and "applied AI" titles, mostly senior and mostly US, and read through page summaries. Treat every count as roughly ±2 and as a direction, not a statistic. Three larger analyses agree on the top of the list: Python, RAG and evaluation. Python and cloud are covered at beginner level in the Python + cloud journey, which names the three big clouds but no individual cloud products. Fine-tuning has three topics in the LLM journey by design, although few postings ask for it.',
     skills: [
       ['Python', 20], ['RAG and retrieval', 20], ['Evals', 20], ['Observability and tracing', 17], ['Cloud (AWS, Azure, GCP)', 16],
       ['Prompt engineering', 15], ['Agent frameworks, named', 15], ['Tool and function calling', 15], ['Guardrails and safety', 15],
@@ -2375,11 +2732,14 @@
       lead: 'Each lesson is three levels: learn the key cards, apply them, then master them mixed with earlier lessons.', levels: ADDY },
     { id: 'llm', icon: '🧪', title: 'LLM journey', tag: 'Tune the model', unit: 'Stop', order: 'linear',
       blurb: 'Tokens, prompting, RAG, fine-tuning, the harness, evals and shipping, ending in a job-ready capstone.',
-      lead: 'Each topic is three levels: learn the key cards, apply them, then master them mixed with earlier topics.', levels: LLM }
+      lead: 'Each topic is three levels: learn the key cards, apply them, then master them mixed with earlier topics.', levels: LLM },
+    { id: 'py', icon: '🐍', title: 'Python + cloud journey', tag: 'Write it. Ship it.', unit: 'Stop', order: 'linear',
+      blurb: 'The Python an agent is written in and the cloud it runs on: APIs, tools, containers, deployment and pipelines.',
+      lead: 'Each topic is three levels: learn the key cards, apply them, then master them mixed with earlier topics.', levels: PY }
   ];
 
   return {
-    JOURNEYS: JOURNEYS, CONCEPTS: CONCEPTS, BANK: BANK, ADDY: ADDY, LLM: LLM, COURSE: COURSE, MARKET: MARKET, TOOLS_REVIEW: TOOLS_REVIEW,
+    JOURNEYS: JOURNEYS, CONCEPTS: CONCEPTS, BANK: BANK, ADDY: ADDY, LLM: LLM, PY: PY, COURSE: COURSE, MARKET: MARKET, TOOLS_REVIEW: TOOLS_REVIEW,
     MISSIONS: MISSIONS, TOOLBOX: TOOLBOX,
     LEVELS: LEVELS, LOOP: LOOP, TOOLS: TOOLS, TOOL_ROUNDS: TOOL_ROUNDS, PROMPT: PROMPT,
     MEMORY: MEMORY, NODES: NODES, PIPES: PIPES, SHIELDS: SHIELDS, ATTACKS: ATTACKS,

@@ -6,9 +6,9 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Round 18, step 1: write the Python + cloud journey in `js/content.js` (insert before the
-> "what employers ask for" block: `TRACK = track('p', 'Topic', false); var PY = TRACK.list;`, then
-> `lesson('01'..'08')`, `mix`, `boss`, and a `BANK = BANK.concat([...])` with two questions per concept).
+> Round 18, step 6: content, wiring and tests are done and committed (53 tests pass). Next: raise `?v=` in
+> `index.html`, play the 27 new levels in the browser (`tools/playthrough.js`), check 375px and the console.
+> Then step 7 (docs, move the round to Done, commit).
 > Git: `main` is ahead of `origin/main` by local commits; ask the user before pushing.
 
 ## Round 18 — Python + cloud journey (in progress; approved by the user 2026-11-15)
@@ -18,13 +18,13 @@ Plan: a fifth journey, id `py`, level prefix `p`, built with the same `lesson()`
 as the LLM journey. No source text: cards are written from general, established practice. Clouds are named
 (AWS, Azure, GCP) but individual cloud products are not, because product names change and are unverified.
 
-- [ ] 1. Content, Python half: p01 Python for agents · p02 Environments, packages, secrets ·
+- [x] 1. Content, Python half: p01 Python for agents · p02 Environments, packages, secrets ·
       p03 Calling a model API · p04 Tools, async and tests; then `mix(1, …)`
-- [ ] 2. Content, cloud half: p05 Cloud building blocks · p06 Containers · p07 Deploying an agent ·
+- [x] 2. Content, cloud half: p05 Cloud building blocks · p06 Containers · p07 Deploying an agent ·
       p08 CI/CD and operating it; then `mix(2, …)` and the capstone `boss(1, …)`
-- [ ] 3. Questions: 2 per concept (24 concepts, 48 questions) in the bank
-- [ ] 4. Wire up: `PY` exported, journey entry in `JOURNEYS`, `MARKET.caveat` no longer says "not taught"
-- [ ] 5. Tests: add `C.PY` to the course tests, a `py` order test; `npm test` passes
+- [x] 3. Questions: 2 per concept (24 concepts, 48 questions) in the bank
+- [x] 4. Wire up: `PY` exported, journey entry in `JOURNEYS`, `MARKET.caveat` no longer says "not taught"
+- [x] 5. Tests: add `C.PY` to the course tests, a `py` order test; `npm test` passes
 - [ ] 6. Browser: bump `?v=`, play the new levels (`tools/playthrough.js` or by hand), 375px, clean console
 - [ ] 7. Docs: `CLAUDE.md` (intro, journey section), move this round to Done, commit
 

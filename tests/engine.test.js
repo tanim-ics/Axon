@@ -425,7 +425,8 @@ test('courses: every Addy and LLM level is well-formed and winnable', () => {
   assert.equal(lessons.length, 19);
   C.ADDY.forEach((L) => { if (L.game === 'learn') assert.ok(lessons.includes(L.read), L.id + ' needs a full read'); });
   C.LLM.forEach((L) => assert.ok(!L.read, L.id + ' has no full read'));
-  [C.ADDY, C.LLM].forEach((LIST) => LIST.forEach((L) => {
+  C.PY.forEach((L) => assert.ok(!L.read, L.id + ' has no full read'));
+  [C.ADDY, C.LLM, C.PY].forEach((LIST) => LIST.forEach((L) => {
     ['icon', 'title', 'tag', 'idea', 'play', 'key'].forEach((k) => assert.ok(L[k], L.id + '.' + k));
     assert.ok(['learn', 'sort', 'order', 'quiz', 'case', 'sim'].includes(L.game), L.id);
     if (L.game === 'learn') {
@@ -488,6 +489,32 @@ test('llm: topics run 01-16 in order, each with Learn, Apply and Master; masters
   }
   C.LLM.filter((l) => l.game === 'quiz').forEach((l) => l.pool.forEach((c) =>
     assert.ok(!C.CONCEPTS[c].level.startsWith('a'), l.id + ' pool has an Addy concept: ' + c)));
+});
+
+test('py: topics run 01-08 in order with two mixes and a capstone; masters draw only on this journey and the Academy', () => {
+  const ids = C.PY.map((l) => l.id);
+  let last = -1;
+  for (let n = 1; n <= 8; n++) {
+    const at = ['learn', 'apply', 'master'].map((k) => ids.indexOf('p0' + n + '-' + k));
+    assert.ok(at[0] > last && at[1] === at[0] + 1 && at[2] === at[1] + 1, 'stop ' + n);
+    last = at[2];
+  }
+  assert.equal(ids.length, 8 * 3 + 3);
+  assert.ok(ids.indexOf('p-mix-1') > ids.indexOf('p04-master') && ids.indexOf('p-mix-1') < ids.indexOf('p05-learn'));
+  assert.equal(ids[ids.length - 1], 'p-boss-1');
+  assert.equal(new Set(ids.concat(C.ADDY.map((l) => l.id), C.LLM.map((l) => l.id), C.LEVELS.map((l) => l.id))).size,
+    ids.length + C.ADDY.length + C.LLM.length + C.LEVELS.length, 'level ids are unique across journeys');
+  C.PY.filter((l) => l.game === 'quiz').forEach((l) => l.pool.concat(l.concepts).forEach((c) => {
+    const home = C.CONCEPTS[c].level;
+    assert.ok(home.startsWith('p0') || C.LEVELS.some((x) => x.id === home), l.id + ' draws on another course: ' + c);
+  }));
+  assert.equal(C.JOURNEYS.filter((j) => j.id === 'py')[0].levels, C.PY);
+  let s = E.defaultState();
+  assert.equal(E.isUnlocked(C, s, 'p01-learn'), true);
+  assert.equal(E.isUnlocked(C, s, 'p01-apply'), false);
+  s = E.awardLevel(C, s, 'p01-learn', 3, '2026-01-01').state;
+  assert.equal(E.isUnlocked(C, s, 'p01-apply'), true);
+  assert.deepEqual(E.dueConcepts(C, s, '2026-01-01').sort(), ['p01-data', 'p01-func', 'p01-json']);
 });
 
 test('addy: all 19 lessons have Learn, Apply and Master, in lesson order, plus three bosses', () => {
@@ -658,7 +685,7 @@ test('touchSession: a session counts as a learning day and reports a new streak 
 });
 
 test('questions: the right answer cannot be guessed from its length', () => {
-  const steps = C.ADDY.concat(C.LLM).filter((l) => l.game === 'case').flatMap((l) => l.steps);
+  const steps = C.ADDY.concat(C.LLM, C.PY).filter((l) => l.game === 'case').flatMap((l) => l.steps);
   [['bank', C.BANK], ['boss decisions', steps]].forEach(([name, list]) => {
     const longest = list.filter((q) => q.x.every((o) => o.length < q.a.length)).length / list.length;
     const shortest = list.filter((q) => q.x.every((o) => o.length > q.a.length)).length / list.length;
@@ -725,7 +752,7 @@ test('missions in review: three ideas and six well-formed questions per mission,
       assert.ok(q.q.includes(stage.tool), q.id + ' asks about the tool of its own answer');
     });
   });
-  C.ADDY.concat(C.LLM).filter((l) => l.game === 'quiz').forEach((l) => l.pool.concat(l.concepts).forEach((c) =>
+  C.ADDY.concat(C.LLM, C.PY).filter((l) => l.game === 'quiz').forEach((l) => l.pool.concat(l.concepts).forEach((c) =>
     assert.ok(!c.startsWith('m-'), l.id + ' must not draw on a mission idea: ' + c)));
   let s = E.defaultState();
   s.stars.guard = 1;
