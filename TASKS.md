@@ -6,21 +6,29 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Rounds 1–18 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
-> empty. Git: `main` is ahead of `origin/main` by local commits; ask the user before pushing.
-> Ideas for what could come next are under "Ideas" below; none is approved.
+> Round 19, steps 1 and 2 run together: a background agent is reading the Python + cloud content (its
+> report arrives in the session; if the session ended, rerun it: see step 1), while the lab is written in
+> `js/content.js` right after `mix(2, 'Python + cloud mix', 8);`.
+> Git: `main` is ahead of `origin/main` by local commits; ask the user before pushing.
 
-## Planned next (approved)
+## Round 19 — harden the Python + cloud journey (in progress; user said "next task" 2026-11-15, Claude picked
+## this from Ideas because it closes the limits recorded for Round 18)
 
-- Nothing further is approved. See the Backlog.
-
+- [ ] 1. Second reader: a fresh agent reads every p-card, puzzle item, question and boss decision in
+      `js/content.js` (the block between "Python + cloud journey" and "what employers ask for") and reports
+      factual errors, ambiguous keyed answers and wrong options that are also defensible
+- [ ] 2. Lab `p-lab-1` "launch week" before the capstone: 4 settings (key, retry, state, release), each tied
+      to a taught concept; extend the labs test and the py order test
+- [ ] 3. Apply the reader's findings
+- [ ] 4. Verify: `npm test`; raise `?v=`; play the lab (one wrong choice, then the fix) and replay the 27
+      levels with `tools/playthrough.js` at 375px; console clean
+- [ ] 5. Docs, move the round to Done, commit
 
 ## Ideas (not approved; pick with the user)
 
 - More labs for the run simulator (Round 16 built four), a "fix the trace" game for the course lessons,
   timed Arena rounds
-- A lab for the Python + cloud journey, a second reader over its 48 questions, and named cloud products
-  once they are checked against official sites
+- Named cloud products in the Python + cloud journey, once they are checked against official sites
 
 ## Backlog (not started, needs the user's OK)
 
