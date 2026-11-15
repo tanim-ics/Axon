@@ -117,13 +117,27 @@
   }
 
   /* ---------- hub: pick a journey ---------- */
+  /* Line icons, drawn from path data. Stroke and size come from the .ico rules. */
+  var ICONS = {
+    lock: ['M4.5 7h7a1.5 1.5 0 0 1 1.5 1.5v4a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 3 12.5v-4A1.5 1.5 0 0 1 4.5 7z', 'M5.5 7V5a2.5 2.5 0 0 1 5 0v2'],
+    review: ['M26 16a10 10 0 1 1-3-7.1', 'M26 5v5h-5', 'M16 11v5l3.5 2'],
+    arena: ['M5 9h5l12 14h5', 'M5 23h5l3.5-4M18.5 13 22 9h5', 'm24 6 3 3-3 3M24 20l3 3-3 3'],
+    blitz: ['M7 18a9 9 0 1 0 18 0a9 9 0 1 0-18 0', 'M13 4h6M16 4v5M16 18l4-4']
+  };
+  function icon(name, size) {
+    var box = size === 'sm' ? '0 0 16 16' : '0 0 32 32';
+    return UI.svg('svg', { class: 'ico ' + size, viewBox: box, 'aria-hidden': 'true', focusable: 'false' },
+      ICONS[name].map(function (d) { return UI.svg('path', { d: d }); }));
+  }
+
   function journeyCard(J) {
     var open = E.journeyOpen(C, state, J.id), p = E.journeyProgress(C, state, J.id);
     var status;
     if (!J.levels.length) {
-      status = h('span', { class: 'journey-note', text: '🚧 Being built' });
+      status = h('span', { class: 'journey-note', text: 'Being built' });
     } else if (!open) {
-      status = h('span', { class: 'journey-note', text: '🔒 Finish "' + levelById(J.gate).title + '" to unlock' });
+      status = h('span', { class: 'journey-note' }, icon('lock', 'sm'),
+        h('span', { text: 'Locked. Finish "' + levelById(J.gate).title + '" in the Academy to open it.' }));
     } else {
       var fill = h('span', { class: 'jbar-fill' });
       fill.style.width = Math.round(p.done / p.total * 100) + '%';
@@ -132,9 +146,9 @@
         h('span', { text: p.done + ' / ' + p.total + ' done · ★ ' + p.stars }));
     }
     var inner = [
-      h('span', { class: 'journey-icon', 'aria-hidden': 'true', text: J.icon }),
-      h('span', { class: 'eyebrow', text: J.tag }),
-      h('h2', { text: J.title }),
+      h('span', { class: 'journey-count', text: String(J.levels.length) }),
+      h('span', { class: 'journey-unit', text: J.kind === 'mission' ? 'missions' : 'levels' }),
+      h('h3', { text: J.title }),
       h('p', { text: J.blurb }),
       status
     ];
@@ -151,7 +165,6 @@
       : due ? 'A few quick questions. Right answers wait longer before they return.'
       : 'Stay sharp in the Arena: a random mix of everything you know.';
     return h('section', { class: 'card review-card', 'aria-label': 'Daily review' },
-      h('span', { class: 'review-icon', 'aria-hidden': 'true', text: '🧠' }),
       h('div', { class: 'review-text' },
         h('span', { class: 'eyebrow', text: 'Daily review' }), h('h2', { text: title }), h('p', { text: sub })),
       learned ? h('div', { class: 'review-actions' },
@@ -160,24 +173,60 @@
         h('a', { class: 'btn', href: '#/blitz' }, '⏱️ Blitz')) : null);
   }
 
+  /* The first-visit headline types itself in, one line after another, 600ms in all. */
+  function typedHeadline(lines) {
+    var total = lines.join('').length, at = 0;
+    return h('h1', { class: 'type', 'aria-label': lines.join(' ') }, lines.map(function (line) {
+      var ms = Math.round(600 * line.length / total);
+      var span = h('span', { 'aria-hidden': 'true', text: line });
+      span.style.setProperty('--n', String(line.length));
+      span.style.setProperty('--ms', ms + 'ms');
+      span.style.setProperty('--at', at + 'ms');
+      at += ms;
+      return span;
+    }));
+  }
+
   function viewHub() {
     document.title = 'Axon — learn to build and tune AI agents by playing';
-    var next = nextUp(), started = E.xpOf(state) > 0;
-    var title = !started ? 'Build your first AI agent.' : next ? 'Next up: ' + next.title + (/[.?!]$/.test(next.title) ? '' : '.') : 'You did it. All of it.';
-    var sub = !started ? 'Short games, real pipelines. Zero lectures.'
-      : next ? next.idea : 'Replay anything for 3 stars, or rebuild your agent.';
+    var H = C.HUB, next = nextUp(), started = E.xpOf(state) > 0;
+    var heading = !started ? typedHeadline(H.headline)
+      : h('h1', { class: 'next', text: next ? 'Next up: ' + next.title + (/[.?!]$/.test(next.title) ? '' : '.') : 'You did it. All of it.' });
+    var sub = !started ? H.sub : next ? next.idea : 'Replay anything for 3 stars, or rebuild your agent.';
     var cta = h('a', { class: 'btn primary big', href: '#/level/' + (next ? next.id : 'boss') },
-      !started ? 'Start' : next ? 'Continue' : 'Rebuild my agent');
+      !started ? 'Start with the Academy' : next ? 'Continue' : 'Rebuild my agent',
+      h('span', { 'aria-hidden': 'true', text: '→' }));
+    var mech = function (name, title, text) {
+      return h('div', null, icon(name, 'lg'), h('h3', { text: title }), h('p', { text: text }));
+    };
 
-    UI.fill(app, h('div', { class: 'map' },
-      h('section', { class: 'hero' },
-        UI.bot(next ? 'idle' : 'happy', 'hero-bot'),
-        h('div', { class: 'hero-text' },
-          h('span', { class: 'eyebrow', text: started ? 'Your journey' : 'Axon' }),
-          h('h1', { text: title }), h('p', { text: sub }), cta)),
+    UI.fill(app, h('div', { class: 'hub' },
+      h('section', { class: 'hub-hero' },
+        h('div', null, heading, h('p', { class: 'hub-sub', text: sub }), cta,
+          started ? null : h('p', { class: 'hub-note', text: H.note })),
+        h('div', null,
+          h('p', { class: 'kinds-cap', id: 'kinds-cap', text: 'Six kinds of level' }),
+          h('dl', { class: 'kinds', 'aria-labelledby': 'kinds-cap' }, H.kinds.map(function (k) {
+            return h('div', null, h('dt', { text: k[0] }), h('dd', { text: k[1] }));
+          })))),
       reviewCard(),
-      h('h2', { class: 'section-title', text: 'Journeys' }),
-      h('ul', { class: 'journeys' }, C.JOURNEYS.map(journeyCard))));
+      h('section', { class: 'hub-sec' },
+        h('div', { class: 'hub-sec-head' },
+          h('h2', { text: 'Journeys' }),
+          h('p', { text: 'Start with the Academy. Scroll sideways for the rest.' })),
+        h('ul', { class: 'journeys', 'aria-label': 'Journeys' }, C.JOURNEYS.map(journeyCard))),
+      h('section', { class: 'hub-sec' },
+        h('div', { class: 'hub-sec-head' }, h('h2', { text: 'What makes it stick' })),
+        h('div', { class: 'mechs' },
+          mech('review', 'Daily review', H.review),
+          mech('arena', 'Arena', H.arena),
+          mech('blitz', 'Blitz', 'The Arena against ' + E.BLITZ.seconds + ' seconds. A wrong answer costs ' + E.BLITZ.penalty + ' of them. Beat your best score.'))),
+      h('p', { class: 'trust', text: H.trust }),
+      h('footer', { class: 'hub-foot' },
+        h('p', null, H.credit[0], h('a', { href: H.credit[2] }, H.credit[1]), H.credit[3]),
+        h('p', null, 'Tool names were last reviewed on ' + C.TOOLS_REVIEW.reviewed + ' and job postings on ' + C.MARKET.reviewed + '. ',
+          h('a', { href: '#/codex' }, 'Sources are in the codex.')),
+        h('p', { text: H.fonts }))));
   }
 
   /* ---------- one journey: its trail of levels ---------- */

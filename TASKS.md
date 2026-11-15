@@ -6,8 +6,9 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Rounds 1–22 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
-> empty. Git: Rounds 1–21 are pushed; Round 22, the README and the landing mock are committed locally only. Ask the user before pushing.
+> Rounds 1–23 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
+> empty. Git: Rounds 1–21 are pushed; Round 22, the README, the landing mock and Round 23 are committed
+> locally only. Ask the user before pushing.
 > Ideas for what could come next are under "Ideas" below; none is approved.
 
 ## Planned next (approved)
@@ -23,6 +24,27 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 
 ## Done
+
+### Round 23 — the landing design applied to the app (complete, verified)
+- [x] Fonts: IBM Plex Mono 500 and 600 and Inter (variable), latin woff2 from Fontsource via jsDelivr
+      (79 KB in all), with their OFL licences from the IBM/plex and rsms/inter repositories. Sora and its
+      licence removed. The CSP is unchanged
+- [x] Theme (`css/styles.css`): palette #0E1117 / #161B25 / #232B3A / #4FC3F7 / #E8EDF4 / #6B7A99, mono
+      headings, Inter body, small radii, dark text on the accent. Removed: the aurora background, the
+      spectrum gradient (eyebrows, XP and progress bars), glass blur, button and mascot glows
+- [x] Hub (`viewHub`, copy in `Content.HUB`): left-aligned hero (typed headline on a first visit, "Next up"
+      afterwards), level-kind legend, review card, journey rail with level counts and an honest lock note,
+      Review / Arena / Blitz with line icons, trust line, footer with credit and review dates. The HUD
+      wordmark is "axon" in mono and stays visible on phones
+- [x] 55 tests pass. Browser (`?v=28`): hub at 708px as a first visit and at 375px with everything done;
+      Academy trail, a level intro, an Arena question with feedback and the codex at 375px.
+      `tools/playthrough.js` played all 169 levels at 375px: 0 with page overflow, console clean (`loop`
+      and `tools` errored only because two runs overlapped; replayed alone, both passed)
+- Limits: muted text (#6B7A99 on #0E1117) is about 4.4:1, just under the 4.5:1 AA line for small text; the
+  colour is the brief's. Not tab-walked by keyboard after the retheme. Reduced motion not exercised in a
+  browser. Not viewed wider than 708px in the app (the mock was viewed at 1024px). Most game screens were
+  checked for overflow by script, not looked at: some still carry the old glow shadows on state changes.
+  The preview pane's screenshots sometimes caught the typed headline before its first frame
 
 ### Landing-page design mock (2026-11-15)
 - [x] `design/landing.html`: a standalone mock built to the user's design brief (IBM Plex Mono + Inter from

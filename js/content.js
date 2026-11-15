@@ -2970,8 +2970,29 @@
       lead: 'Each topic is three levels: learn the key cards, apply them, then master them mixed with earlier topics.', levels: PY }
   ];
 
+  /* ---------- hub copy ---------- */
+  var HUB = {
+    headline: ['Learn how', 'agents work.', 'By playing.'],
+    sub: 'You pick the agent\'s next action, equip its tools, run it and fix what breaks. Almost no reading.',
+    note: 'Eight short games. Progress is saved in this browser.',
+    kinds: [
+      ['learn', 'A few key cards, then one question per idea'],
+      ['apply', 'Sort the cards, or put the steps in order'],
+      ['master', 'This topic, mixed with earlier ones'],
+      ['lab', 'Choose a design, run the agent, read the trace'],
+      ['debug', 'Tap the first wrong step, pick the repair'],
+      ['boss', 'One scenario that needs several lessons at once']
+    ],
+    review: 'Every idea you learn comes back after 1, 3, 7, then 21 days. Miss it and it returns tomorrow.',
+    arena: 'A shuffled mix of everything you have learned, with no clock. Each answer shows why.',
+    trust: 'Plain HTML · CSS · JS — no build step, no data leaves your browser.',
+    credit: ['The Addy journey is based on Addy Osmani\'s ', 'Agent Engineer', 'https://github.com/addyosmani/agent-engineer',
+      ' course (Apache 2.0). Cards and questions are written in Axon\'s own words.'],
+    fonts: 'Type: IBM Plex Mono and Inter, both under the SIL Open Font License.'
+  };
+
   return {
-    JOURNEYS: JOURNEYS, CONCEPTS: CONCEPTS, BANK: BANK, ADDY: ADDY, LLM: LLM, PY: PY, COURSE: COURSE, MARKET: MARKET, TOOLS_REVIEW: TOOLS_REVIEW,
+    HUB: HUB, JOURNEYS: JOURNEYS, CONCEPTS: CONCEPTS, BANK: BANK, ADDY: ADDY, LLM: LLM, PY: PY, COURSE: COURSE, MARKET: MARKET, TOOLS_REVIEW: TOOLS_REVIEW,
     MISSIONS: MISSIONS, TOOLBOX: TOOLBOX,
     LEVELS: LEVELS, LOOP: LOOP, TOOLS: TOOLS, TOOL_ROUNDS: TOOL_ROUNDS, PROMPT: PROMPT,
     MEMORY: MEMORY, NODES: NODES, PIPES: PIPES, SHIELDS: SHIELDS, ATTACKS: ATTACKS,

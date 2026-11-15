@@ -103,6 +103,7 @@ and what was left unverified.
 
 ## Licences
 
-- The Sora display font is bundled under the SIL Open Font License (`fonts/SORA-LICENSE.txt`).
+- IBM Plex Mono and Inter are bundled under the SIL Open Font License (`fonts/IBM-PLEX-LICENSE.txt`,
+  `fonts/INTER-LICENSE.txt`).
 - The course text in `course/addy/` is under Apache 2.0 (`course/addy/LICENSE.txt`).
 - The project's own code and content have no licence file yet.

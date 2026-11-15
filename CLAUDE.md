@@ -33,7 +33,7 @@ No build step, no dependencies, no network calls. `.claude/launch.json` defines 
 |---|---|
 | `index.html` | Shell, CSP, mascot SVG `<template>`, script order |
 | `css/styles.css` | All styles. Tokens at the top |
-| `fonts/` | Bundled Sora display font + its licence |
+| `fonts/` | Bundled IBM Plex Mono (display) and Inter (body) + their licences |
 | `js/content.js` | All lesson data (levels, puzzles, copy). No logic |
 | `js/engine.js` | All rules: scoring, progress, sanitizing, blueprint export. Pure, no DOM |
 | `js/ui.js` | `UI.h()` DOM builder, `UI.fill()`, mascot, sound, confetti. Declares `Games` |
@@ -174,8 +174,9 @@ Unlocked together once `guard` (Shield Up) is done; playable in any order. Each 
 
 **Design and tone**
 - Show, don't tell: one idea per level, one line of copy per screen, feedback through the coach bubble (`api.say`).
-- The look is Apple-product-page dark glass: true black, translucent blurred surfaces with hairline borders, pill buttons, system colours (blue = action, green = good, red = bad, orange = human checkpoint, yellow = stars). Use the tokens at the top of `styles.css`; do not hard-code new colours.
-- Type: headings use **Sora** (`--display`), bundled at `fonts/sora-latin-variable.woff2` (SIL OFL, licence in `fonts/SORA-LICENSE.txt`); body text uses the system stack (`--font`, San Francisco on Apple devices). No remote fonts: the CSP allows `font-src 'self'` only. Adding or swapping a font file needs the user's OK.
+- The look is flat, dark and technical: one near-black background (`--bg` #0E1117), opaque panels (`--surface`) with hairline borders (`--line`), small radii, no gradients or glows as decoration. The cyan accent (`--blue`, #4FC3F7) marks what can be pressed (primary buttons, focus rings, hover underlines); text on it is dark (`--bg`). Status colours are unchanged: green = good, red = bad, orange = human checkpoint, yellow = stars. Use the tokens at the top of `styles.css`; do not hard-code new colours. The token is still named `--blue` so the old rules keep working.
+- Type: headings use **IBM Plex Mono** (`--display`, weights 500 and 600) and body text uses **Inter** (`--font`, variable). Both are bundled in `fonts/` under the SIL OFL with their licence files. No remote fonts: the CSP allows `font-src 'self'` only. Adding or swapping a font file needs the user's OK. Mono headings are wide: keep them short and check 375px.
+- The hub (`viewHub`) is left-aligned: hero, level-kind legend, review card, journey rail, Review / Arena / Blitz, trust line, footer. Its copy is `Content.HUB`. The first-visit headline types itself in (one CSS animation, about 600ms, skipped under reduced motion); nothing else animates unprompted. No all-caps labels. `design/landing.html` is the mock it came from.
 - Motion uses `--ease` and `--spring`; press states scale down, they do not shift layout.
 - Every control is a real `<button>` or `<a>`, at least 44px tall, with a visible focus ring. State is never shown by color alone. Respect `prefers-reduced-motion`.
 - Check at 375px wide: no horizontal page scroll.
