@@ -6,18 +6,25 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Rounds 1–21 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
-> empty. Git: Rounds 1–20 are pushed; Round 21 is committed locally only. Ask the user before pushing.
-> Ideas for what could come next are under "Ideas" below; none is approved.
+> Round 22 (three more labs) is in progress. Rounds 1–21 are complete and pushed (Round 14 was dropped).
+> Next step: the first unticked box under "Round 22" below.
 
 ## Planned next (approved)
 
-- Nothing further is approved. See the Backlog.
-
+### Round 22 — three more labs for the run simulator (approved 2026-11-15)
+- [ ] `js/content.js`: `lab()` takes an optional tag number; Addy `a-lab-3` "plug in the team's tools" after
+      Mix 4 (AGENTS.md, skills, MCP or CLI, MCP risks)
+- [ ] `js/content.js`: LLM `l-lab-3` "the prompt change" after topic 16 (golden set, rubric, repeat runs,
+      gradual release)
+- [ ] `js/content.js`: Python `p-lab-2` "the first agent script" after the Python mix (testing tools, schemas,
+      JSON, pinned dependencies). It is shown as Lab 1 and `p-lab-1` as Lab 2; ids stay, so saved stars stay
+- [ ] `tests/engine.test.js`: lab id list and `py` level count updated; `npm test` passes
+- [ ] `index.html`: `?v=26`; browser at 375px: each new lab played with one wrong choice, then fixed;
+      `tools/playthrough.js` over the three labs; console clean
+- [ ] `CLAUDE.md` level counts; move the round to Done; commit
 
 ## Ideas (not approved; pick with the user)
 
-- More labs for the run simulator (Round 16 built four)
 - Named cloud products in the Python + cloud journey, once they are checked against official sites
 
 ## Backlog (not started, needs the user's OK)

@@ -499,7 +499,7 @@ test('py: topics run 01-08 in order with two mixes and a capstone; masters draw 
     assert.ok(at[0] > last && at[1] === at[0] + 1 && at[2] === at[1] + 1, 'stop ' + n);
     last = at[2];
   }
-  assert.equal(ids.length, 8 * 3 + 5);
+  assert.equal(ids.length, 8 * 3 + 6);
   assert.deepEqual(ids.slice(-3), ['p-lab-1', 'p-fix-1', 'p-boss-1']);
   assert.ok(ids.indexOf('p-mix-1') > ids.indexOf('p04-master') && ids.indexOf('p-mix-1') < ids.indexOf('p05-learn'));
   assert.equal(ids[ids.length - 1], 'p-boss-1');
@@ -819,7 +819,7 @@ test('fix levels: one bad step per run, never the first, with a taught concept a
 
 test('labs: one winning design, and every wrong choice fails at its own step with a reason', () => {
   const labs = C.ADDY.concat(C.LLM, C.PY).filter((l) => l.game === 'sim');
-  assert.deepEqual(labs.map((l) => l.id), ['a-lab-1', 'a-lab-2', 'l-lab-1', 'l-lab-2', 'p-lab-1']);
+  assert.deepEqual(labs.map((l) => l.id), ['a-lab-1', 'a-lab-2', 'a-lab-3', 'l-lab-1', 'l-lab-2', 'l-lab-3', 'p-lab-2', 'p-lab-1']);
   labs.forEach((L) => {
     const sim = L.sim, LIST = { a: C.ADDY, l: C.LLM, p: C.PY }[L.id[0]];
     const taught = LIST.slice(0, LIST.indexOf(L)).filter((x) => x.game === 'learn').flatMap((x) => x.concepts);
