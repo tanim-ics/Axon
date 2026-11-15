@@ -8,7 +8,7 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 > Rounds 1–29 are complete (Round 14 was dropped by the user). Nothing is in progress. What is left of the
 > audit (`docs/audit-2026-11-15.md`, last section) is content work, listed under "Ideas"; none is approved.
-> Git: Rounds 27, 28 and 29 are committed but NOT pushed. Ask the user before pushing.
+> Git: Rounds 1–29 are pushed (2026-11-15). Ask the user before pushing anything new.
 
 ## Planned next (approved)
 
