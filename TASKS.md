@@ -6,9 +6,9 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Round 21, step 1: add the engine rules for Blitz (`BLITZ`, `recordBlitz`, `state.blitz` in `defaultState`,
-> `sanitizeState` and `awardLevel`) with tests. Nothing of this round is in the code yet. A background agent
-> may be reading the 12 debug runs (step 4); if the session ended, rerun it.
+> Round 21, step 5: Blitz is written (engine + tests, `js/games/blitz.js`, `viewBlitz` in `js/app.js`, styles)
+> but not yet played in a browser. Next: play a round at 375px (step 5). The second reader for the 12 debug
+> runs (step 4) may still be running; apply its report when it arrives, or rerun it if the session ended.
 > Git: Rounds 1–20 are pushed. Ask the user before pushing anything new.
 
 ## Round 21 — timed Arena ("Blitz") and a second reader for the debug runs (in progress; user said
@@ -18,10 +18,10 @@ Blitz: 60 seconds, one question after another from everything learned. A right a
 one costs 3 seconds and shows the right answer briefly. The best score is saved. Misses are listed with their
 "why" at the end and come back in tomorrow's review. The untimed Arena stays as it is.
 
-- [ ] 1. Engine: `BLITZ = { seconds: 60, penalty: 3 }`, `state.blitz` (best score, sanitized), `recordBlitz`
+- [x] 1. Engine: `BLITZ = { seconds: 60, penalty: 3 }`, `state.blitz` (best score, sanitized), `recordBlitz`
       (pure, returns state + whether it is a record); tests
-- [ ] 2. Game: `js/games/blitz.js` (timer bar, score, streak, quick feedback, clock paused during feedback)
-- [ ] 3. App: route `#/blitz`, entry buttons on the hub review card and the Arena end panel, end summary with
+- [x] 2. Game: `js/games/blitz.js` (timer bar, score, streak, quick feedback, clock paused during feedback)
+- [x] 3. App: route `#/blitz`, entry buttons on the hub review card and the Arena end panel, end summary with
       the missed questions; styles; script tag; `?v=`
 - [ ] 4. Second reader over the 12 debug runs in `a-fix-1`, `l-fix-1`, `p-fix-1`; apply findings
 - [ ] 5. Verify at 375px: play a Blitz round (right, wrong, time running out, record saved, misses listed,

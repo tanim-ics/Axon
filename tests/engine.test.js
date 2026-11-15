@@ -762,6 +762,26 @@ test('missions in review: three ideas and six well-formed questions per mission,
     ['m-video-flow', 'm-video-gate', 'm-video-tools']);
 });
 
+test('blitz: the best score only goes up, survives other updates and bad storage is ignored', () => {
+  const s0 = E.defaultState();
+  assert.equal(s0.blitz, 0);
+  assert.ok(E.BLITZ.seconds >= 30 && E.BLITZ.penalty > 0 && E.BLITZ.penalty < E.BLITZ.seconds);
+  const a = E.recordBlitz(s0, 7);
+  assert.deepEqual([a.best, a.record, a.state.blitz, s0.blitz], [7, true, 7, 0]);
+  const b = E.recordBlitz(a.state, 5);
+  assert.deepEqual([b.best, b.record], [7, false]);
+  assert.equal(b.state, a.state);
+  assert.equal(E.recordBlitz(a.state, 7).record, false);
+  assert.equal(E.recordBlitz(s0, 0).record, false);
+  [-1, 1.5, '9', null, undefined, NaN, 1e9].forEach((bad) => assert.equal(E.recordBlitz(a.state, bad).state, a.state));
+  let s = E.awardLevel(C, a.state, 'loop', 3, '2026-01-01').state;
+  s = E.recordReview(C, s, Object.keys(C.CONCEPTS)[0], false, '2026-01-01');
+  s = E.touchSession(C, s, '2026-01-02').state;
+  assert.equal(s.blitz, 7, 'the record survives a level, a review answer and a session');
+  assert.equal(E.sanitizeState(C, JSON.parse(JSON.stringify(s))).blitz, 7);
+  [-3, 2.5, '12', 100000, {}, null].forEach((bad) => assert.equal(E.sanitizeState(C, { blitz: bad }).blitz, 0));
+});
+
 test('fix levels: one bad step per run, never the first, with a taught concept and one right repair', () => {
   const lists = { a: C.ADDY, l: C.LLM, p: C.PY };
   const levels = C.ADDY.concat(C.LLM, C.PY).filter((l) => l.game === 'fix');

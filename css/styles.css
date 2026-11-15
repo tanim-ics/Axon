@@ -702,3 +702,19 @@ button.ostep:active { transform: scale(0.98); }
 .fix-panel { display: grid; gap: var(--s3); }
 .fix-panel:empty { display: none; }
 .fix-panel .question { font-size: clamp(20px, 4vw, 26px); }
+
+/* ---------- blitz: the timed Arena ---------- */
+.blitz-top { display: flex; align-items: center; gap: var(--s3); }
+.blitz-clock { flex: none; min-width: 3ch; font-family: var(--display); font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.blitz-bar { flex: 1; height: 8px; background: var(--surface-2); border-radius: var(--pill); overflow: hidden; }
+.blitz-fill { height: 100%; width: 100%; background: var(--spectrum); border-radius: var(--pill); transition: width 0.2s linear; }
+.blitz-bar.low .blitz-fill { background: var(--red); }
+.blitz-combo { flex: none; font-weight: 700; font-size: 14px; color: var(--orange); font-variant-numeric: tabular-nums; }
+.blitz-combo:empty { display: none; }
+.blitz-q { display: grid; gap: var(--s4); }
+.blitz-misses { display: grid; gap: var(--s3); max-width: 660px; margin: 0 auto; }
+.blitz-misses ul { display: grid; gap: var(--s2); }
+.miss { display: grid; gap: 2px; padding: var(--s4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); }
+.miss-q { font-weight: 600; }
+.miss-a { color: var(--green); }
+.miss-why { font-size: 15px; color: var(--muted); }

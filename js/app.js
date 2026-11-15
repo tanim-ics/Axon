@@ -98,6 +98,7 @@
     if (L && E.isUnlocked(C, state, L.id)) viewLevel(L, false);
     else if (J && E.journeyOpen(C, state, J.id)) viewJourney(J);
     else if (parts[0] === 'review' || parts[0] === 'arena') viewSession(parts[0]);
+    else if (parts[0] === 'blitz') viewBlitz();
     else if (parts[0] === 'course') viewCourse();
     else if (parts[0] === 'read' && lessonByNo(parts[1])) viewRead(lessonByNo(parts[1]));
     else if (parts[0] === 'codex') viewCodex();
@@ -155,7 +156,8 @@
         h('span', { class: 'eyebrow', text: 'Daily review' }), h('h2', { text: title }), h('p', { text: sub })),
       learned ? h('div', { class: 'review-actions' },
         due ? h('a', { class: 'btn primary', href: '#/review' }, 'Review now') : null,
-        h('a', { class: 'btn', href: '#/arena' }, '⚔️ Arena')) : null);
+        h('a', { class: 'btn', href: '#/arena' }, '⚔️ Arena'),
+        h('a', { class: 'btn', href: '#/blitz' }, '⏱️ Blitz')) : null);
   }
 
   function viewHub() {
@@ -445,6 +447,89 @@
         again.focus();
       }
     });
+  }
+
+  /* ---------- Blitz: the timed Arena ---------- */
+  function viewBlitz() {
+    document.title = 'Blitz — Axon';
+    var myEpoch = epoch, B = E.BLITZ;
+    var stage = h('div', { class: 'stage' });
+    var bubble = h('p', { class: 'bubble', role: 'status' });
+    var coachBot = UI.bot('idle', 'coach-bot');
+    var learned = E.learnedConcepts(C, state).length;
+
+    UI.fill(app, h('section', { class: 'level' },
+      pageHead('#/map', 'Back to all journeys', '⏱️', 'Everything you know, against the clock', 'Blitz'),
+      stage,
+      h('div', { class: 'coach' }, coachBot, bubble)));
+
+    function say(text, mood) {
+      bubble.textContent = text;
+      coachBot.setAttribute('data-mood', mood || 'idle');
+    }
+    function panel(icon, title, text, actions, extra) {
+      UI.fill(stage, h('div', { class: 'intro' },
+        h('div', { class: 'intro-icon', 'aria-hidden': 'true', text: icon }),
+        h('h2', { tabindex: '-1', text: title }), h('p', { text: text }), h('div', { class: 'cta-row' }, actions)), extra);
+    }
+    function hubLink() { return h('a', { class: 'btn', href: '#/map' }, 'Journeys'); }
+
+    if (!learned) {
+      say('Play a level first.', 'happy');
+      panel('⏱️', 'Nothing to recall yet.', 'Finish a level and its ideas show up here.', [hubLink()]);
+      return;
+    }
+
+    function ready() {
+      var go = h('button', { class: 'btn primary big', type: 'button', onclick: function () { UI.sfx('tap'); run(); } }, 'Start');
+      say('Fast, but not careless.', 'idle');
+      panel('⏱️', B.seconds + ' seconds. Go.',
+        'A right answer scores a point. A wrong one costs ' + B.penalty + ' seconds.' + (state.blitz ? ' Your best: ' + state.blitz + '.' : ''),
+        [hubLink(), h('a', { class: 'btn', href: '#/arena' }, 'No clock: Arena'), go]);
+    }
+
+    function run() {
+      say('Go!', 'happy');
+      Games.blitz(stage, {
+        more: function () { return E.buildSession(C, state, today(), 'arena', learned); },
+        say: say,
+        sfx: UI.sfx,
+        later: function (fn, ms) {
+          timers.push(setTimeout(function () { if (myEpoch === epoch) fn(); }, ms));
+        },
+        answer: function (q, correct) {
+          state = E.recordReview(C, state, q.concept, correct, today());
+          save();
+        },
+        end: function (right, total, misses) {
+          if (myEpoch !== epoch) return;
+          var rec = E.recordBlitz(state, right);
+          var res = E.touchSession(C, rec.state, today());
+          state = res.state;
+          save(); renderHud();
+          var again = h('button', { class: 'btn primary', type: 'button', onclick: function () {
+            cleanup(); viewBlitz(); app.focus({ preventScroll: true });
+          } }, 'Go again');
+          var list = misses.length ? h('section', { class: 'blitz-misses', 'aria-label': 'What you missed' },
+            h('h2', { class: 'label', text: 'Missed. These come back tomorrow.' }),
+            h('ul', null, misses.map(function (m) {
+              return h('li', { class: 'miss' },
+                h('p', { class: 'miss-q', text: m.q }),
+                h('p', { class: 'miss-a', text: '✓ ' + m.a }),
+                h('p', { class: 'miss-why', text: m.why }));
+            }))) : null;
+          panel(rec.record ? '🏆' : '⏱️', right + ' right in ' + B.seconds + ' seconds',
+            (rec.record ? 'A new record. ' : 'Your best is ' + rec.best + '. ') + total + ' answered, ' + misses.length + ' missed.',
+            [hubLink(), again], list);
+          say(rec.record ? 'New record!' : misses.length ? 'Read what you missed. Then go again.' : 'Not one miss.', rec.record || !misses.length ? 'happy' : 'idle');
+          UI.sfx(rec.record ? 'win' : 'good');
+          if (rec.record) UI.confetti();
+          again.focus();
+        }
+      });
+    }
+
+    ready();
   }
 
   /* ---------- result dialog ---------- */

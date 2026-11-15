@@ -79,7 +79,7 @@
   /* ---------- progress state ---------- */
 
   function defaultState() {
-    return { v: 1, stars: {}, streak: { count: 0, last: '', best: 0 }, sound: true, agent: null, review: {} };
+    return { v: 1, stars: {}, streak: { count: 0, last: '', best: 0 }, sound: true, agent: null, review: {}, blitz: 0 };
   }
 
   function cleanName(raw) {
@@ -133,6 +133,7 @@
     }
     s.sound = raw.sound !== false;
     s.agent = sanitizeAgent(C, raw.agent);
+    if (Number.isInteger(raw.blitz) && raw.blitz > 0 && raw.blitz <= BLITZ.maxScore) s.blitz = raw.blitz;
     if (isObj(raw.review)) {
       conceptIds(C).forEach(function (id) {
         var r = own(raw.review, id) ? raw.review[id] : null;
@@ -255,7 +256,7 @@
     }
     var next = {
       v: 1, stars: {}, streak: touchStreak(state, today), sound: state.sound, agent: state.agent,
-      review: state.review || {}
+      review: state.review || {}, blitz: state.blitz || 0
     };
     Object.keys(state.stars).forEach(function (k) { next.stars[k] = state.stars[k]; });
     next.stars[id] = Math.max(starsOf(state, id), stars);
@@ -416,6 +417,22 @@
 
   /* runs = how many times Run was pressed, the successful one included. */
   function simStars(runs) { return runs <= 1 ? 3 : runs <= 3 ? 2 : 1; }
+
+  /* ---------- blitz: the timed Arena ---------- */
+
+  /* seconds: length of a round. penalty: seconds a wrong answer costs. maxScore: sanity cap for storage. */
+  var BLITZ = { seconds: 60, penalty: 3, maxScore: 999 };
+
+  /* Record a finished round. The best score only ever goes up. Returns a new state. */
+  function recordBlitz(state, score) {
+    var best = state.blitz || 0;
+    if (!Number.isInteger(score) || score < 0 || score > BLITZ.maxScore) return { state: state, best: best, record: false };
+    if (score <= best) return { state: state, best: best, record: false };
+    var next = {};
+    Object.keys(state).forEach(function (k) { next[k] = state[k]; });
+    next.blitz = score;
+    return { state: next, best: score, record: true };
+  }
 
   /* ---------- fix the trace ---------- */
 
@@ -660,7 +677,7 @@
     journeyProgress: journeyProgress, nextInJourney: nextInJourney,
     REVIEW_GAPS: REVIEW_GAPS, masteryOf: masteryOf, learnedConcepts: learnedConcepts, dueConcepts: dueConcepts,
     recordReview: recordReview, buildQuestions: buildQuestions, buildSession: buildSession,
-    levelQuestions: levelQuestions, caseQuestions: caseQuestions, quizStars: quizStars, sortRight: sortRight, orderRight: orderRight, simReady: simReady, simRun: simRun, simStars: simStars, fixPick: fixPick, fixOptions: fixOptions, fixStars: fixStars, shuffle: shuffle,
+    levelQuestions: levelQuestions, caseQuestions: caseQuestions, quizStars: quizStars, sortRight: sortRight, orderRight: orderRight, simReady: simReady, simRun: simRun, simStars: simStars, BLITZ: BLITZ, recordBlitz: recordBlitz, fixPick: fixPick, fixOptions: fixOptions, fixStars: fixStars, shuffle: shuffle,
     slotKey: slotKey, pipeSlots: pipeSlots, checkPipeline: checkPipeline,
     runTrials: runTrials, bossStars: bossStars, buildBlueprint: buildBlueprint
   };
