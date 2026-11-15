@@ -7,8 +7,8 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 ## Resume here
 
 > Rounds 1–26 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
-> empty. Git: Rounds 1–24 are pushed; Rounds 25 and 26 are committed locally only. Ask the user before
-> pushing. Ideas for what could come next are under "Ideas" below; none is approved.
+> empty. Git: Rounds 1–26 are pushed (2026-11-15). Ask the user before pushing
+> anything new. Ideas for what could come next are under "Ideas" below; none is approved.
 
 ## Planned next (approved)
 
@@ -27,7 +27,7 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 ## Done
 
 ### Round 26 — the next 24 weak questions rewritten (complete, verified)
-- [x] 24 more bank questions rewritten to the Round 25 brief (6 Academy, 11 Addy, 4 LLM, 3 Python + cloud):
+- [x] 24 more bank questions rewritten to the Round 25 brief (5 Academy, 13 Addy, 3 LLM, 3 Python + cloud):
       44 of the 290 hand-written questions are now done. Ids, concepts and counts are unchanged
 - [x] 59 tests pass; every question text is still unique. Right answer longest in 34% and shortest in 34%
       of the bank (limit 45%). Browser at 375px (`?v=33`): seven rewritten questions answered wrong in
