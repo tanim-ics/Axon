@@ -6,9 +6,8 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Rounds 1–24 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
-> empty. Git: Rounds 1–24, the README and the landing mock are pushed (2026-11-15). Ask the user before
-> pushing anything new.
+> Rounds 1–25 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
+> empty. Git: Rounds 1–24 are pushed; Round 25 is committed locally only. Ask the user before pushing.
 > Ideas for what could come next are under "Ideas" below; none is approved.
 
 ## Planned next (approved)
@@ -18,12 +17,29 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Ideas (not approved; pick with the user)
 
+- Rewrite the next batch of weak questions (about 100 short "why" lines remain; see Round 25)
+
 - Named cloud products in the Python + cloud journey, once they are checked against official sites
 
 ## Backlog (not started, needs the user's OK)
 
 
 ## Done
+
+### Round 25 — the 20 weakest questions rewritten (complete, verified)
+- [x] Audit by script of the 290 hand-written bank questions (the 42 mission questions are generated and
+      were left alone). No stem used "which of the following". 104 have a "why" under 60 characters, 52 have
+      a wrong option under 12 characters, 62 have options that differ in length by more than half
+- [x] The 20 that combined one-word options with a one-line "why" were rewritten (2 Academy, 7 Addy,
+      11 LLM): a scenario stem, wrong options that are real misconceptions, a "why" that says why the wrong
+      options fail, options within 20% of each other in length. Ids, concepts and counts are unchanged
+      (332 questions, 166 concepts). Addy rewrites use the lesson's own terms
+- [x] 59 tests pass. Right answer longest in 31% and shortest in 33% of the bank (limit 45%). Browser at
+      375px (`?v=32`): four rewritten questions answered wrong in their Master levels; the right option was
+      marked, the new "why" showed, no page overflow, console clean
+- Limits: 270 hand-written questions were not touched; about 100 still have a short "why" and about 50 a
+  very short wrong option. The 20-per-cent length rule is applied to the rewritten questions only; the test
+  still checks the looser rule. The rewrites have had no second reader. Boss decisions were not audited
 
 ### Round 24 — solution button, start over, profiles (complete, verified)
 - [x] Engine: `solutionOf` writes the solution of every level that is not made of questions from the
