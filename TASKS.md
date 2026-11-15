@@ -7,7 +7,7 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 ## Resume here
 
 > Rounds 1–22 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
-> empty. Git: Rounds 1–21 are pushed; Round 22 is committed locally only. Ask the user before pushing.
+> empty. Git: Rounds 1–21 are pushed; Round 22 and the README are committed locally only. Ask the user before pushing.
 > Ideas for what could come next are under "Ideas" below; none is approved.
 
 ## Planned next (approved)
@@ -23,6 +23,11 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 
 ## Done
+
+### README (2026-11-15)
+- [x] `README.md` added: what the app is, how to run and test it, the journeys and level kinds, the review
+      layer, the layout, sources and limits, licences. Counts were read from `Content` (169 levels, 166
+      concepts, 332 questions). It states that the project's own code has no licence file yet
 
 ### Round 22 — three more labs for the run simulator (complete, verified)
 - [x] Addy `a-lab-3` "plug in the team's tools" after Mix 4: AGENTS.md, a skill loaded on demand, MCP or a
