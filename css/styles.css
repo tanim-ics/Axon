@@ -27,7 +27,7 @@
   --line: #232b3a;
   --line-2: #34405a;
   --text: #e8edf4;
-  --muted: #6b7a99;
+  --muted: #93a1bb;
   --blue: #4fc3f7;
   --blue-hi: #7dd3f9;
   --green: #30d158;
@@ -730,17 +730,17 @@ button.ostep:active { transform: scale(0.98); }
 .mastery { display: grid; gap: var(--s3); margin-top: var(--s3); }
 .mastery h3 { font-size: 19px; }
 .mastery-list { list-style: none; padding: 0; display: grid; gap: var(--s2); }
-.mrow { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(150px, auto); align-items: center; gap: var(--s3); padding: var(--s2) var(--s3); background: var(--well); border: 1px solid var(--line); border-radius: var(--r-sm); font-size: 15px; }
-.mrow-name { font-weight: 600; }
-.mrow-status { color: var(--muted); font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; }
-.mrow.s-due { border-color: rgba(255, 159, 10, 0.5); }
-.mrow.s-due .mrow-status { color: var(--orange); }
-.mrow.s-strong .mrow-status { color: var(--green); }
+.mast-row { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(150px, auto); align-items: center; gap: var(--s3); padding: var(--s2) var(--s3); background: var(--well); border: 1px solid var(--line); border-radius: var(--r-sm); font-size: 15px; }
+.mast-name { font-weight: 600; }
+.mast-status { color: var(--muted); font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; }
+.mast-row.s-due { border-color: rgba(255, 159, 10, 0.5); }
+.mast-row.s-due .mast-status { color: var(--orange); }
+.mast-row.s-strong .mast-status { color: var(--green); }
 .mdots { display: inline-flex; gap: 4px; }
 .mdot { width: 8px; height: 8px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--line-2); }
 .mdot.on { background: var(--green); border-color: transparent; }
 .verdict-fix { color: var(--muted); }
-@media (max-width: 560px) { .mrow { grid-template-columns: minmax(0, 1fr) auto; } .mrow-status { grid-column: 1 / -1; text-align: left; } }
+@media (max-width: 560px) { .mast-row { grid-template-columns: minmax(0, 1fr) auto; } .mast-status { grid-column: 1 / -1; text-align: left; } }
 
 /* ---------- run simulator (labs) ---------- */
 .sim-slot { display: grid; gap: var(--s2); margin: 0; padding: var(--s4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); min-width: 0; transition: border-color 0.3s, background 0.3s; }

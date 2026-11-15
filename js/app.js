@@ -764,10 +764,10 @@
         h('ul', { class: 'mastery-list' }, mine.map(function (m) {
           var dots = [];
           for (var i = 1; i <= E.REVIEW_GAPS.length; i++) dots.push(h('span', { class: 'mdot' + (i <= m.box ? ' on' : '') }));
-          return h('li', { class: 'mrow s-' + m.status },
-            h('span', { class: 'mrow-name', text: m.name }),
+          return h('li', { class: 'mast-row s-' + m.status },
+            h('span', { class: 'mast-name', text: m.name }),
             h('span', { class: 'mdots', role: 'img', 'aria-label': m.box + ' of ' + E.REVIEW_GAPS.length + ' right in a row' }, dots),
-            h('span', { class: 'mrow-status' }, h('span', { 'aria-hidden': 'true', text: STATUS[m.status][1] + ' ' }),
+            h('span', { class: 'mast-status' }, h('span', { 'aria-hidden': 'true', text: STATUS[m.status][1] + ' ' }),
               m.status === 'learning' || m.status === 'strong' ? STATUS[m.status][0] + ' · back ' + m.due : STATUS[m.status][0]));
         })));
     });

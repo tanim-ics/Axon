@@ -6,16 +6,17 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Rounds 1–26 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
-> empty. Git: Rounds 1–26 are pushed (2026-11-15). Ask the user before pushing
-> anything new. Ideas for what could come next are under "Ideas" below; none is approved.
->
-> Round 27 (2026-11-15) was a read-only audit: no code changed. The full report is `docs/audit-2026-11-15.md` (62 findings: 0 critical, 2 high, 19 medium, 41 low). Its top findings are listed under "Ideas";
-> none is approved. Ask the user which to fix before touching code.
+> Round 28 is in progress (2026-11-15): fixing the findings of `docs/audit-2026-11-15.md`, high, then medium,
+> then low. The steps are under "Planned next". Do the first unticked step. Nothing is pushed since Round 26.
 
 ## Planned next (approved)
 
-- Nothing further is approved. See the Backlog.
+### Round 28 — fix the audit findings (ids are those of `docs/audit-2026-11-15.md`)
+- [x] High: D-1 (`.mrow` collision), D-2 (`--muted` contrast)
+- [ ] Medium, code: D-3, D-4, D-5, E-1, E-2, U-1, U-2, U-3, U-8, U-14, U-15, with tests T-1, T-2, T-3
+- [ ] Low, engine and app: E-4, E-5, E-6, E-7, U-4, U-5, U-6, U-7, U-9, U-10, U-12, U-13, S-1, S-2, S-3, S-5, T-4, T-5
+- [ ] Low, CSS: U-11, U-16, D-6 to D-17
+- [ ] Content: C-9. The other content findings (C-1 to C-8, C-10) need their own rounds and the user's choice
 
 
 ## Ideas (not approved; pick with the user)
