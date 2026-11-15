@@ -499,7 +499,8 @@ test('py: topics run 01-08 in order with two mixes and a capstone; masters draw 
     assert.ok(at[0] > last && at[1] === at[0] + 1 && at[2] === at[1] + 1, 'stop ' + n);
     last = at[2];
   }
-  assert.equal(ids.length, 8 * 3 + 3);
+  assert.equal(ids.length, 8 * 3 + 4);
+  assert.equal(ids[ids.length - 2], 'p-lab-1');
   assert.ok(ids.indexOf('p-mix-1') > ids.indexOf('p04-master') && ids.indexOf('p-mix-1') < ids.indexOf('p05-learn'));
   assert.equal(ids[ids.length - 1], 'p-boss-1');
   assert.equal(new Set(ids.concat(C.ADDY.map((l) => l.id), C.LLM.map((l) => l.id), C.LEVELS.map((l) => l.id))).size,
@@ -762,17 +763,17 @@ test('missions in review: three ideas and six well-formed questions per mission,
 });
 
 test('labs: one winning design, and every wrong choice fails at its own step with a reason', () => {
-  const labs = C.ADDY.concat(C.LLM).filter((l) => l.game === 'sim');
-  assert.deepEqual(labs.map((l) => l.id), ['a-lab-1', 'a-lab-2', 'l-lab-1', 'l-lab-2']);
+  const labs = C.ADDY.concat(C.LLM, C.PY).filter((l) => l.game === 'sim');
+  assert.deepEqual(labs.map((l) => l.id), ['a-lab-1', 'a-lab-2', 'l-lab-1', 'l-lab-2', 'p-lab-1']);
   labs.forEach((L) => {
-    const sim = L.sim, LIST = L.id.startsWith('a') ? C.ADDY : C.LLM;
+    const sim = L.sim, LIST = { a: C.ADDY, l: C.LLM, p: C.PY }[L.id[0]];
     const taught = LIST.slice(0, LIST.indexOf(L)).filter((x) => x.game === 'learn').flatMap((x) => x.concepts);
     assert.ok(sim.task && sim.slots.length >= 3 && sim.steps.length >= 6, L.id);
     const win = {};
     sim.slots.forEach((sl) => {
       const ids = sl.options.map((o) => o.id);
       assert.ok(ids.length >= 3 && new Set(ids).size === ids.length && sl.label && sl.icon, L.id + ' ' + sl.id);
-      assert.ok(taught.includes(sl.concept) || !/^[al]\d\d-/.test(sl.concept) && C.CONCEPTS[sl.concept],
+      assert.ok(taught.includes(sl.concept) || !/^[alp]\d\d-/.test(sl.concept) && C.CONCEPTS[sl.concept],
         L.id + ': ' + sl.concept + ' is not taught before this lab');
       const steps = sim.steps.filter((st) => st.slot === sl.id);
       assert.equal(steps.length, 1, L.id + ': slot ' + sl.id + ' must decide exactly one step');

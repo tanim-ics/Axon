@@ -2278,6 +2278,33 @@
 
   mix(2, 'Python + cloud mix', 8);
 
+  lab(1, '🧪', 'Lab: launch week', 'Set up the deployment of a support agent, then live through its first week.',
+    'Keys in a secret manager, backoff on rate limits, state in a database, releases in stages.', {
+    task: 'The job: run the support agent for real customers. Two copies sit behind a load balancer.',
+    slots: [
+      SL('key', '🔑', 'Where the API key lives', 'p02-secrets', [['code', 'Written in agent.py'], ['vault', 'In a secret manager, read at start'], ['image', 'Copied into the image']]),
+      SL('retry', '⏳', 'When the model API answers 429', 'p03-backoff', [['backoff', 'Wait, and wait longer each time'], ['spam', 'Retry at once, with no limit'], ['fail', 'Show the customer an error']]),
+      SL('state', '🧊', 'Where the chat history lives', 'p07-stateless', [['proc', 'In a Python variable'], ['file', 'In a file inside the container'], ['db', 'In a database']]),
+      SL('release', '🪜', 'How a new version goes out', 'p08-rollout', [['all', 'To everyone at once'], ['staged', 'Staging, then 5%, then everyone'], ['hand', 'Copied to the servers by hand']])
+    ],
+    steps: [
+      P('act', 'The pipeline builds the image and starts two copies. Each one reads its key from the secret manager.', 'key', 'vault', {
+        code: ['The repository is shared with a contractor. By Friday the key is in use by someone else, and the bill shows it.', 'A key in code is in the history for good. Keep it in a secret manager and hand it over when the service starts.'],
+        image: ['Anyone who can pull the image can read the key out of it, and changing the key means rebuilding.', 'An image is a package many people and machines can fetch. Secrets are handed over at start, not packed in.'] }),
+      P('obs', 'Monday, 09:00. Traffic climbs to 40 chats a minute.'),
+      P('act', 'The model API answers 429. The agent waits 1 second, then 2, and gets through.', 'retry', 'backoff', {
+        spam: ['Every failed call is sent again at once. The flood keeps the rate limit tripped, and nothing gets through for an hour.', 'Retrying without waiting makes a rate limit worse. Back off, and stop after a set number of tries.'],
+        fail: ['At the first 429 every customer sees "Something went wrong", for a problem that would have cleared in two seconds.', 'A rate limit is temporary. A short wait and a retry hides it from the customer.'] }),
+      P('think', 'A customer writes again and the request lands on the other copy. It loads the chat from the database and carries on.', 'state', 'db', {
+        proc: ['The other copy has never seen this chat. The customer is greeted as a stranger and has to explain it all again.', 'With two copies, memory in one process is invisible to the other. Keep state where every copy can read it.'],
+        file: ['The container was replaced during the night. The file went with it, and so did every open chat.', 'A container is thrown away and started fresh. Only a database or storage outside it survives.'] }),
+      P('obs', 'Tuesday. A new prompt version has passed the tests and the evals.'),
+      P('act', 'It goes to staging, then to 5% of users. The error rate doubles there, and it is rolled back within a minute.', 'release', 'staged', {
+        all: ['The new version reaches every customer at once, and the error rate doubles for all of them before anyone looks.', 'A staged rollout lets a bad version meet a few users first, while rolling back is still cheap.'],
+        hand: ['Files are copied to one server and the other is forgotten. Half the customers get the old agent and half the new one.', 'Releases done by hand drift apart. A pipeline deploys the same image to every copy.'] }),
+      P('answer', 'End of week one: no leaked key, no lost chats, and one bad release caught at 5%.')
+    ] });
+
   boss(1, '🚀', 'Ship the support agent',
     'Your support agent works on your laptop. On Monday it must serve real customers. Make the calls.',
     'Pin it, package it, keep secrets out of code, retry sensibly, keep state outside, ship through a pipeline and watch it.', [

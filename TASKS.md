@@ -6,9 +6,9 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Round 19, steps 1 and 2 run together: a background agent is reading the Python + cloud content (its
-> report arrives in the session; if the session ended, rerun it: see step 1), while the lab is written in
-> `js/content.js` right after `mix(2, 'Python + cloud mix', 8);`.
+> Round 19: the lab `p-lab-1` is written, tested (53 pass) and committed. The second reader (step 1) is
+> still running in the background; when its report arrives, apply it (step 3). If the session ended first,
+> rerun the reader as described in step 1. Then step 4 (browser) and step 5 (docs).
 > Git: `main` is ahead of `origin/main` by local commits; ask the user before pushing.
 
 ## Round 19 — harden the Python + cloud journey (in progress; user said "next task" 2026-11-15, Claude picked
@@ -17,7 +17,7 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 - [ ] 1. Second reader: a fresh agent reads every p-card, puzzle item, question and boss decision in
       `js/content.js` (the block between "Python + cloud journey" and "what employers ask for") and reports
       factual errors, ambiguous keyed answers and wrong options that are also defensible
-- [ ] 2. Lab `p-lab-1` "launch week" before the capstone: 4 settings (key, retry, state, release), each tied
+- [x] 2. Lab `p-lab-1` "launch week" before the capstone: 4 settings (key, retry, state, release), each tied
       to a taught concept; extend the labs test and the py order test
 - [ ] 3. Apply the reader's findings
 - [ ] 4. Verify: `npm test`; raise `?v=`; play the lab (one wrong choice, then the fix) and replay the 27
