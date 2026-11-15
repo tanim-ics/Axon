@@ -6,27 +6,14 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Round 20, step 5: engine, game, 12 cases, tests (54 pass) and play-through support are committed. Next:
-> in the browser at 375px play `#/level/p-fix-1` by hand (one wrong tap, one wrong fix), run
-> `Playthrough.play(['a-fix-1','l-fix-1','p-fix-1'])`, check the console. Then step 6 (docs, Done, commit).
-> Git: `main` is ahead of `origin/main` by local commits; ask the user before pushing.
+> Rounds 1–20 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
+> empty. Git: `main` is ahead of `origin/main` by local commits; ask the user before pushing.
+> Ideas for what could come next are under "Ideas" below; none is approved.
 
-## Round 20 — "fix the trace" game (in progress; user said "start task 20" 2026-11-15, Claude picked this
-## from Ideas as the most hands-on of the remaining ones)
+## Planned next (approved)
 
-A new game, `game: 'fix'`: a broken agent run is shown as a trace. Round A: tap the first step that went
-wrong. Round B: pick the fix from three options. Each case is tied to a concept and feeds the spaced review.
+- Nothing further is approved. See the Backlog.
 
-- [x] 1. Engine: `fixPick(case, i)`, `fixOptions(case, rnd)`, `fixStars(slips)`; unit tests
-- [x] 2. Game: `js/games/fix.js` + styles; script tag in `index.html`; `tools/playthrough.js` learns `fix`
-- [x] 3. Content: helper `fix(n, icon, title, idea, key, cases)` with `X(concept, ask, steps, bug, a, x, why)`,
-      `T(kind, text)` and `B(kind, text)` (the bad step). One level before the last boss of each course:
-      `a-fix-1`, `l-fix-1`, `p-fix-1`, four cases each
-- [x] 4. Tests: well-formed cases (one bad step, never first, not always the same position, concept taught
-      earlier, fix options distinct), fixes included in the length-guess test; update level counts
-- [ ] 5. Browser at 375px: play one level by hand with a wrong tap and a wrong fix; play-through for the
-      three new levels; console clean
-- [ ] 6. Docs (`CLAUDE.md`: layout row, level table, rules), move the round to Done, commit
 
 ## Ideas (not approved; pick with the user)
 
@@ -37,6 +24,22 @@ wrong. Round B: pick the fix from three options. Each case is tied to a concept 
 
 
 ## Done
+
+### Round 20 — "fix the trace" game (complete, verified)
+- [x] New game `js/games/fix.js` (`game: 'fix'`): a broken run is shown as a trace; tap the first wrong step,
+      then pick the repair from three options. Slips (wrong taps and wrong fixes) decide the stars
+- [x] Engine: `fixPick`, `fixOptions`, `fixStars`, with tests for bad indexes and shuffling
+- [x] Three debug levels before the last boss of each course, four runs each: `a-fix-1` (repeating a failed
+      step, prompt injection, context rot, unreadable tools), `l-fix-1` (unchecked output, ungrounded answer,
+      lost goal, oversized model), `p-fix-1` (retrying a 401, bad JSON, state in a process, unstaged release).
+      Each run is tied to a taught concept and its answer is recorded in the spaced review
+- [x] 54 tests pass; `tools/playthrough.js` plays the new game
+- [x] Browser at 375px: `p-fix-1` played by hand with one wrong tap and one wrong fix (2 stars, the miss and
+      the hits were recorded in the review); the play-through ran the three debug levels and the three bosses
+      after them: 6 played, 0 failed, 0 with page overflow, console clean
+- Limits: `a-fix-1` and `l-fix-1` were played only by the script, which always answers right. Keyboard use
+  was not exercised. The twelve runs have had no second reader. Someone who had already passed the last
+  boss of a course must play the new debug level before replaying that boss (levels unlock in order)
 
 ### Round 19 — the Python + cloud journey hardened (complete, verified)
 - [x] Lab `p-lab-1` "launch week" before the capstone: 4 settings (key, retry, state, release), each tied to

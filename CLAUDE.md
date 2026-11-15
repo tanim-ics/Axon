@@ -1,6 +1,6 @@
 # Axon
 
-A gamified, hands-on course that teaches beginners how AI agents work, how to design, build and tune one, and how to wire agentic pipelines. It is organised as **journeys** picked from a hub: the Academy (eight short games), Field missions (seven real-world pipelines and their popular tools), the Addy journey (Addy Osmani's "Agent Engineer" course: all 19 lessons, 66 levels) and the LLM journey (tokens, prompting, RAG, fine-tuning, the harness, evals and shipping: 16 topics, 54 levels, weighted by researched job postings) and the Python + cloud journey (the Python an agent is written in and the cloud it runs on: 8 topics, 28 levels). A spaced-review layer brings every learned idea back so it sticks. Almost no reading.
+A gamified, hands-on course that teaches beginners how AI agents work, how to design, build and tune one, and how to wire agentic pipelines. It is organised as **journeys** picked from a hub: the Academy (eight short games), Field missions (seven real-world pipelines and their popular tools), the Addy journey (Addy Osmani's "Agent Engineer" course: all 19 lessons, 67 levels) and the LLM journey (tokens, prompting, RAG, fine-tuning, the harness, evals and shipping: 16 topics, 55 levels, weighted by researched job postings) and the Python + cloud journey (the Python an agent is written in and the cloud it runs on: 8 topics, 29 levels). A spaced-review layer brings every learned idea back so it sticks. Almost no reading.
 
 The app was first called Agentcraft. The `localStorage` key is still `agentcraft.v1` on purpose, so saved progress survives.
 
@@ -43,6 +43,7 @@ No build step, no dependencies, no network calls. `.claude/launch.json` defines 
 | `js/games/recall.js` | `Games.recall` (questions with "why" feedback: daily review, Arena) and `Games.quiz` (a level made of questions: Master and Mix levels), `Games.case` (boss scenarios) |
 | `js/games/learn.js` | Key-lesson cards with a diagram each, then one question per idea |
 | `js/games/sort.js`, `js/games/order.js` | Data-driven puzzles: send cards to buckets; tap steps in order |
+| `js/games/fix.js` | "Fix the trace": tap the first wrong step of a broken run, then pick the repair |
 | `js/games/sim.js` | The run simulator (labs): choose a design, run the agent, read the trace, fix what broke |
 | `js/markdown.js` | Pure Markdown parser for the full-read mode (UMD, tested). Returns data, never HTML |
 | `course/addy/` | Bundled course text: `md/NN.md` (downloaded, then cleaned of embedded HTML and scripts), `NN.js` (generated, loaded by the reader), `LICENSE.txt`, `README.md` (source, licence, changes) |
@@ -91,6 +92,8 @@ Addy Osmani's "Agent Engineer" course (Apache 2.0, `github.com/addyosmani/agent-
 
 `lab(n, icon, title, idea, key, sim)` adds a lab (`game: 'sim'`). `sim.slots` are design choices built with `SL(id, icon, label, concept, [[optionId, text], …])`; `sim.steps` are the agent's run built with `P(kind, text)` or `P(kind, text, slot, okId, { optionId: [whatHappens, why] })`. Rules the tests enforce: each slot decides exactly one step, each wrong option has what-happens and why, exactly one design wins, the right option is not always first, the last step shows the result, and each slot's concept is taught earlier in that journey (or is an Academy concept). Rules live in `Engine.simRun`; the game only plays the result.
 
+`fix(n, icon, title, idea, key, cases)` adds a debug level (`game: 'fix'`, id `<prefix>-fix-<n>`). A case is `X(concept, ask, steps, bug, rightFix, [wrongFixes], why)`; steps are `T(kind, text)` and exactly one `B(kind, text)`, the first step that went wrong. The learner taps the bad step, then picks the fix; a wrong tap or a wrong fix is a slip (`Engine.fixStars`), and the fix answer is recorded for the case's concept. Rules the tests enforce: three or more cases, one concept per case and taught earlier in that journey, exactly one bad step and never the first, the bad step not always in the same position, distinct options. Write the bad step as the first decision that is wrong, not the first place the damage shows.
+
 - Cards and questions are written in this app's own words from the lesson's ideas. The lesson's own text is only shown in the reader, with credit and a link to the original.
 - **Full read:** `tools/build-course.js` removes the lessons' embedded HTML widgets and inline scripts and wraps the text as `Course.add("NN", "...")`. The reader adds that one `<script src>` on demand, `Markdown.parse` turns the text into data, and `app.js` builds DOM from it with `UI.h()`. Never render lesson text as HTML, and do not add `connect-src` to the CSP. After changing or re-downloading anything in `course/addy/md/`, run `node tools/build-course.js` before anything else: it also removes the embedded HTML and scripts from the stored file. A test fails if a stored lesson contains HTML or differs from its `NN.js`.
 - `Markdown.safeHref` also refuses links with `user@host`, control characters or direction-flipping characters, and every regex in `markdown.js` has bounded quantifiers. Keep both properties when changing the parser; the tests time hostile input.
@@ -98,7 +101,7 @@ Addy Osmani's "Agent Engineer" course (Apache 2.0, `github.com/addyosmani/agent-
 
 ## The Python + cloud journey
 
-- `Content.PY`, journey id `py`, level prefix `p` (`p01-learn` … `p08-master`, `p-mix-1`, `p-mix-2`, `p-lab-1`, `p-boss-1`). Built with the same `lesson()` / `mix()` / `boss()` helpers; `TRACK = track('p', 'Topic', false)` is set before its lessons.
+- `Content.PY`, journey id `py`, level prefix `p` (`p01-learn` … `p08-master`, `p-mix-1`, `p-mix-2`, `p-lab-1`, `p-fix-1`, `p-boss-1`). Built with the same `lesson()` / `mix()` / `boss()` helpers; `TRACK = track('p', 'Topic', false)` is set before its lessons.
 - Topics: 01 Python for agents · 02 Environments and secrets · 03 Calling a model API · 04 Tools, async and tests · 05 Cloud building blocks · 06 Containers · 07 Deploying an agent · 08 Pipelines and operations.
 - No source text and no research behind it: cards are written from general, established practice at beginner level. It names AWS, Azure and Google Cloud, plus Docker, Kubernetes and pytest, but **no individual cloud products** (their names change and are not verified). Keep it that way unless the names are checked and dated like `TOOLS_REVIEW`.
 - Code shown in cards and puzzles is illustrative, not run by the app. Keep snippets to one line and standard-library or generic names.
