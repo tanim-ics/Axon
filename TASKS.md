@@ -6,37 +6,42 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Round 18, step 6: content, wiring and tests are done and committed (53 tests pass). Next: raise `?v=` in
-> `index.html`, play the 27 new levels in the browser (`tools/playthrough.js`), check 375px and the console.
-> Then step 7 (docs, move the round to Done, commit).
-> Git: `main` is ahead of `origin/main` by local commits; ask the user before pushing.
+> Rounds 1–18 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
+> empty. Git: `main` is ahead of `origin/main` by local commits; ask the user before pushing.
+> Ideas for what could come next are under "Ideas" below; none is approved.
 
-## Round 18 — Python + cloud journey (in progress; approved by the user 2026-11-15)
+## Planned next (approved)
 
-Why: Python (20 of 23 postings) and cloud (16 of 23) top the job-market tally and were not taught.
-Plan: a fifth journey, id `py`, level prefix `p`, built with the same `lesson()` / `mix()` / `boss()` helpers
-as the LLM journey. No source text: cards are written from general, established practice. Clouds are named
-(AWS, Azure, GCP) but individual cloud products are not, because product names change and are unverified.
+- Nothing further is approved. See the Backlog.
 
-- [x] 1. Content, Python half: p01 Python for agents · p02 Environments, packages, secrets ·
-      p03 Calling a model API · p04 Tools, async and tests; then `mix(1, …)`
-- [x] 2. Content, cloud half: p05 Cloud building blocks · p06 Containers · p07 Deploying an agent ·
-      p08 CI/CD and operating it; then `mix(2, …)` and the capstone `boss(1, …)`
-- [x] 3. Questions: 2 per concept (24 concepts, 48 questions) in the bank
-- [x] 4. Wire up: `PY` exported, journey entry in `JOURNEYS`, `MARKET.caveat` no longer says "not taught"
-- [x] 5. Tests: add `C.PY` to the course tests, a `py` order test; `npm test` passes
-- [ ] 6. Browser: bump `?v=`, play the new levels (`tools/playthrough.js` or by hand), 375px, clean console
-- [ ] 7. Docs: `CLAUDE.md` (intro, journey section), move this round to Done, commit
 
 ## Ideas (not approved; pick with the user)
 
 - More labs for the run simulator (Round 16 built four), a "fix the trace" game for the course lessons,
   timed Arena rounds
+- A lab for the Python + cloud journey, a second reader over its 48 questions, and named cloud products
+  once they are checked against official sites
 
 ## Backlog (not started, needs the user's OK)
 
 
 ## Done
+
+### Round 18 — Python + cloud journey (complete, verified)
+- [x] Fifth journey `py` (`Content.PY`): 8 topics x Learn, Apply, Master, two Mix levels and a capstone boss
+      ("Ship the support agent"): 27 levels, 24 concepts, 48 questions, 8 boss decisions
+- [x] Topics: Python for agents · Environments and secrets · Calling a model API · Tools, async and tests ·
+      Cloud building blocks · Containers · Deploying an agent · Pipelines and operations
+- [x] `MARKET.caveat` no longer says Python and cloud are not taught
+- [x] Tests: `C.PY` added to the course, length-guess and mission-isolation tests, plus a `py` order test.
+      53 tests pass
+- [x] Browser at 375px: `tools/playthrough.js` played all 27 new levels to their result dialog: 27 played,
+      0 failed, 0 with page overflow, console clean. The hub lists the journey
+- [x] Fixed in passing: the hub title no longer adds a full stop after a title ending in "?"
+- Limits: the content is written from general practice, not researched or checked by a second reader, and it
+  is beginner level. No individual cloud products are named. The play-through takes the right answer every
+  time; wrong answers, retries and the keyboard were not exercised on the new levels. The other 135 levels
+  were not replayed (only content was added; no game code changed)
 
 ### Round 17 — every level played, and a second reader for the questions (complete, verified)
 - [x] Play-through: a script played all 135 levels (8 Academy, 7 missions, 66 Addy, 54 LLM) to their result

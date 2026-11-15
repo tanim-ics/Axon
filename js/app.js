@@ -161,7 +161,7 @@
   function viewHub() {
     document.title = 'Axon — learn to build and tune AI agents by playing';
     var next = nextUp(), started = E.xpOf(state) > 0;
-    var title = !started ? 'Build your first AI agent.' : next ? 'Next up: ' + next.title + '.' : 'You did it. All of it.';
+    var title = !started ? 'Build your first AI agent.' : next ? 'Next up: ' + next.title + (/[.?!]$/.test(next.title) ? '' : '.') : 'You did it. All of it.';
     var sub = !started ? 'Short games, real pipelines. Zero lectures.'
       : next ? next.idea : 'Replay anything for 3 stars, or rebuild your agent.';
     var cta = h('a', { class: 'btn primary big', href: '#/level/' + (next ? next.id : 'boss') },

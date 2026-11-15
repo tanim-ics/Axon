@@ -1,6 +1,6 @@
 # Axon
 
-A gamified, hands-on course that teaches beginners how AI agents work, how to design, build and tune one, and how to wire agentic pipelines. It is organised as **journeys** picked from a hub: the Academy (eight short games), Field missions (seven real-world pipelines and their popular tools), the Addy journey (Addy Osmani's "Agent Engineer" course: all 19 lessons, 66 levels) and the LLM journey (tokens, prompting, RAG, fine-tuning, the harness, evals and shipping: 16 topics, 54 levels, weighted by researched job postings). A spaced-review layer brings every learned idea back so it sticks. Almost no reading.
+A gamified, hands-on course that teaches beginners how AI agents work, how to design, build and tune one, and how to wire agentic pipelines. It is organised as **journeys** picked from a hub: the Academy (eight short games), Field missions (seven real-world pipelines and their popular tools), the Addy journey (Addy Osmani's "Agent Engineer" course: all 19 lessons, 66 levels) and the LLM journey (tokens, prompting, RAG, fine-tuning, the harness, evals and shipping: 16 topics, 54 levels, weighted by researched job postings) and the Python + cloud journey (the Python an agent is written in and the cloud it runs on: 8 topics, 27 levels). A spaced-review layer brings every learned idea back so it sticks. Almost no reading.
 
 The app was first called Agentcraft. The `localStorage` key is still `agentcraft.v1` on purpose, so saved progress survives.
 
@@ -95,6 +95,14 @@ Addy Osmani's "Agent Engineer" course (Apache 2.0, `github.com/addyosmani/agent-
 - **Full read:** `tools/build-course.js` removes the lessons' embedded HTML widgets and inline scripts and wraps the text as `Course.add("NN", "...")`. The reader adds that one `<script src>` on demand, `Markdown.parse` turns the text into data, and `app.js` builds DOM from it with `UI.h()`. Never render lesson text as HTML, and do not add `connect-src` to the CSP. After changing or re-downloading anything in `course/addy/md/`, run `node tools/build-course.js` before anything else: it also removes the embedded HTML and scripts from the stored file. A test fails if a stored lesson contains HTML or differs from its `NN.js`.
 - `Markdown.safeHref` also refuses links with `user@host`, control characters or direction-flipping characters, and every regex in `markdown.js` has bounded quantifiers. Keep both properties when changing the parser; the tests time hostile input.
 - Only `https?://` links and links to another lesson (`../NN-slug/` → `#/read/NN`) become links; everything else is shown as text.
+
+## The Python + cloud journey
+
+- `Content.PY`, journey id `py`, level prefix `p` (`p01-learn` … `p08-master`, `p-mix-1`, `p-mix-2`, `p-boss-1`). Built with the same `lesson()` / `mix()` / `boss()` helpers; `TRACK = track('p', 'Topic', false)` is set before its lessons.
+- Topics: 01 Python for agents · 02 Environments and secrets · 03 Calling a model API · 04 Tools, async and tests · 05 Cloud building blocks · 06 Containers · 07 Deploying an agent · 08 Pipelines and operations.
+- No source text and no research behind it: cards are written from general, established practice at beginner level. It names AWS, Azure and Google Cloud, plus Docker, Kubernetes and pytest, but **no individual cloud products** (their names change and are not verified). Keep it that way unless the names are checked and dated like `TOOLS_REVIEW`.
+- Code shown in cards and puzzles is illustrative, not run by the app. Keep snippets to one line and standard-library or generic names.
+- The same id rule as the LLM journey applies: add new topics at the end, or saved stars move to the wrong topic.
 
 ## The LLM journey and the market tally
 
