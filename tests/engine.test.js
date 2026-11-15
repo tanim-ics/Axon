@@ -361,7 +361,8 @@ test('bank: every concept has a real level and at least two answerable questions
   C.BANK.forEach((q) => {
     assert.ok(C.CONCEPTS[q.concept], q.id);
     ['q', 'a', 'why'].forEach((k) => assert.ok(q[k], q.id + '.' + k));
-    assert.ok(q.x.length >= 2, q.id);
+    assert.equal(q.x.length, 3, q.id + ' needs three wrong options, so a blind guess is right one time in four');
+    assert.equal(new Set([q.a].concat(q.x)).size, 4, q.id + ': options must differ');
     assert.equal(new Set([q.a, ...q.x]).size, q.x.length + 1, q.id + ' has duplicate options');
   });
 });
@@ -694,10 +695,13 @@ test('questions: the right answer cannot be guessed from its length', () => {
   [['bank', C.BANK], ['boss decisions', steps]].forEach(([name, list]) => {
     const longest = list.filter((q) => q.x.every((o) => o.length < q.a.length)).length / list.length;
     const shortest = list.filter((q) => q.x.every((o) => o.length > q.a.length)).length / list.length;
-    const middle = 1 - longest - shortest;
-    /* With three options, chance is one third. A share near 60% (the pass mark) would be a winning strategy. */
-    [['longest', longest], ['shortest', shortest], ['in the middle', middle]].forEach(([where, share]) =>
-      assert.ok(share <= 0.45, name + ': the right answer is ' + where + ' in ' + Math.round(share * 100) + '% of questions'));
+    /* "Pick a middle-length option" is a guess among the options that are neither longest nor shortest:
+       one of them with three options, two with four. Its win rate is what has to stay low. */
+    const middle = list.filter((q) => !q.x.every((o) => o.length < q.a.length) && !q.x.every((o) => o.length > q.a.length))
+      .reduce((sum, q) => sum + 1 / Math.max(1, q.x.length - 1), 0) / list.length;
+    /* Chance is one in three or one in four. A win rate near 60% (the pass mark) would be a winning strategy. */
+    [['pick the longest', longest], ['pick the shortest', shortest], ['pick a middle one', middle]].forEach(([how, share]) =>
+      assert.ok(share <= 0.45, name + ': "' + how + '" wins ' + Math.round(share * 100) + '% of questions'));
   });
 });
 
@@ -744,7 +748,7 @@ test('missions in review: three ideas and six well-formed questions per mission,
       qs.forEach((q) => {
         assert.ok(names.includes(q.a), q.id + ': the answer must be a stage of this mission');
         q.x.forEach((o) => assert.ok(names.includes(o) && o !== q.a, q.id + ': bad option ' + o));
-        assert.equal(new Set(q.x).size, 2, q.id);
+        assert.equal(new Set(q.x).size, 3, q.id);
       });
     });
     const gate = M.stages.find((x) => x.id === M.gate).name;

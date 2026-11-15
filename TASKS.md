@@ -6,10 +6,9 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Rounds 1–28 are complete (Round 14 was dropped by the user). Nothing is in progress. Round 28 fixed 46 of
-> the 62 findings of `docs/audit-2026-11-15.md` and 5 more in part; the report's last section says which.
-> What is left is content work, listed under "Ideas"; none is approved. Git: Rounds 27 and 28 are committed
-> but NOT pushed. Ask the user before pushing.
+> Rounds 1–29 are complete (Round 14 was dropped by the user). Nothing is in progress. What is left of the
+> audit (`docs/audit-2026-11-15.md`, last section) is content work, listed under "Ideas"; none is approved.
+> Git: Rounds 27, 28 and 29 are committed but NOT pushed. Ask the user before pushing.
 
 ## Planned next (approved)
 
@@ -21,8 +20,9 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 - Rewrite the next batch of weak questions (81 short "why" lines remain; see Rounds 25 and 26)
 
 - Open audit findings (`docs/audit-2026-11-15.md`, "Status after Round 28"):
-  - C-1, C-2: every question has two wrong options and every concept two questions. Either write a third
-    wrong option / a third question, or raise the Master threshold (the user's choice)
+  - C-2: every concept has two questions; a third each is a content round
+  - A second reader for the 290 third options of Round 29, the Addy ones against the lesson text
+  - A third wrong option for the 50 boss decisions and the fix cases, which still have two
   - C-3: one hand-written scenario question per mission (the six-per-mission test rule has to change)
   - C-4 to C-8, C-10: question rewrites, most of them in the LLM journey, and the boss decisions
   - Left on purpose: E-8 (no migration yet), E-9 (default `rng`), off-scale spacing (D-10), numbered
@@ -34,6 +34,19 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 
 ## Done
+
+### Round 29 — a third wrong option for every bank question (audit C-1; complete, verified)
+- [x] 290 hand-written questions each gained one more wrong option (32 Academy, 114 Addy, 96 LLM, 48 Python +
+      cloud). Ids, concepts, answers and "why" lines are unchanged
+- [x] The mission generator adds a third stage name to each of its 42 questions
+- [x] Tests: exactly three wrong options and four distinct options per question; the length rule now measures
+      the win rate of "pick a middle-length one" (a guess between two options when there are four). 64 pass.
+      Right answer longest in 23% and shortest in 27% of the bank
+- [x] Browser at 375px (`?v=38`): playthrough reports 169 played, 0 failed, 0 with page overflow; console clean
+- Limits: no second reader, and the Addy options were not checked against the lesson text. 31 questions
+  (was 27) have one option more than twice the length of another. A screen with four options was not looked
+  at by eye after a wrong answer; the playthrough only answers correctly. Boss decisions and fix cases still
+  have two wrong options
 
 ### Round 28 — the audit findings fixed, high, then medium, then low (complete, verified)
 - [x] High: `.mrow` collision (mastery classes are now `.mast-*`); `--muted` is #93a1bb, 4.9:1 or better

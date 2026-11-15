@@ -75,7 +75,7 @@ No build step, no dependencies, no network calls. `.claude/launch.json` defines 
 
 ## Spaced review (the retention layer)
 
-- `Content.CONCEPTS` maps a concept id to `{ level, name }`. `Content.BANK` holds questions built with `Q(id, concept, q, a, x, why)`: one right answer `a`, two or more wrong answers `x`, and a `why` shown after every answer. Tests require two or more questions per concept.
+- `Content.CONCEPTS` maps a concept id to `{ level, name }`. `Content.BANK` holds questions built with `Q(id, concept, q, a, x, why)`: one right answer `a`, exactly three wrong answers `x` (a test requires three, so a blind guess is right one time in four), and a `why` shown after every answer. Tests require two or more questions per concept.
 - A concept enters review when its level is finished. `state.review[concept] = { box, due }`.
 - Rules live in `engine.js`: right when due waits 1, 3, 7, then 21 days; wrong at any time resets to tomorrow; right before it is due changes nothing (so Arena practice cannot fake mastery).
 - `Engine.masteryOf` lists every learned idea with a status (`due`, `new`, `learning`, `strong`); the codex shows it as the Mastery map.
@@ -83,7 +83,7 @@ No build step, no dependencies, no network calls. `.claude/launch.json` defines 
 - Daily review asks what is due, weakest first. Arena is a random mix of everything learned. Neither gives stars or XP.
 - Blitz (`#/blitz`, `viewBlitz` in `app.js`, `Games.blitz`) is the Arena against a clock. `Engine.BLITZ` holds the round length and the seconds a wrong answer costs; `Engine.recordBlitz` keeps the best score in `state.blitz` (sanitised on load, only ever goes up). Answers are recorded with the same `recordReview` rules as the Arena, the clock pauses while feedback is shown, and the end panel lists each missed question once with its "why". It gives no stars or XP. Keep the untimed Arena: a clock is a barrier for some learners.
 - **Every new level must add its concepts and questions to the bank.** Field missions are the exception: their three concepts and six questions each are generated from the mission's stages, gate and tools at the end of `content.js`, so adding a mission needs no questions written by hand.
-- Wrong options must be plausible misconceptions, never jokes, and the right answer must not stand out by length. A test fails if the right answer is the longest, the shortest or the middle-length option in more than 45% of questions.
+- Wrong options must be plausible misconceptions, never jokes, and the right answer must not stand out by length. A test fails if "pick the longest", "pick the shortest" or "pick a middle-length one" would be right on more than 45% of questions.
 
 ## The Addy journey
 
