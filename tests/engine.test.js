@@ -700,3 +700,36 @@ test('tools review: every product named in a mission or the toolbox has a dated,
   named.forEach((n) => assert.ok(byName.has(n) || R.generic.includes(n), n + ' has no checked source'));
   byName.forEach((_, n) => assert.ok(named.has(n), n + ' is in the sources but no longer named anywhere'));
 });
+
+test('missions in review: three ideas and six well-formed questions per mission, kept out of course Masters', () => {
+  C.MISSIONS.forEach((M) => {
+    const names = M.stages.map((x) => x.name);
+    ['flow', 'gate', 'tools'].forEach((k) => {
+      const id = M.id + '-' + k;
+      assert.equal(C.CONCEPTS[id].level, M.id);
+      const qs = C.BANK.filter((q) => q.concept === id);
+      assert.equal(qs.length, 2, id);
+      qs.forEach((q) => {
+        assert.ok(names.includes(q.a), q.id + ': the answer must be a stage of this mission');
+        q.x.forEach((o) => assert.ok(names.includes(o) && o !== q.a, q.id + ': bad option ' + o));
+        assert.equal(new Set(q.x).size, 2, q.id);
+      });
+    });
+    const gate = M.stages.find((x) => x.id === M.gate).name;
+    C.BANK.filter((q) => q.concept === M.id + '-gate').forEach((q) => assert.equal(q.a, gate));
+    const [f1, f2] = C.BANK.filter((q) => q.concept === M.id + '-flow');
+    assert.equal(f1.a, names[1]);
+    assert.equal(f2.a, names[names.length - 2]);
+    C.BANK.filter((q) => q.concept === M.id + '-tools').forEach((q) => {
+      const stage = M.stages.find((x) => x.name === q.a);
+      assert.ok(q.q.includes(stage.tool), q.id + ' asks about the tool of its own answer');
+    });
+  });
+  C.ADDY.concat(C.LLM).filter((l) => l.game === 'quiz').forEach((l) => l.pool.concat(l.concepts).forEach((c) =>
+    assert.ok(!c.startsWith('m-'), l.id + ' must not draw on a mission idea: ' + c)));
+  let s = E.defaultState();
+  s.stars.guard = 1;
+  s = E.awardLevel(C, s, 'm-video', 2, '2026-01-01').state;
+  assert.deepEqual(E.dueConcepts(C, s, '2026-01-01').filter((c) => c.startsWith('m-')).sort(),
+    ['m-video-flow', 'm-video-gate', 'm-video-tools']);
+});

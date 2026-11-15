@@ -72,7 +72,7 @@ No build step, no dependencies, no network calls. `.claude/launch.json` defines 
 - `Engine.masteryOf` lists every learned idea with a status (`due`, `new`, `learning`, `strong`); the codex shows it as the Mastery map.
 - A finished session goes through `Engine.touchSession`, which counts it as a learning day and returns any new badge. Do not change `state.streak` in the app.
 - Daily review asks what is due, weakest first. Arena is a random mix of everything learned. Neither gives stars or XP.
-- **Every new level must add its concepts and questions to the bank.**
+- **Every new level must add its concepts and questions to the bank.** Field missions are the exception: their three concepts and six questions each are generated from the mission's stages, gate and tools at the end of `content.js`, so adding a mission needs no questions written by hand.
 - Wrong options must be plausible misconceptions, never jokes, and the right answer must not stand out by length. A test fails if the right answer is the longest, the shortest or the middle-length option in more than 45% of questions.
 
 ## The Addy journey

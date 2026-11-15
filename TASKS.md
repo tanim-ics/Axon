@@ -6,28 +6,42 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> **Round 14 in progress** (user at the keyboard, 2026-11-15): VoiceOver test. Git: `main` matches
-> `origin/main` as of commit 6545f93 (pushed with the user's OK); ask before any later push.
-> Next step: the user runs the eight checks below in Safari with VoiceOver and reports what was read aloud.
-> Claude cannot hear VoiceOver, so every finding comes from the user's report. Fix what fails, then re-check.
-
-## Round 14 — VoiceOver test (in progress)
-
-- [ ] 14.1 User runs the checks: hub and HUD, level start, a question, a sort card, a Learn card, the result
-      dialog, the reader, the codex
-- [ ] 14.2 Fix each reported problem, with a test where a rule changes
-- [ ] 14.3 User re-checks the fixed items
-- [ ] 14.4 Docs, commit
+> Rounds 1–15 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
+> empty. Git: `main` is ahead of `origin/main` by local commits; ask the user before pushing.
+> Ideas for what could come next are under "Ideas" below; none is approved.
 
 ## Planned next (approved)
 
 - Nothing further is approved. See the Backlog.
 
 
+## Ideas (not approved; pick with the user)
+
+- Richer game mechanics. The user's original ask was to "improve the games a lot". The course levels use four
+  simple mechanics (cards, sort, order, questions). Candidates: a simulated agent run where the learner's
+  design passes or fails step by step; a "fix the trace" game for the course lessons; timed Arena rounds
+- A real play-through of every level by a person: most levels are verified only by tests that prove they can
+  be won
+- A second reader for the rewritten wrong answers (Round 9), looking for options that are arguably right
+- Python and cloud basics, which top the job-market tally and are not taught
+
 ## Backlog (not started, needs the user's OK)
 
 
 ## Done
+
+### Round 15 — Field missions feed the spaced review (complete, verified)
+- [x] Three ideas per mission (the order, the human check, the tools), two questions each, generated in
+      `js/content.js` from the mission's own stages, gate and tools: 21 concepts, 42 questions. Totals are now
+      142 concepts and 284 questions
+- [x] Test: every mission question is well-formed and its answer is right by construction; Addy and LLM Master
+      levels never draw on mission ideas; finishing a mission makes its three ideas due
+- [x] 51 tests pass. In the browser at 375px: with a mission marked done, its ideas appeared in the mastery map
+      under Field missions and its questions came up in the daily review; console clean
+
+### Round 14 — VoiceOver test (dropped by the user, 2026-11-15)
+- Not done and not wanted: the user does not use VoiceOver. No real screen-reader test has been run. The
+  accessibility work rests on code review, keyboard runs and the roles and labels in the markup.
 
 ### Round 13 — tool names verified against official sites (complete, verified)
 - [x] Three agents looked up all 113 product names on 2026-11-15 (117 lookups reported: 31 + 44 + 42, with

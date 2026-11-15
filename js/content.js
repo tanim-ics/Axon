@@ -2200,6 +2200,42 @@
     ].map(function (r) { return { name: r[0], url: r[1] }; })
   };
 
+  /* ---------- Field missions in the spaced review ----------
+     Built from each mission's own data, so the questions can never drift from the mission.
+     Three ideas per mission: the order of the stages, the human check, and what each tool is for.
+     Added after the course journeys on purpose: their Master levels must not draw on mission ideas. */
+  MISSIONS.forEach(function (M) {
+    var st = M.stages, last = st.length - 1, names = st.map(function (x) { return x.name; });
+    var others = st.filter(function (x) { return x.id !== M.gate; });
+    var gate = st.filter(function (x) { return x.id === M.gate; })[0];
+    var withTool = st.filter(function (x) { return x.tool.indexOf('Claude') !== 0; }); /* skip the generic model steps */
+    var pipe = 'In the "' + M.title + '" pipeline, ';
+    function pick(avoid) { return names.filter(function (n) { return avoid.indexOf(n) === -1; }); }
+
+    CONCEPTS[M.id + '-flow'] = { level: M.id, name: M.title + ': the order' };
+    CONCEPTS[M.id + '-gate'] = { level: M.id, name: M.title + ': the human check' };
+    CONCEPTS[M.id + '-tools'] = { level: M.id, name: M.title + ': the tools' };
+
+    var order = 'The order is: ' + names.join(' → ') + '.';
+    BANK.push(
+      Q(M.id + '-flow-1', M.id + '-flow', pipe + 'which step comes straight after "' + names[0] + '"?',
+        names[1], [names[last], names[last - 1]], order),
+      Q(M.id + '-flow-2', M.id + '-flow', pipe + 'which step comes straight before "' + names[last] + '"?',
+        names[last - 1], [names[0], names[1]], order),
+      Q(M.id + '-gate-1', M.id + '-gate', pipe + 'which step must wait for a human\'s OK?',
+        gate.name, [others[0].name, others[1].name], M.gateWhy),
+      Q(M.id + '-gate-2', M.id + '-gate', '"' + M.gateWhy + '" Which step of "' + M.title + '" is that about?',
+        gate.name, [others[others.length - 1].name, others[others.length - 2].name],
+        'That step is the checkpoint: the agent prepares, a person approves.')
+    );
+    [withTool[0], withTool[withTool.length - 1]].forEach(function (x, i) {
+      var wrong = pick([x.name]);
+      BANK.push(Q(M.id + '-tools-' + (i + 1), M.id + '-tools', pipe + 'what is ' + x.tool + ' used for?',
+        x.name, [wrong[i], wrong[wrong.length - 1 - i]],
+        x.tool + ' is a popular choice for this step: ' + x.does + '. Others: ' + x.also.join(', ') + '.'));
+    });
+  });
+
   /* ---------- journeys: the hub lists these in order ---------- */
   var JOURNEYS = [
     { id: 'academy', icon: '🎓', title: 'Academy', tag: 'How an agent works', unit: 'Level', order: 'linear',
