@@ -51,6 +51,7 @@ No build step, no dependencies, no network calls. `.claude/launch.json` defines 
 | `tools/playthrough.js` | Paste into the browser console to play every level to its result dialog and report failures and page overflow. Not loaded by the app |
 | `tools/build-course.js` | Cleans `md/NN.md` in place (removes embedded HTML and scripts) and writes `NN.js`. Not part of the running app |
 | `TASKS.md` | Task list and resume point. Read first |
+| `design/landing.html` | A standalone landing-page design mock (remote fonts, inline CSS). Not loaded by the app and exempt from its CSP rules; do not copy its fonts or inline styles into the app |
 | `README.md` | For people: what it is, how to run it, sources and limits. Update its counts when levels or questions are added |
 | `tests/engine.test.js` | Unit tests |
 

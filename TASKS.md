@@ -7,7 +7,7 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 ## Resume here
 
 > Rounds 1–22 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
-> empty. Git: Rounds 1–21 are pushed; Round 22 and the README are committed locally only. Ask the user before pushing.
+> empty. Git: Rounds 1–21 are pushed; Round 22, the README and the landing mock are committed locally only. Ask the user before pushing.
 > Ideas for what could come next are under "Ideas" below; none is approved.
 
 ## Planned next (approved)
@@ -23,6 +23,18 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 
 ## Done
+
+### Landing-page design mock (2026-11-15)
+- [x] `design/landing.html`: a standalone mock built to the user's design brief (IBM Plex Mono + Inter from
+      Google Fonts, inline CSS, cyan accent, left-aligned hero that types in, journey rail, Review / Arena /
+      Blitz, trust line, footer). It is NOT the app: `index.html`, its CSP and the bundled Sora font are
+      untouched, and the mock's remote fonts and inline styles would break the app's rules if copied in
+- [x] Checked at 1024px and 375px: no page overflow, console clean, links at least 44px tall. Critique
+      applied: removed the "Open · …" line on unlocked cards; tightened hero and section spacing so the
+      journey cards start higher
+- Limits: not tab-walked by keyboard; reduced-motion not exercised in a browser; not checked at 1440px.
+  Not approved as the app's new look: applying it to the real hub would need the fonts bundled locally
+  (font changes need the user's OK) and the styles moved into `css/styles.css`
 
 ### README (2026-11-15)
 - [x] `README.md` added: what the app is, how to run and test it, the journeys and level kinds, the review
