@@ -11,7 +11,7 @@
       It first unlocks everything in memory by setting one star per level, and puts your saved
       progress back when it finishes (or call Playthrough.restore() yourself if it is interrupted).
 
-   It takes about a minute and a half. A clean run prints "166 played, 0 failed" (the number
+   It takes about a minute and a half. A clean run prints "169 played, 0 failed" (the number
    grows with the content). Rerun it after changing any game or level data. */
 var Playthrough = (function () {
   'use strict';

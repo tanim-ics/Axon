@@ -6,22 +6,14 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Round 22 (three more labs) is in progress. Rounds 1–21 are complete and pushed (Round 14 was dropped).
-> Next step: the first unticked box under "Round 22" below.
+> Rounds 1–22 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
+> empty. Git: Rounds 1–21 are pushed; Round 22 is committed locally only. Ask the user before pushing.
+> Ideas for what could come next are under "Ideas" below; none is approved.
 
 ## Planned next (approved)
 
-### Round 22 — three more labs for the run simulator (approved 2026-11-15)
-- [ ] `js/content.js`: `lab()` takes an optional tag number; Addy `a-lab-3` "plug in the team's tools" after
-      Mix 4 (AGENTS.md, skills, MCP or CLI, MCP risks)
-- [ ] `js/content.js`: LLM `l-lab-3` "the prompt change" after topic 16 (golden set, rubric, repeat runs,
-      gradual release)
-- [ ] `js/content.js`: Python `p-lab-2` "the first agent script" after the Python mix (testing tools, schemas,
-      JSON, pinned dependencies). It is shown as Lab 1 and `p-lab-1` as Lab 2; ids stay, so saved stars stay
-- [ ] `tests/engine.test.js`: lab id list and `py` level count updated; `npm test` passes
-- [ ] `index.html`: `?v=26`; browser at 375px: each new lab played with one wrong choice, then fixed;
-      `tools/playthrough.js` over the three labs; console clean
-- [ ] `CLAUDE.md` level counts; move the round to Done; commit
+- Nothing further is approved. See the Backlog.
+
 
 ## Ideas (not approved; pick with the user)
 
@@ -31,6 +23,25 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 
 ## Done
+
+### Round 22 — three more labs for the run simulator (complete, verified)
+- [x] Addy `a-lab-3` "plug in the team's tools" after Mix 4: AGENTS.md, a skill loaded on demand, MCP or a
+      shared-password script, an audited server with narrow rights
+- [x] LLM `l-lab-3` "the prompt change" after topic 16: golden set, a judge with a rubric, five runs with a
+      pass rate, a 5% rollout
+- [x] Python `p-lab-2` "the first agent script" after the Python mix: a pytest test, hints and a docstring,
+      `json.loads`, pinned packages. `lab()` has a `shown` number so it reads as Lab 1 and `p-lab-1` as
+      Lab 2; ids are unchanged, so saved stars stay where they were
+- [x] Each lab has 4 settings with 3 options (8 distinct failures), each tied to a concept taught earlier.
+      55 tests pass. Totals: Addy 68 levels, LLM 56, Python + cloud 30; 169 levels in all
+- [x] Browser at 375px (`?v=26`): each new lab run once with one wrong choice (it stopped at the right step
+      with its reason, focus went to the "Change" button and then to the setting), then fixed: 2 stars.
+      `tools/playthrough.js` then played the three labs, the level after each, and `p-lab-1`: 8 played,
+      0 failed, no page overflow, console clean
+- Limits: one wrong option per lab was tried in the browser; the other seven are covered by the tests only.
+  The runs were driven by script clicks, not by keyboard. The labs have had no second reader. The other
+  161 levels were not replayed (no game code changed). Someone already past Mix 4, LLM topic 16 or the
+  Python mix must play the new lab before the next locked level opens
 
 ### Round 21 — Blitz (timed Arena) and a second reader for the debug runs (complete, verified)
 - [x] Engine: `BLITZ` (60 seconds, 3-second penalty), `state.blitz` (best score, sanitised, carried through
