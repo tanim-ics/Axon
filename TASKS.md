@@ -7,8 +7,8 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 ## Resume here
 
 > Rounds 1–24 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
-> empty. Git: Rounds 1–21 are pushed; Rounds 22–24, the README and the landing mock are committed locally
-> only. Ask the user before pushing.
+> empty. Git: Rounds 1–24, the README and the landing mock are pushed (2026-11-15). Ask the user before
+> pushing anything new.
 > Ideas for what could come next are under "Ideas" below; none is approved.
 
 ## Planned next (approved)
