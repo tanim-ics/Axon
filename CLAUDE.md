@@ -1,6 +1,6 @@
 # Axon
 
-A gamified, hands-on course that teaches beginners how AI agents work, how to design, build and tune one, and how to wire agentic pipelines. It is organised as **journeys** picked from a hub: the Academy (eight short games), Field missions (seven real-world pipelines and their popular tools), the Addy journey (Addy Osmani's "Agent Engineer" course: all 19 lessons, 64 levels) and the LLM journey (tokens, prompting, RAG, fine-tuning, the harness, evals and shipping: 16 topics, 52 levels, weighted by researched job postings). A spaced-review layer brings every learned idea back so it sticks. Almost no reading.
+A gamified, hands-on course that teaches beginners how AI agents work, how to design, build and tune one, and how to wire agentic pipelines. It is organised as **journeys** picked from a hub: the Academy (eight short games), Field missions (seven real-world pipelines and their popular tools), the Addy journey (Addy Osmani's "Agent Engineer" course: all 19 lessons, 66 levels) and the LLM journey (tokens, prompting, RAG, fine-tuning, the harness, evals and shipping: 16 topics, 54 levels, weighted by researched job postings). A spaced-review layer brings every learned idea back so it sticks. Almost no reading.
 
 The app was first called Agentcraft. The `localStorage` key is still `agentcraft.v1` on purpose, so saved progress survives.
 
@@ -43,6 +43,7 @@ No build step, no dependencies, no network calls. `.claude/launch.json` defines 
 | `js/games/recall.js` | `Games.recall` (questions with "why" feedback: daily review, Arena) and `Games.quiz` (a level made of questions: Master and Mix levels), `Games.case` (boss scenarios) |
 | `js/games/learn.js` | Key-lesson cards with a diagram each, then one question per idea |
 | `js/games/sort.js`, `js/games/order.js` | Data-driven puzzles: send cards to buckets; tap steps in order |
+| `js/games/sim.js` | The run simulator (labs): choose a design, run the agent, read the trace, fix what broke |
 | `js/markdown.js` | Pure Markdown parser for the full-read mode (UMD, tested). Returns data, never HTML |
 | `course/addy/` | Bundled course text: `md/NN.md` (downloaded, then cleaned of embedded HTML and scripts), `NN.js` (generated, loaded by the reader), `LICENSE.txt`, `README.md` (source, licence, changes) |
 | `tools/build-course.js` | Cleans `md/NN.md` in place (removes embedded HTML and scripts) and writes `NN.js`. Not part of the running app |
@@ -86,6 +87,8 @@ Addy Osmani's "Agent Engineer" course (Apache 2.0, `github.com/addyosmani/agent-
 | Master | `aNN-master` | `quiz` | The lesson's concepts plus 2 random earlier ones; 60% clears it |
 
 `mix(n, title, size)` adds a Mix level drawing on every course lesson so far. `boss(n, icon, title, brief, key, steps)` adds a boss (`game: 'case'`): one scenario and a run of decisions built with `D(concept, q, a, x, why)`. Tests require a boss to span four or more lessons and to use only concepts taught before it. A level picks its game through `L.game`.
+
+`lab(n, icon, title, idea, key, sim)` adds a lab (`game: 'sim'`). `sim.slots` are design choices built with `SL(id, icon, label, concept, [[optionId, text], …])`; `sim.steps` are the agent's run built with `P(kind, text)` or `P(kind, text, slot, okId, { optionId: [whatHappens, why] })`. Rules the tests enforce: each slot decides exactly one step, each wrong option has what-happens and why, exactly one design wins, the right option is not always first, the last step shows the result, and each slot's concept is taught earlier in that journey (or is an Academy concept). Rules live in `Engine.simRun`; the game only plays the result.
 
 - Cards and questions are written in this app's own words from the lesson's ideas. The lesson's own text is only shown in the reader, with credit and a link to the original.
 - **Full read:** `tools/build-course.js` removes the lessons' embedded HTML widgets and inline scripts and wraps the text as `Course.add("NN", "...")`. The reader adds that one `<script src>` on demand, `Markdown.parse` turns the text into data, and `app.js` builds DOM from it with `UI.h()`. Never render lesson text as HTML, and do not add `connect-src` to the CSP. After changing or re-downloading anything in `course/addy/md/`, run `node tools/build-course.js` before anything else: it also removes the embedded HTML and scripts from the stored file. A test fails if a stored lesson contains HTML or differs from its `NN.js`.

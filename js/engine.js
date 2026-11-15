@@ -389,6 +389,34 @@
     return r >= 1 ? 3 : r >= 0.8 ? 2 : r >= 0.6 ? 1 : 0;
   }
 
+  /* ---------- run simulator (labs) ----------
+     A lab has slots (design choices) and steps (the agent's run). A step may depend on one slot:
+     { k, t, slot, ok: [option ids], bad: { optionId: [whatHappens, why] } }. The run stops at the
+     first step whose slot was chosen wrongly. */
+
+  function simReady(sim, choices) {
+    return sim.slots.every(function (sl) {
+      return sl.options.some(function (o) { return o.id === choices[sl.id]; });
+    });
+  }
+
+  function simRun(sim, choices) {
+    var steps = [];
+    for (var i = 0; i < sim.steps.length; i++) {
+      var st = sim.steps[i];
+      if (st.slot && !has(st.ok, choices[st.slot])) {
+        var bad = own(st.bad || {}, choices[st.slot]) ? st.bad[choices[st.slot]] : null;
+        steps.push({ k: st.k, t: bad ? bad[0] : 'This choice was never made, so the run cannot go on.', ok: false });
+        return { ok: false, steps: steps, failedAt: i, slot: st.slot, why: bad ? bad[1] : 'Choose an option for every setting first.' };
+      }
+      steps.push({ k: st.k, t: st.t, ok: true });
+    }
+    return { ok: true, steps: steps, failedAt: -1, slot: null, why: null };
+  }
+
+  /* runs = how many times Run was pressed, the successful one included. */
+  function simStars(runs) { return runs <= 1 ? 3 : runs <= 3 ? 2 : 1; }
+
   /* ---------- sort and order puzzles ---------- */
 
   function sortRight(puzzle, itemId, bucketId) {
@@ -617,7 +645,7 @@
     journeyProgress: journeyProgress, nextInJourney: nextInJourney,
     REVIEW_GAPS: REVIEW_GAPS, masteryOf: masteryOf, learnedConcepts: learnedConcepts, dueConcepts: dueConcepts,
     recordReview: recordReview, buildQuestions: buildQuestions, buildSession: buildSession,
-    levelQuestions: levelQuestions, caseQuestions: caseQuestions, quizStars: quizStars, sortRight: sortRight, orderRight: orderRight, shuffle: shuffle,
+    levelQuestions: levelQuestions, caseQuestions: caseQuestions, quizStars: quizStars, sortRight: sortRight, orderRight: orderRight, simReady: simReady, simRun: simRun, simStars: simStars, shuffle: shuffle,
     slotKey: slotKey, pipeSlots: pipeSlots, checkPipeline: checkPipeline,
     runTrials: runTrials, bossStars: bossStars, buildBlueprint: buildBlueprint
   };

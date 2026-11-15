@@ -6,7 +6,7 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Rounds 1–15 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
+> Rounds 1–16 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
 > empty. Git: `main` is ahead of `origin/main` by local commits; ask the user before pushing.
 > Ideas for what could come next are under "Ideas" below; none is approved.
 
@@ -17,9 +17,8 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Ideas (not approved; pick with the user)
 
-- Richer game mechanics. The user's original ask was to "improve the games a lot". The course levels use four
-  simple mechanics (cards, sort, order, questions). Candidates: a simulated agent run where the learner's
-  design passes or fails step by step; a "fix the trace" game for the course lessons; timed Arena rounds
+- More labs for the run simulator (Round 16 built four), a "fix the trace" game for the course lessons,
+  timed Arena rounds
 - A real play-through of every level by a person: most levels are verified only by tests that prove they can
   be won
 - A second reader for the rewritten wrong answers (Round 9), looking for options that are arguably right
@@ -29,6 +28,21 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 
 ## Done
+
+### Round 16 — the run simulator (complete, verified)
+- [x] Engine: `simReady`, `simRun`, `simStars` (first run 3 stars, by the third run 2, later 1)
+- [x] `js/games/sim.js`: choose a design, press Run, the trace appears step by step; a wrong choice stops the
+      run at the step it affects with what happened and why, and a button jumps back to that setting
+- [x] Four labs via `lab()`, `SL()` and `P()` in `js/content.js`: Addy "the order desk" (after lesson 05) and
+      "the refund attack" (after lesson 10); LLM "build the docs bot" (after topic 07) and "the coding agent's
+      harness" (after topic 11). Each has 4 settings with 3 options, so 8 distinct failures per lab
+- [x] Each setting is tied to a concept: a failed setting is recorded as a miss in the spaced review, a
+      successful run as a hit for all four
+- [x] Tests: exactly one winning design per lab; every wrong option fails at its own step with a reason; the
+      right option is not always listed first; 52 tests pass
+- [x] Browser at 375px: lab 1 of each journey played with one wrong choice and then fixed, the first by mouse
+      and the second by keyboard; the page follows the trace; console clean
+- Not played by hand: Addy lab 2 and LLM lab 2 (covered by the tests). Addy is now 66 levels, LLM 54
 
 ### Round 15 — Field missions feed the spaced review (complete, verified)
 - [x] Three ideas per mission (the order, the human check, the tools), two questions each, generated in

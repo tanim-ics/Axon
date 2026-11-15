@@ -678,3 +678,22 @@ button.ostep:active { transform: scale(0.98); }
 .mdot.on { background: var(--green); border-color: transparent; }
 .verdict-fix { color: var(--muted); }
 @media (max-width: 560px) { .mrow { grid-template-columns: minmax(0, 1fr) auto; } .mrow-status { grid-column: 1 / -1; text-align: left; } }
+
+/* ---------- run simulator (labs) ---------- */
+.sim-slot { display: grid; gap: var(--s2); margin: 0; padding: var(--s4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); min-width: 0; transition: border-color 0.3s, background 0.3s; }
+.sim-slot legend { padding: 0 var(--s2); font-size: 14px; font-weight: 600; color: var(--muted); }
+.sim-slot.flag { border-color: rgba(255, 69, 58, 0.55); background: var(--tint-red); }
+.sim-slot.flag legend { color: var(--red); }
+.sim-opt { text-align: left; white-space: normal; }
+.sim-trace { list-style: none; padding: 0; display: grid; gap: var(--s2); }
+.sim-trace:empty { display: none; }
+.sstep { display: flex; gap: var(--s3); align-items: flex-start; padding: var(--s3) var(--s4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); animation: rise 0.35s var(--ease) backwards; }
+.sstep.ok { border-color: rgba(48, 209, 88, 0.4); }
+.sstep.bad { border-color: rgba(255, 69, 58, 0.6); background: var(--tint-red); }
+.sstep-n { display: grid; place-items: center; flex: none; width: 24px; height: 24px; margin-top: 2px; background: var(--surface-2); border-radius: 50%; font-size: 12px; font-weight: 700; }
+.sstep.ok .sstep-n { background: var(--green); color: #000; }
+.sstep.bad .sstep-n { background: var(--red); color: #fff; }
+.sstep-body { display: grid; gap: 2px; min-width: 0; }
+.sstep-kind { font-size: 13px; font-weight: 600; color: var(--muted); }
+.sstep-mark { color: var(--red); }
+.sstep-text { overflow-wrap: anywhere; }

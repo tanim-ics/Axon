@@ -427,7 +427,7 @@ test('courses: every Addy and LLM level is well-formed and winnable', () => {
   C.LLM.forEach((L) => assert.ok(!L.read, L.id + ' has no full read'));
   [C.ADDY, C.LLM].forEach((LIST) => LIST.forEach((L) => {
     ['icon', 'title', 'tag', 'idea', 'play', 'key'].forEach((k) => assert.ok(L[k], L.id + '.' + k));
-    assert.ok(['learn', 'sort', 'order', 'quiz', 'case'].includes(L.game), L.id);
+    assert.ok(['learn', 'sort', 'order', 'quiz', 'case', 'sim'].includes(L.game), L.id);
     if (L.game === 'learn') {
       assert.ok(L.cards.length >= 3 && L.cards.length <= 5, L.id + ' cards');
       L.cards.forEach((c) => {
@@ -732,4 +732,51 @@ test('missions in review: three ideas and six well-formed questions per mission,
   s = E.awardLevel(C, s, 'm-video', 2, '2026-01-01').state;
   assert.deepEqual(E.dueConcepts(C, s, '2026-01-01').filter((c) => c.startsWith('m-')).sort(),
     ['m-video-flow', 'm-video-gate', 'm-video-tools']);
+});
+
+test('labs: one winning design, and every wrong choice fails at its own step with a reason', () => {
+  const labs = C.ADDY.concat(C.LLM).filter((l) => l.game === 'sim');
+  assert.deepEqual(labs.map((l) => l.id), ['a-lab-1', 'a-lab-2', 'l-lab-1', 'l-lab-2']);
+  labs.forEach((L) => {
+    const sim = L.sim, LIST = L.id.startsWith('a') ? C.ADDY : C.LLM;
+    const taught = LIST.slice(0, LIST.indexOf(L)).filter((x) => x.game === 'learn').flatMap((x) => x.concepts);
+    assert.ok(sim.task && sim.slots.length >= 3 && sim.steps.length >= 6, L.id);
+    const win = {};
+    sim.slots.forEach((sl) => {
+      const ids = sl.options.map((o) => o.id);
+      assert.ok(ids.length >= 3 && new Set(ids).size === ids.length && sl.label && sl.icon, L.id + ' ' + sl.id);
+      assert.ok(taught.includes(sl.concept) || !/^[al]\d\d-/.test(sl.concept) && C.CONCEPTS[sl.concept],
+        L.id + ': ' + sl.concept + ' is not taught before this lab');
+      const steps = sim.steps.filter((st) => st.slot === sl.id);
+      assert.equal(steps.length, 1, L.id + ': slot ' + sl.id + ' must decide exactly one step');
+      assert.equal(steps[0].ok.length, 1);
+      assert.ok(ids.includes(steps[0].ok[0]));
+      win[sl.id] = steps[0].ok[0];
+      ids.filter((id) => id !== win[sl.id]).forEach((id) => {
+        const bad = steps[0].bad[id];
+        assert.ok(bad && bad[0] && bad[1], L.id + ': ' + sl.id + '/' + id + ' needs what happens and why');
+      });
+    });
+    sim.steps.forEach((st) => assert.ok(st.t && ['think', 'act', 'obs', 'answer'].includes(st.k), L.id));
+    assert.equal(sim.steps[sim.steps.length - 1].slot, undefined, 'the last step shows the result');
+    assert.equal(E.simReady(sim, {}), false);
+    assert.equal(E.simReady(sim, win), true);
+    const good = E.simRun(sim, win);
+    assert.equal(good.ok, true);
+    assert.equal(good.steps.length, sim.steps.length);
+    sim.slots.forEach((sl) => sl.options.filter((o) => o.id !== win[sl.id]).forEach((o) => {
+      const r = E.simRun(sim, Object.assign({}, win, { [sl.id]: o.id }));
+      const at = sim.steps.findIndex((st) => st.slot === sl.id);
+      assert.deepEqual([r.ok, r.failedAt, r.slot], [false, at, sl.id], L.id + ' ' + sl.id + '/' + o.id);
+      assert.equal(r.steps.length, at + 1, 'the run stops at the failing step');
+      assert.equal(r.steps[at].ok, false);
+      assert.equal(r.why, sim.steps[at].bad[o.id][1]);
+    }));
+    const firstWins = sim.slots.filter((sl) => sl.options[0].id === win[sl.id]).length;
+    assert.ok(firstWins <= 1, L.id + ': the right option must not always be listed first');
+  });
+  assert.deepEqual([1, 2, 3, 4, 9].map(E.simStars), [3, 2, 2, 1, 1]);
+  const none = E.simRun(labs[0].sim, {});
+  assert.equal(none.ok, false);
+  assert.ok(none.why);
 });
