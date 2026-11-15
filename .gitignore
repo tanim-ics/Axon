@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# Editors
+.idea/
+.vscode/
+*.swp
+
+# Node (the project has no dependencies; this is here in case one is ever tried locally)
+node_modules/
+npm-debug.log*
+
+# Claude Code: personal settings stay local; .claude/launch.json is shared on purpose
+.claude/settings.local.json
+.claude/worktrees/
+
+# graphify output, if it is ever run here
+graphify-out/
