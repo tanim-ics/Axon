@@ -23,7 +23,7 @@ one costs 3 seconds and shows the right answer briefly. The best score is saved.
 - [x] 2. Game: `js/games/blitz.js` (timer bar, score, streak, quick feedback, clock paused during feedback)
 - [x] 3. App: route `#/blitz`, entry buttons on the hub review card and the Arena end panel, end summary with
       the missed questions; styles; script tag; `?v=`
-- [ ] 4. Second reader over the 12 debug runs in `a-fix-1`, `l-fix-1`, `p-fix-1`; apply findings
+- [x] 4. Second reader over the 12 debug runs in `a-fix-1`, `l-fix-1`, `p-fix-1`; apply findings
 - [ ] 5. Verify at 375px: play a Blitz round (right, wrong, time running out, record saved, misses listed,
       Go again); console clean; `npm test`
 - [ ] 6. Docs (`CLAUDE.md`: routes, review section, layout), move the round to Done, commit

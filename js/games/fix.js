@@ -1,5 +1,5 @@
 /* Fix — "fix the trace". A broken agent run is shown step by step.
-   Round A: tap the first step that went wrong. Round B: pick what would fix it.
+   Round A: tap the first step where the agent made a mistake. Round B: pick what would fix it.
    Every slip (a wrong tap or a wrong fix) costs stars; the fix answer also feeds the spaced review. */
 (function () {
   'use strict';
@@ -10,7 +10,7 @@
 
     function show() {
       var c = cases[i], last = i === cases.length - 1, found = false, answered = false;
-      var heading = h('h2', { class: 'label', tabindex: '-1', text: 'Tap the first step that went wrong' });
+      var heading = h('h2', { class: 'label', tabindex: '-1', text: 'Tap the first step where the agent made a mistake' });
       var panel = h('div', { class: 'fix-panel' });
 
       var steps = c.steps.map(function (s, k) {
@@ -32,7 +32,7 @@
           if (open.length) open[0].focus();
           UI.shake(b);
           api.sfx('bad');
-          api.say('That step is fine. Where did it first go wrong?', 'oops');
+          api.say('That step is not the agent\'s mistake. Where did it first go wrong?', 'oops');
           return;
         }
         found = true;
