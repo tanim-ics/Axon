@@ -311,6 +311,37 @@ a.node:active .node-disc { transform: scale(0.94); }
 .agent-sheet .code { width: 100%; }
 .reset-row { margin-top: var(--s7); text-align: center; }
 
+/* ---------- solution, start over, show answer ---------- */
+.level-tools { display: flex; justify-content: center; gap: var(--s2); flex-wrap: wrap; margin-top: var(--s5); }
+.level-tools[hidden] { display: none; }
+.level-tools .btn, .reveal { min-height: 44px; color: var(--muted); background: transparent; }
+.reveal-row { display: flex; justify-content: center; margin-top: var(--s3); }
+.reveal[hidden] { display: none; }
+.modal.solution { justify-items: stretch; text-align: left; max-width: 520px; padding: var(--s6) var(--s5) var(--s5); max-height: calc(100vh - 2 * var(--s4)); overflow-y: auto; }
+.modal.solution h2 { font-size: 28px; }
+.solution-body { display: grid; gap: var(--s3); }
+.solution-list { display: grid; gap: var(--s2); padding: var(--s4); background: var(--well); border: 1px solid var(--line); border-radius: var(--r-md); list-style: none; }
+.solution-list li { font-size: 15px; line-height: 1.45; overflow-wrap: anywhere; }
+.solution-list li + li { padding-top: var(--s2); border-top: 1px solid var(--line); }
+.solution-note { font-size: 14px; color: var(--muted); }
+
+/* ---------- profiles ---------- */
+.profile-btn { font-family: var(--display); font-weight: 600; font-size: 15px; text-decoration: none; }
+.profile-status { min-height: 24px; margin: var(--s4) 0 var(--s2); font-size: 15px; color: var(--green); }
+.profile-list { display: grid; gap: var(--s2); }
+.profile-row { display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; padding: var(--s3) var(--s4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); }
+.profile-row.on { border-color: var(--line-2); background: var(--surface-2); }
+.profile-face { display: grid; place-items: center; flex: none; width: 40px; height: 40px; border: 1px solid var(--line-2); border-radius: 50%; font-family: var(--display); font-weight: 600; }
+.profile-who { display: grid; flex: 1; min-width: 120px; }
+.profile-who strong { font-family: var(--display); font-weight: 600; overflow-wrap: anywhere; }
+.profile-who span { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.profile-row .btn { min-height: 44px; }
+.profile-card { display: grid; gap: var(--s4); justify-items: start; }
+.field-row { display: flex; align-items: flex-end; gap: var(--s3); flex-wrap: wrap; width: 100%; }
+.field { display: grid; gap: var(--s1); flex: 1; min-width: 180px; font-size: 14px; color: var(--muted); }
+.field .name-input { width: 100%; }
+.profile-hint { font-size: 14px; color: var(--muted); max-width: 60ch; }
+
 /* ---------- L1 loop ---------- */
 .ring { display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; }
 .phase { display: inline-flex; align-items: center; gap: 6px; padding: 6px var(--s4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--pill); font-weight: 500; font-size: 14px; color: var(--muted); transition: all 0.35s var(--ease); }

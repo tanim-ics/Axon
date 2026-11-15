@@ -15,7 +15,12 @@
    grows with the content). Rerun it after changing any game or level data. */
 var Playthrough = (function () {
   'use strict';
-  var KEY = 'agentcraft.v1', SNAP = 'playthrough.snapshot';
+  /* The saved progress of whichever profile is active. */
+  var KEY = (function () {
+    var P = null;
+    try { P = JSON.parse(localStorage.getItem('agentcraft.profiles')); } catch (e) { /* no profiles saved */ }
+    return Engine.profileKey(Engine.sanitizeProfiles(P).active);
+  })(), SNAP = 'playthrough.snapshot';
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
   var $ = function (s) { return document.querySelector(s); };
   var $$ = function (s) { return Array.from(document.querySelectorAll(s)); };

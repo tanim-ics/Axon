@@ -88,6 +88,61 @@
     return s || 'Bit';
   }
 
+  /* ---------- profiles: several learners in one browser ---------- */
+  var PROFILE_MAX = 6, PROFILE_MAIN = 'main';
+
+  function profileName(raw) {
+    var s = typeof raw === 'string' ? raw : '';
+    s = s.replace(/[^A-Za-z0-9 _-]/g, '').replace(/\s+/g, ' ').trim().slice(0, NAME_MAX).trim();
+    return s || 'Player';
+  }
+  /* The first profile keeps the app's original key, so progress saved before profiles existed is its progress. */
+  function profileKey(id) {
+    return id === PROFILE_MAIN || !/^p[1-9]\d{0,3}$/.test(String(id)) ? 'agentcraft.v1' : 'agentcraft.v1.' + id;
+  }
+  function sanitizeProfiles(raw) {
+    var list = [{ id: PROFILE_MAIN, name: 'Player 1' }], seen = {};
+    seen[PROFILE_MAIN] = true;
+    var src = raw && typeof raw === 'object' && Array.isArray(raw.list) ? raw.list : [];
+    src.forEach(function (p) {
+      if (!p || typeof p !== 'object' || typeof p.id !== 'string') return;
+      if (p.id === PROFILE_MAIN) { list[0].name = profileName(p.name); return; }
+      if (!/^p[1-9]\d{0,3}$/.test(p.id) || seen[p.id] || list.length >= PROFILE_MAX) return;
+      seen[p.id] = true;
+      list.push({ id: p.id, name: profileName(p.name) });
+    });
+    var active = raw && typeof raw === 'object' && typeof raw.active === 'string' && seen[raw.active] ? raw.active : PROFILE_MAIN;
+    return { active: active, list: list };
+  }
+  /* Each returns a new, sanitised profiles object. addProfile returns null when the list is full. */
+  function addProfile(P, name) {
+    P = sanitizeProfiles(P);
+    if (P.list.length >= PROFILE_MAX) return null;
+    var n = 0;
+    P.list.forEach(function (p) { if (p.id !== PROFILE_MAIN) n = Math.max(n, +p.id.slice(1)); });
+    var id = 'p' + (n + 1);
+    P.list.push({ id: id, name: profileName(name) });
+    P.active = id;
+    return P;
+  }
+  function renameProfile(P, id, name) {
+    P = sanitizeProfiles(P);
+    P.list.forEach(function (p) { if (p.id === id) p.name = profileName(name); });
+    return P;
+  }
+  function removeProfile(P, id) {
+    P = sanitizeProfiles(P);
+    if (id === PROFILE_MAIN) return P;
+    P.list = P.list.filter(function (p) { return p.id !== id; });
+    if (P.active === id) P.active = PROFILE_MAIN;
+    return P;
+  }
+  function switchProfile(P, id) {
+    P = sanitizeProfiles(P);
+    if (P.list.some(function (p) { return p.id === id; })) P.active = id;
+    return P;
+  }
+
   function validDay(s) {
     /* A real calendar day: 2026-02-31 or 9999-99-99 would otherwise be normalised to some other date. */
     return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(dayNumber(s)) && addDays(s, 0) === s;
@@ -539,6 +594,79 @@
     return { have: cfg.needs.filter(function (f) { return has(facts, f); }), missing: missing, ok: !missing.length };
   }
 
+  /* ---------- solutions: what the "Solution" button shows ---------- */
+
+  /* A level whose solution was looked at still clears, with one star. */
+  function solvedStars(stars, seen) { return seen ? Math.min(1, stars) : stars; }
+
+  /* The written solution of a level, as lines of text. null for levels made of questions
+     (Learn, Master, Mix, bosses): those show the answer per question instead. */
+  function solutionOf(C, L) {
+    var J = journeyOf(C, L.id), game = J && J.kind === 'mission' ? 'mission' : (L.game || L.id);
+    var named = function (map, id) { return map[id].name; };
+    var by = function (list, id) { return list.filter(function (x) { return x.id === id; })[0]; };
+    if (game === 'learn' || game === 'quiz' || game === 'case') return null;
+    if (game === 'mission') {
+      return ['Order: ' + L.stages.map(function (s) { return s.name; }).join(' → ')]
+        .concat(L.stages.map(function (s) { return s.name + ': ' + s.tool; }))
+        .concat(['A human approves: ' + by(L.stages, L.gate).name]);
+    }
+    if (game === 'sort') {
+      return L.puzzle.items.map(function (it) { return it.text + ' → ' + by(L.puzzle.buckets, it.bucket).name; });
+    }
+    if (game === 'order') return L.puzzle.steps.map(function (st, i) { return (i + 1) + '. ' + st.text; });
+    if (game === 'fix') {
+      return L.cases.map(function (c, i) {
+        var at = -1;
+        c.steps.forEach(function (st, k) { if (st.bad) at = k; });
+        return 'Run ' + (i + 1) + ': step ' + (at + 1) + ' is the mistake. Fix: ' + c.a;
+      });
+    }
+    if (game === 'sim') {
+      return L.sim.slots.map(function (sl) {
+        var st = L.sim.steps.filter(function (x) { return x.slot === sl.id; })[0];
+        return sl.label + ': ' + by(sl.options, st.ok[0]).name;
+      });
+    }
+    if (game === 'loop') {
+      return C.LOOP.needs.map(function (f) {
+        return 'Call ' + C.LOOP.actions.filter(function (a) { return a.fact === f; })[0].label;
+      }).concat(['Then ' + C.LOOP.actions.filter(function (a) { return a.final && a.correct; })[0].label]);
+    }
+    if (game === 'tools') {
+      return C.TOOL_ROUNDS.map(function (r) {
+        return r.task + ' → ' + r.needs.map(function (t) { return named(C.TOOLS, t); }).join(' + ');
+      });
+    }
+    if (game === 'prompt') {
+      return ['Switch on: ' + C.PROMPT.blocks.filter(function (b) { return b.good; }).map(function (b) { return b.name; }).join(', '),
+        'Leave the others off.'];
+    }
+    if (game === 'memory') {
+      return ['Pack only these: ' + C.MEMORY.cards.filter(function (c) { return c.fact; }).map(function (c) { return c.text; }).join(' · '),
+        'That is ' + C.MEMORY.needs.length + ' facts for ' + C.MEMORY.slots + ' slots: pack ' + C.MEMORY.slots + ', select two packed cards and squash them into one, then add the last.'];
+    }
+    if (game === 'pipeline') {
+      return C.PIPES.map(function (p) {
+        return p.pattern + ': ' + pipeSlots(p).map(function (sl) { return named(C.NODES, sl.want); }).join(' → ');
+      });
+    }
+    if (game === 'guard') return C.ATTACKS.map(function (a) { return a.threat + ' → ' + named(C.SHIELDS, a.fix); });
+    if (game === 'trace') {
+      return C.TRACES.map(function (t, i) {
+        var at = -1;
+        t.steps.forEach(function (st, k) { if (st.bad) at = k; });
+        return 'Case ' + (i + 1) + ': step ' + (at + 1) + ' (' + t.bug + ')';
+      });
+    }
+    if (game === 'boss') {
+      return C.BOSS.missions.map(function (m) {
+        return m.name + ': only ' + m.needs.map(function (t) { return named(C.TOOLS, t); }).join(' + ');
+      }).concat(['All five prompt blocks, all three shields, memory on, self-check on.']);
+    }
+    return null;
+  }
+
   /* ---------- level 5: pipelines ---------- */
 
   function slotKey(s, i) { return s + '-' + i; }
@@ -679,6 +807,9 @@
     recordReview: recordReview, buildQuestions: buildQuestions, buildSession: buildSession,
     levelQuestions: levelQuestions, caseQuestions: caseQuestions, quizStars: quizStars, sortRight: sortRight, orderRight: orderRight, simReady: simReady, simRun: simRun, simStars: simStars, BLITZ: BLITZ, recordBlitz: recordBlitz, fixPick: fixPick, fixOptions: fixOptions, fixStars: fixStars, shuffle: shuffle,
     slotKey: slotKey, pipeSlots: pipeSlots, checkPipeline: checkPipeline,
-    runTrials: runTrials, bossStars: bossStars, buildBlueprint: buildBlueprint
+    runTrials: runTrials, bossStars: bossStars, buildBlueprint: buildBlueprint,
+    solutionOf: solutionOf, solvedStars: solvedStars,
+    PROFILE_MAX: PROFILE_MAX, profileName: profileName, profileKey: profileKey, sanitizeProfiles: sanitizeProfiles,
+    addProfile: addProfile, renameProfile: renameProfile, removeProfile: removeProfile, switchProfile: switchProfile
   };
 });

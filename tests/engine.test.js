@@ -863,3 +863,64 @@ test('labs: one winning design, and every wrong choice fails at its own step wit
   assert.equal(none.ok, false);
   assert.ok(none.why);
 });
+
+test('solutions: every level has a written solution, or is made of questions', () => {
+  const all = C.JOURNEYS.reduce((a, J) => a.concat(J.levels), []);
+  assert.equal(all.length, E.allIds(C).length);
+  all.forEach((L) => {
+    const J = E.journeyOf(C, L.id), game = J.kind === 'mission' ? 'mission' : (L.game || L.id);
+    const sol = E.solutionOf(C, L);
+    if (['learn', 'quiz', 'case'].includes(game)) { assert.equal(sol, null, L.id); return; }
+    assert.ok(Array.isArray(sol) && sol.length >= 2, L.id + ' needs a solution');
+    sol.forEach((line) => assert.ok(typeof line === 'string' && line.length > 3 && !/undefined|\[object/.test(line), L.id + ': ' + line));
+  });
+  const lab = C.PY.find((l) => l.id === 'p-lab-2');
+  assert.ok(E.solutionOf(C, lab).includes('The packages: In a virtual environment, versions pinned in a file'));
+  const m = C.MISSIONS[0], ms = E.solutionOf(C, m);
+  assert.equal(ms.length, m.stages.length + 2);
+  assert.ok(ms[ms.length - 1].includes(m.stages.find((x) => x.id === m.gate).name));
+  assert.deepEqual(E.solutionOf(C, C.LEVELS.find((l) => l.id === 'loop')),
+    ['Call weather("Innsbruck")', 'Call weather("Oslo")', 'Then answer("Innsbruck")']);
+});
+
+test('solutions: a level whose solution was seen gives one star', () => {
+  assert.deepEqual([1, 2, 3].map((n) => E.solvedStars(n, true)), [1, 1, 1]);
+  assert.deepEqual([1, 2, 3].map((n) => E.solvedStars(n, false)), [1, 2, 3]);
+});
+
+test('profiles: bad storage is repaired, names are cleaned, the first profile keeps the old key', () => {
+  const d = E.sanitizeProfiles(null);
+  assert.deepEqual(d, { active: 'main', list: [{ id: 'main', name: 'Player 1' }] });
+  assert.deepEqual(E.sanitizeProfiles('x'), d);
+  assert.deepEqual(E.sanitizeProfiles({ active: 'p9', list: 'no' }), d);
+  const dirty = E.sanitizeProfiles({ active: 'p2', list: [
+    { id: 'p2', name: '<b>Ana</b>' }, { id: 'p2', name: 'twice' }, { id: '../x', name: 'path' },
+    { id: 'main', name: '  Tom  ' }, null, { id: 'p0', name: 'zero' }, { id: 7 }
+  ] });
+  assert.deepEqual(dirty, { active: 'p2', list: [{ id: 'main', name: 'Tom' }, { id: 'p2', name: 'bAnab' }] });
+  assert.equal(E.profileKey('main'), 'agentcraft.v1');
+  assert.equal(E.profileKey('p3'), 'agentcraft.v1.p3');
+  assert.equal(E.profileKey('../evil'), 'agentcraft.v1');
+  assert.equal(E.profileName(''), 'Player');
+  assert.equal(E.profileName('x'.repeat(40)).length, E.NAME_MAX);
+});
+
+test('profiles: add, rename, switch and remove', () => {
+  let P = E.addProfile(null, 'Ana');
+  assert.deepEqual(P, { active: 'p1', list: [{ id: 'main', name: 'Player 1' }, { id: 'p1', name: 'Ana' }] });
+  P = E.addProfile(P, 'Ben');
+  assert.equal(P.active, 'p2');
+  P = E.removeProfile(P, 'p1');
+  assert.deepEqual(P.list.map((p) => p.id), ['main', 'p2']);
+  assert.equal(E.addProfile(P, 'Cy').active, 'p3', 'ids are never reused below the highest');
+  P = E.renameProfile(P, 'p2', 'Benny!');
+  assert.equal(P.list[1].name, 'Benny');
+  assert.equal(E.switchProfile(P, 'main').active, 'main');
+  assert.equal(E.switchProfile(P, 'p77').active, 'p2', 'an unknown profile is ignored');
+  assert.equal(E.removeProfile(P, 'main').list.length, 2, 'the first profile cannot be removed');
+  assert.equal(E.removeProfile(P, 'p2').active, 'main');
+  let full = null;
+  for (let i = 0; i < E.PROFILE_MAX - 1; i++) full = E.addProfile(full, 'P' + i);
+  assert.equal(full.list.length, E.PROFILE_MAX);
+  assert.equal(E.addProfile(full, 'one too many'), null);
+});

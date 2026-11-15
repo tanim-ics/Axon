@@ -6,15 +6,22 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Rounds 1–23 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
-> empty. Git: Rounds 1–21 are pushed; Round 22, the README, the landing mock and Round 23 are committed
-> locally only. Ask the user before pushing.
-> Ideas for what could come next are under "Ideas" below; none is approved.
+> Round 24 (solution button, start over, profiles) is in progress. Rounds 1–23 are complete; Rounds 1–21
+> are pushed, the rest is committed locally only. Next step: the first unticked box under "Round 24".
 
 ## Planned next (approved)
 
-- Nothing further is approved. See the Backlog.
-
+### Round 24 — solution button, start over, profiles (asked for 2026-11-15)
+- [ ] Engine + tests: `solutionOf` (a written solution for every level that is not made of questions),
+      `solvedStars` (a level whose solution was seen gives 1 star), profiles (`sanitizeProfiles`,
+      `addProfile`, `renameProfile`, `removeProfile`, `profileKey`, `profileName`)
+- [ ] Level frame: "Solution" (asks first, then lists the solution) and "Start over"; question screens get
+      "Show answer", which counts as a miss
+- [ ] `#/profile`: switch, add, rename, delete, reset progress; HUD link; the codex reset moves there.
+      Storage: the first profile keeps the key `agentcraft.v1`, others use `agentcraft.v1.<id>`
+- [ ] `npm test`; `?v=29`; browser at 375px: a solution on three game types, show answer, start over, two
+      profiles with separate progress, reset; `tools/playthrough.js` reads the active profile
+- [ ] `CLAUDE.md` and README; move the round to Done; commit
 
 ## Ideas (not approved; pick with the user)
 

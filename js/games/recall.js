@@ -24,9 +24,13 @@
         return b;
       });
 
+      /* o is the option picked, or null when the learner asked to be shown the answer (a miss). */
       function pick(o, chosen) {
         if (answered) return;
         answered = true;
+        reveal.hidden = true;
+        var shown = !o;
+        o = o || { correct: false };
         if (o.correct) right++;
         buttons.forEach(function (b, k) {
           b.disabled = true;
@@ -35,7 +39,7 @@
         });
         api.answer(q, o.correct);
         api.sfx(o.correct ? 'good' : 'bad');
-        api.say(o.correct ? 'Yes. That one stuck.' : 'Not quite. Read the why: it comes back tomorrow.', o.correct ? 'happy' : 'oops');
+        api.say(o.correct ? 'Yes. That one stuck.' : shown ? 'Here it is. Read the why: it comes back tomorrow.' : 'Not quite. Read the why: it comes back tomorrow.', o.correct ? 'happy' : shown ? 'idle' : 'oops');
         var next = h('button', { class: 'btn primary', type: 'button', onclick: function () {
           i++;
           if (last) api.end(right, qs.length); else show();
@@ -47,11 +51,13 @@
         next.focus();
       }
 
+      var reveal = h('button', { class: 'btn small reveal', type: 'button', onclick: function () { pick(null, null); } }, 'Show answer');
       UI.fill(root, h('div', { class: 'game narrow' },
         api.header ? api.header() : null,
         UI.dots(qs.length, i),
         heading,
         h('div', { class: 'answers' }, buttons),
+        h('div', { class: 'reveal-row' }, reveal),
         why));
       heading.focus(); /* the old question was removed: move keyboard and screen-reader focus to the new one */
     }
