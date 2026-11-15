@@ -52,7 +52,7 @@ No build step, no dependencies, no network calls. `.claude/launch.json` defines 
 | `tools/build-course.js` | Cleans `md/NN.md` in place (removes embedded HTML and scripts) and writes `NN.js`. Not part of the running app |
 | `TASKS.md` | Task list and resume point. Read first |
 | `design/landing.html` | A standalone landing-page design mock (remote fonts, inline CSS). Not loaded by the app and exempt from its CSP rules; do not copy its fonts or inline styles into the app |
-| `docs/` | Dated audit reports (`audit-YYYY-MM-DD.md`). A record of findings at one commit, not kept up to date |
+| `docs/` | Dated audit reports (`audit-YYYY-MM-DD.md`). A record of findings at one commit, with a status section added when they are fixed |
 | `README.md` | For people: what it is, how to run it, sources and limits. Update its counts when levels or questions are added |
 | `tests/engine.test.js` | Unit tests |
 
@@ -157,10 +157,10 @@ Unlocked together once `guard` (Shield Up) is done; playable in any order. Each 
 - Never use `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `eval`, `new Function`, or inline `style=""`/`on*=""` attributes. Build DOM only with `UI.h()` / `UI.fill()`; set dynamic sizes through `el.style.x = …`.
 - Keep the CSP in `index.html` as is (`script-src`, `style-src`, `font-src` are all `'self'`): no inline scripts or styles, no remote origins. Do not add CDNs, fonts, analytics, or any dependency.
 - `localStorage` is untrusted. Everything read from it goes through `Engine.sanitizeState`. New persisted fields need a sanitizer branch and a test.
-- `UI.h()` drops any `href` that is not `#…` or `http(s)://`, and any `src`. Do not work around it.
+- `UI.h()` drops any `href` that is not `#…` or `http(s)://`, and sets only the attributes on its allow list (`ALLOWED` in `ui.js`, plus `aria-*` and `data-*`). A new attribute must be added there on purpose. Do not work around it.
 - After a game re-renders its screen, move focus to the new content (the question heading, the card), so keyboard and screen-reader users are not sent back to the top of the page.
-- There are two free-text inputs. The agent name must pass through `Engine.cleanName` and a profile name through `Engine.profileName` before it is stored or displayed.
-- The profile list is untrusted too: read it only through `Engine.sanitizeProfiles`, and build a storage key only with `Engine.profileKey` (it refuses any id that is not `main` or `p<number>`). Profiles are a convenience for sharing one browser, not security: there is no password, and the page says so.
+- There are two free-text inputs. The agent name must pass through `Engine.cleanName` and a profile name through `Engine.profileName` before it is stored or displayed. Both keep letters and digits of any script plus space, `_` and `-`.
+- The profile list is untrusted too: read it only through `Engine.sanitizeProfiles`, and build a storage key only with `Engine.profileKey` (it returns `null` for any id that is not `main` or `p1`…`p9999`; check for it). New ids come from `profiles.next`, which never goes back, so a deleted profile's id is not reused. Profiles are a convenience for sharing one browser, not security: there is no password, and the page says so.
 
 **Architecture**
 - Rules and scoring live in `engine.js` and stay pure. Games only render and call the engine. Add a test for every new rule.
@@ -186,7 +186,9 @@ Unlocked together once `guard` (Shield Up) is done; playable in any order. Each 
 - The look is flat, dark and technical: one near-black background (`--bg` #0E1117), opaque panels (`--surface`) with hairline borders (`--line`), small radii, no gradients or glows as decoration. The cyan accent (`--blue`, #4FC3F7) marks what can be pressed (primary buttons, focus rings, hover underlines); text on it is dark (`--bg`). Status colours are unchanged: green = good, red = bad, orange = human checkpoint, yellow = stars. Use the tokens at the top of `styles.css`; do not hard-code new colours. The token is still named `--blue` so the old rules keep working.
 - Type: headings use **IBM Plex Mono** (`--display`, weights 500 and 600) and body text uses **Inter** (`--font`, variable). Both are bundled in `fonts/` under the SIL OFL with their licence files. No remote fonts: the CSP allows `font-src 'self'` only. Adding or swapping a font file needs the user's OK. Mono headings are wide: keep them short and check 375px.
 - The hub (`viewHub`) is left-aligned: hero, level-kind legend, review card, journey rail, Review / Arena / Blitz, trust line, footer. Its copy is `Content.HUB`. The first-visit headline types itself in (one CSS animation, about 600ms, skipped under reduced motion); nothing else animates unprompted. No all-caps labels. `design/landing.html` is the mock it came from.
-- Motion uses `--ease` and `--spring`; press states scale down, they do not shift layout.
+- Motion uses `--ease` and `--spring`; press states scale down, they do not shift layout. No animation repeats for ever, and a sequence timed in JavaScript checks `UI.reducedMotion()` and shows its end state at once.
+- Never move on from an explanation on a timer: show a Next button and let the learner read (`tools.js`, `guard.js`).
+- Colour roles: `--line` is the hairline of a panel; `--edge` is the border of anything that can be pressed (3:1 or better); `--muted` is secondary text and must stay at 4.5:1 or better on every surface and tint; `--red-hi` is red text on a red tint. Type sizes are in rem.
 - Every control is a real `<button>` or `<a>`, at least 44px tall, with a visible focus ring. State is never shown by color alone. Respect `prefers-reduced-motion`.
 - Check at 375px wide: no horizontal page scroll.
 

@@ -6,35 +6,27 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Round 28 is in progress (2026-11-15): fixing the findings of `docs/audit-2026-11-15.md`, high, then medium,
-> then low. The steps are under "Planned next". Do the first unticked step. Nothing is pushed since Round 26.
+> Rounds 1–28 are complete (Round 14 was dropped by the user). Nothing is in progress. Round 28 fixed 46 of
+> the 62 findings of `docs/audit-2026-11-15.md` and 5 more in part; the report's last section says which.
+> What is left is content work, listed under "Ideas"; none is approved. Git: Rounds 27 and 28 are committed
+> but NOT pushed. Ask the user before pushing.
 
 ## Planned next (approved)
 
-### Round 28 — fix the audit findings (ids are those of `docs/audit-2026-11-15.md`)
-- [x] High: D-1 (`.mrow` collision), D-2 (`--muted` contrast)
-- [x] Medium, code: D-3, D-4, D-5, E-1, E-2, U-1, U-2, U-3, U-8, U-14, U-15, with tests T-1, T-2, T-3
-- [ ] Low, engine and app: E-4, E-5, E-6, E-7, U-4, U-5, U-6, U-7, U-9, U-10, U-12, U-13, S-1, S-2, S-3, S-5, T-4, T-5
-- [ ] Low, CSS: U-11, U-16, D-6 to D-17
-- [ ] Content: C-9. The other content findings (C-1 to C-8, C-10) need their own rounds and the user's choice
+- Nothing further is approved. See the Backlog.
 
 
 ## Ideas (not approved; pick with the user)
 
 - Rewrite the next batch of weak questions (81 short "why" lines remain; see Rounds 25 and 26)
 
-- Round 27 audit findings, most useful first (none fixed yet):
-  1. `css/styles.css`: `.mrow` is defined twice (field missions, line 475; mastery map, line 733), so mission
-     rows take the mastery grid, padding and background
-  2. `--muted` (#6b7a99) is 4.38:1 on `--bg`, 4.00 on `--surface`, 3.56 on `--surface-2`, about 3.0 on the tints
-  3. Reader and source lists: `ol, ul { list-style: none }` is never undone for `.prose` and `.market-sources`
-  4. `js/games/order.js` says "That is the loop." after every order puzzle
-  5. `js/games/tools.js`, `guard.js`: the explanation is replaced after 2.2s / 1.6s
-  6. Engine: a valid far-future `due` is kept for ever; a clock that moves back a day resets the streak
-  7. `app.js` `save()`: a failed write is silent
-  8. 320px: the first-visit hub hero is 24px too wide; the armed reset button is wider than its card
-  9. Every question has two wrong options, and a Master clears at 60%: guessing passes about 1 time in 5
-  10. No test covers `ui.js`, `app.js` or the games, or checks the banned DOM calls and the `?v=` numbers
+- Open audit findings (`docs/audit-2026-11-15.md`, "Status after Round 28"):
+  - C-1, C-2: every question has two wrong options and every concept two questions. Either write a third
+    wrong option / a third question, or raise the Master threshold (the user's choice)
+  - C-3: one hand-written scenario question per mission (the six-per-mission test rule has to change)
+  - C-4 to C-8, C-10: question rewrites, most of them in the LLM journey, and the boss decisions
+  - Left on purpose: E-8 (no migration yet), E-9 (default `rng`), off-scale spacing (D-10), numbered
+    builder sections, stack diagrams and emoji icons (D-17), tests for `app.js` and the games (T-1)
 
 - Named cloud products in the Python + cloud journey, once they are checked against official sites
 
@@ -42,6 +34,26 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 
 ## Done
+
+### Round 28 — the audit findings fixed, high, then medium, then low (complete, verified)
+- [x] High: `.mrow` collision (mastery classes are now `.mast-*`); `--muted` is #93a1bb, 4.9:1 or better
+- [x] Medium: far-future `due` counts as due now; a clock one day back keeps the streak; Tool Belt and Shield
+      Up wait for a Next button; "That is the right order."; Blitz keys 1 to 3; a failed save shows a notice;
+      list markers in the reader; opaque coach bubble; `--edge` borders on controls; buttons wrap, no overflow
+      at 320px
+- [x] Low: `awardLevel` copies every field; `profileKey` returns null for a bad id; profile ids from
+      `profiles.next`; names keep letters of any script; `UI.h()` allow list; a missing script or game shows
+      a message; destructive buttons disarm on blur; reduced motion skips the timed sequences; 44px icon
+      buttons; colour-only states get a mark; glows, blur and endless animations removed; type sizes in rem;
+      dead CSS removed; one negative question stem rephrased
+- [x] `tools/playthrough.js` clicks the new Next buttons
+- [x] 64 tests pass (5 new: clock skew twice, `UI.h()` in a stand-in document, the security rules, `awardLevel`
+      fields). Browser (`?v=37`): playthrough at 375px reports 169 played, 0 failed, 0 with page overflow;
+      hub, codex, profiles, a trail, a level and the reader have no page overflow at 320px; console clean
+- Limits: the keyboard was not tabbed through by hand, and no screen reader was used. The new look (lighter
+  borders and secondary text, no glows, a still mascot) was seen at 375px only, not at desktop width. The
+  profile changes (rename message, disarm on blur, id counter) are covered by tests and code reading, not
+  played in the browser. Content findings C-1 to C-8 and C-10 are open
 
 ### Round 27 — read-only audit of every source file (complete, no code changed)
 - [x] Read `index.html`, `css/styles.css`, `engine.js`, `ui.js`, `app.js`, `markdown.js`, all 16 game files and

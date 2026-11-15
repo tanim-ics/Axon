@@ -111,3 +111,9 @@ and what was left unverified.
   `fonts/INTER-LICENSE.txt`).
 - The course text in `course/addy/` is under Apache 2.0 (`course/addy/LICENSE.txt`).
 - The project's own code and content have no licence file yet.
+
+## Hosting
+
+The page sets its Content Security Policy in a `<meta>` tag, which cannot stop another site from showing
+Axon inside a frame. When you put it on a real host, send the same policy as a response header and add
+`frame-ancestors 'none'`.

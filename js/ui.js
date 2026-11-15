@@ -216,7 +216,11 @@ var UI = (function () {
     canvas.width = w * dpr; canvas.height = ht * dpr;
     g.scale(dpr, dpr);
     document.body.appendChild(canvas);
-    var colors = ['#0a84ff', '#30d158', '#ffd60a', '#ff375f', '#bf5af2', '#f5f5f7'];
+    /* The theme's own colours, read from the tokens in styles.css. */
+    var css = window.getComputedStyle(document.documentElement);
+    var colors = ['--blue', '--green', '--yellow', '--pink', '--purple', '--text'].map(function (t) {
+      return css.getPropertyValue(t).trim() || '#e8edf4';
+    });
     var parts = [];
     for (var i = 0; i < 110; i++) {
       parts.push({

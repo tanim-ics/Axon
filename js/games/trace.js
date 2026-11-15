@@ -26,7 +26,7 @@
             return;
           }
           solved = true;
-          steps.forEach(function (x) { if (x !== b) x.disabled = true; });
+          steps.forEach(function (x) { if (x !== b) { x.disabled = true; x.classList.add('kept'); } });
           b.classList.add('culprit');
           b.setAttribute('aria-label', 'Bug found: ' + s.t);
           api.sfx('good');

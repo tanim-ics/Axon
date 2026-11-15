@@ -282,7 +282,7 @@
           mech('review', 'Daily review', H.review),
           mech('arena', 'Arena', H.arena),
           mech('blitz', 'Blitz', 'The Arena against ' + E.BLITZ.seconds + ' seconds. A wrong answer costs ' + E.BLITZ.penalty + ' of them. Beat your best score.'))),
-      h('p', { class: 'trust', text: H.trust }),
+      h('div', { class: 'trust' }, h('p', { text: H.trust })),
       h('footer', { class: 'hub-foot' },
         h('p', null, H.credit[0], h('a', { href: H.credit[2] }, H.credit[1]), H.credit[3]),
         h('p', null, 'Tool names were last reviewed on ' + C.TOOLS_REVIEW.reviewed + ' and job postings on ' + C.MARKET.reviewed + '. ',

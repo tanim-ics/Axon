@@ -117,7 +117,8 @@ var Playthrough = (function () {
         await waitFor(function () { return btn('Run agent'); });
         r.needs.forEach(function (t) { $$('.chip').find(function (b) { return b.textContent.includes(Content.TOOLS[t].name); }).click(); });
         btn('Run agent').click();
-        await sleep(2400);
+        (await waitFor(function () { return btn('Next job') || btn('Finish'); })).click();
+        await sleep(60);
       }
     },
     prompt: async function () {
@@ -153,7 +154,8 @@ var Playthrough = (function () {
     guard: async function () {
       for (var a of Content.ATTACKS) {
         (await waitFor(function () { return $$('.shield:not([disabled])').find(function (x) { return x.textContent.includes(Content.SHIELDS[a.fix].name); }); })).click();
-        await sleep(1750);
+        (await waitFor(function () { return btn('Next threat') || btn('Finish'); })).click();
+        await sleep(60);
       }
     },
     trace: async function () {
