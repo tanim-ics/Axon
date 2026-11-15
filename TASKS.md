@@ -27,7 +27,7 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ### Round 24 — solution button, start over, profiles (complete, verified)
 - [x] Engine: `solutionOf` writes the solution of every level that is not made of questions from the
-      level's own data (124 levels; the other 45 are question levels); `solvedStars`; the profile functions.
+      level's own data (69 levels; the other 100 are question levels); `solvedStars`; the profile functions.
       59 tests pass (4 new)
 - [x] Level frame: "Solution" asks first, then lists the solution and caps the level at one star until the
       page is reloaded; "Start over" restarts the level. Question screens (Learn checks, Master, Mix, bosses,
