@@ -6,19 +6,30 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Rounds 1–19 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
-> empty. Git: `main` is ahead of `origin/main` by local commits; ask the user before pushing.
-> Ideas for what could come next are under "Ideas" below; none is approved.
+> Round 20, step 1: add the engine rules (`fixPick`, `fixOptions`, `fixStars`) to `js/engine.js` with tests,
+> then step 2 (`js/games/fix.js`). Nothing of this round is in the code yet.
+> Git: `main` is ahead of `origin/main` by local commits; ask the user before pushing.
 
-## Planned next (approved)
+## Round 20 — "fix the trace" game (in progress; user said "start task 20" 2026-11-15, Claude picked this
+## from Ideas as the most hands-on of the remaining ones)
 
-- Nothing further is approved. See the Backlog.
+A new game, `game: 'fix'`: a broken agent run is shown as a trace. Round A: tap the first step that went
+wrong. Round B: pick the fix from three options. Each case is tied to a concept and feeds the spaced review.
 
+- [ ] 1. Engine: `fixPick(case, i)`, `fixOptions(case, rnd)`, `fixStars(slips)`; unit tests
+- [ ] 2. Game: `js/games/fix.js` + styles; script tag in `index.html`; `tools/playthrough.js` learns `fix`
+- [ ] 3. Content: helper `fix(n, icon, title, idea, key, cases)` with `X(concept, ask, steps, bug, a, x, why)`,
+      `T(kind, text)` and `B(kind, text)` (the bad step). One level before the last boss of each course:
+      `a-fix-1`, `l-fix-1`, `p-fix-1`, four cases each
+- [ ] 4. Tests: well-formed cases (one bad step, never first, not always the same position, concept taught
+      earlier, fix options distinct), fixes included in the length-guess test; update level counts
+- [ ] 5. Browser at 375px: play one level by hand with a wrong tap and a wrong fix; play-through for the
+      three new levels; console clean
+- [ ] 6. Docs (`CLAUDE.md`: layout row, level table, rules), move the round to Done, commit
 
 ## Ideas (not approved; pick with the user)
 
-- More labs for the run simulator (Round 16 built four), a "fix the trace" game for the course lessons,
-  timed Arena rounds
+- More labs for the run simulator (Round 16 built four), timed Arena rounds
 - Named cloud products in the Python + cloud journey, once they are checked against official sites
 
 ## Backlog (not started, needs the user's OK)
