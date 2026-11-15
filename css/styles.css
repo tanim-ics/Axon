@@ -697,3 +697,8 @@ button.ostep:active { transform: scale(0.98); }
 .sstep-kind { font-size: 13px; font-weight: 600; color: var(--muted); }
 .sstep-mark { color: var(--red); }
 .sstep-text { overflow-wrap: anywhere; }
+
+/* ---------- fix the trace ---------- */
+.fix-panel { display: grid; gap: var(--s3); }
+.fix-panel:empty { display: none; }
+.fix-panel .question { font-size: clamp(20px, 4vw, 26px); }

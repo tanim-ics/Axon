@@ -62,6 +62,20 @@ var Playthrough = (function () {
       L.puzzle.steps.forEach(function (s) { $$('button.ostep').find(function (b) { return b.textContent.includes(s.text); }).click(); });
       btn('Finish').click();
     },
+    fix: async function (L) {
+      for (var k = 0; k < L.cases.length; k++) {
+        var c = L.cases[k];
+        var steps = await waitFor(function () { var s = $$('.tstep'); return s.length === c.steps.length && !$('.answer') ? s : null; }, 3000);
+        if (!steps) throw new Error('run ' + (k + 1) + ' never showed');
+        steps[c.steps.findIndex(function (s) { return s.bad; })].click();
+        var a = await waitFor(function () { return $$('.answer').find(function (x) { return x.querySelector('.answer-text').textContent === c.a; }); }, 3000);
+        if (!a) throw new Error('the right fix was not offered: ' + c.a);
+        a.click();
+        var next = await waitFor(function () { return $('.why button'); }, 3000);
+        if (!next) throw new Error('no button after the fix');
+        next.click();
+      }
+    },
     sim: async function (L) {
       L.sim.slots.forEach(function (sl) {
         var st = L.sim.steps.find(function (x) { return x.slot === sl.id; });

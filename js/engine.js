@@ -417,6 +417,21 @@
   /* runs = how many times Run was pressed, the successful one included. */
   function simStars(runs) { return runs <= 1 ? 3 : runs <= 3 ? 2 : 1; }
 
+  /* ---------- fix the trace ---------- */
+
+  /* Is step i the one that went wrong? Anything that is not a real step index is simply not it. */
+  function fixPick(c, i) {
+    return !!c && Array.isArray(c.steps) && Number.isInteger(i) && i >= 0 && i < c.steps.length && c.steps[i].bad === true;
+  }
+  /* The repair options for one case, shuffled, with exactly one correct. */
+  function fixOptions(c, rng) {
+    return shuffle([{ text: c.a, correct: true }].concat(c.x.map(function (t) {
+      return { text: t, correct: false };
+    })), rng || Math.random);
+  }
+  /* A slip is a wrong tap or a wrong fix. */
+  function fixStars(slips) { return starsFromMistakes(slips); }
+
   /* ---------- sort and order puzzles ---------- */
 
   function sortRight(puzzle, itemId, bucketId) {
@@ -645,7 +660,7 @@
     journeyProgress: journeyProgress, nextInJourney: nextInJourney,
     REVIEW_GAPS: REVIEW_GAPS, masteryOf: masteryOf, learnedConcepts: learnedConcepts, dueConcepts: dueConcepts,
     recordReview: recordReview, buildQuestions: buildQuestions, buildSession: buildSession,
-    levelQuestions: levelQuestions, caseQuestions: caseQuestions, quizStars: quizStars, sortRight: sortRight, orderRight: orderRight, simReady: simReady, simRun: simRun, simStars: simStars, shuffle: shuffle,
+    levelQuestions: levelQuestions, caseQuestions: caseQuestions, quizStars: quizStars, sortRight: sortRight, orderRight: orderRight, simReady: simReady, simRun: simRun, simStars: simStars, fixPick: fixPick, fixOptions: fixOptions, fixStars: fixStars, shuffle: shuffle,
     slotKey: slotKey, pipeSlots: pipeSlots, checkPipeline: checkPipeline,
     runTrials: runTrials, bossStars: bossStars, buildBlueprint: buildBlueprint
   };

@@ -428,7 +428,7 @@ test('courses: every Addy and LLM level is well-formed and winnable', () => {
   C.PY.forEach((L) => assert.ok(!L.read, L.id + ' has no full read'));
   [C.ADDY, C.LLM, C.PY].forEach((LIST) => LIST.forEach((L) => {
     ['icon', 'title', 'tag', 'idea', 'play', 'key'].forEach((k) => assert.ok(L[k], L.id + '.' + k));
-    assert.ok(['learn', 'sort', 'order', 'quiz', 'case', 'sim'].includes(L.game), L.id);
+    assert.ok(['learn', 'sort', 'order', 'quiz', 'case', 'sim', 'fix'].includes(L.game), L.id);
     if (L.game === 'learn') {
       assert.ok(L.cards.length >= 3 && L.cards.length <= 5, L.id + ' cards');
       L.cards.forEach((c) => {
@@ -499,8 +499,8 @@ test('py: topics run 01-08 in order with two mixes and a capstone; masters draw 
     assert.ok(at[0] > last && at[1] === at[0] + 1 && at[2] === at[1] + 1, 'stop ' + n);
     last = at[2];
   }
-  assert.equal(ids.length, 8 * 3 + 4);
-  assert.equal(ids[ids.length - 2], 'p-lab-1');
+  assert.equal(ids.length, 8 * 3 + 5);
+  assert.deepEqual(ids.slice(-3), ['p-lab-1', 'p-fix-1', 'p-boss-1']);
   assert.ok(ids.indexOf('p-mix-1') > ids.indexOf('p04-master') && ids.indexOf('p-mix-1') < ids.indexOf('p05-learn'));
   assert.equal(ids[ids.length - 1], 'p-boss-1');
   assert.equal(new Set(ids.concat(C.ADDY.map((l) => l.id), C.LLM.map((l) => l.id), C.LEVELS.map((l) => l.id))).size,
@@ -686,7 +686,7 @@ test('touchSession: a session counts as a learning day and reports a new streak 
 });
 
 test('questions: the right answer cannot be guessed from its length', () => {
-  const steps = C.ADDY.concat(C.LLM, C.PY).filter((l) => l.game === 'case').flatMap((l) => l.steps);
+  const steps = C.ADDY.concat(C.LLM, C.PY).flatMap((l) => l.game === 'case' ? l.steps : l.game === 'fix' ? l.cases : []);
   [['bank', C.BANK], ['boss decisions', steps]].forEach(([name, list]) => {
     const longest = list.filter((q) => q.x.every((o) => o.length < q.a.length)).length / list.length;
     const shortest = list.filter((q) => q.x.every((o) => o.length > q.a.length)).length / list.length;
@@ -760,6 +760,41 @@ test('missions in review: three ideas and six well-formed questions per mission,
   s = E.awardLevel(C, s, 'm-video', 2, '2026-01-01').state;
   assert.deepEqual(E.dueConcepts(C, s, '2026-01-01').filter((c) => c.startsWith('m-')).sort(),
     ['m-video-flow', 'm-video-gate', 'm-video-tools']);
+});
+
+test('fix levels: one bad step per run, never the first, with a taught concept and one right repair', () => {
+  const lists = { a: C.ADDY, l: C.LLM, p: C.PY };
+  const levels = C.ADDY.concat(C.LLM, C.PY).filter((l) => l.game === 'fix');
+  assert.deepEqual(levels.map((l) => l.id), ['a-fix-1', 'l-fix-1', 'p-fix-1']);
+  levels.forEach((L) => {
+    const LIST = lists[L.id[0]];
+    const taught = LIST.slice(0, LIST.indexOf(L)).filter((x) => x.game === 'learn').flatMap((x) => x.concepts);
+    assert.ok(L.cases.length >= 3, L.id);
+    assert.equal(new Set(L.cases.map((c) => c.concept)).size, L.cases.length, L.id + ': one concept per run');
+    const at = L.cases.map((c) => c.steps.findIndex((s) => s.bad));
+    assert.ok(new Set(at).size > 1, L.id + ': the bad step must not always sit in the same place');
+    L.cases.forEach((c, n) => {
+      const tag = L.id + ' run ' + (n + 1);
+      assert.ok(taught.includes(c.concept), tag + ': ' + c.concept + ' is not taught before this level');
+      ['ask', 'bug', 'a', 'why'].forEach((k) => assert.ok(c[k], tag + '.' + k));
+      assert.ok(c.steps.length >= 3, tag);
+      c.steps.forEach((s) => assert.ok(s.t && C.TRACE_KINDS[s.k], tag));
+      assert.equal(c.steps.filter((s) => s.bad).length, 1, tag + ': exactly one bad step');
+      assert.ok(at[n] > 0, tag + ': the first step is never the bad one');
+      assert.ok(c.x.length >= 2 && new Set([c.a, ...c.x]).size === c.x.length + 1, tag + ': distinct options');
+      c.steps.forEach((s, i) => assert.equal(E.fixPick(c, i), i === at[n]));
+      const opts = E.fixOptions(c, () => 0.3);
+      assert.equal(opts.length, c.x.length + 1);
+      assert.deepEqual(opts.filter((o) => o.correct).map((o) => o.text), [c.a]);
+    });
+  });
+  const c0 = levels[0].cases[0];
+  [-1, 99, 1.5, '1', null, undefined].forEach((bad) => assert.equal(E.fixPick(c0, bad), false));
+  assert.equal(E.fixPick(null, 0), false);
+  assert.deepEqual([0, 1, 2, 3, 8].map(E.fixStars), [3, 2, 2, 1, 1]);
+  const orders = new Set();
+  for (let k = 0; k < 40; k++) orders.add(E.fixOptions(c0).map((o) => o.text).join('|'));
+  assert.ok(orders.size > 1, 'options are shuffled');
 });
 
 test('labs: one winning design, and every wrong choice fails at its own step with a reason', () => {
