@@ -6,9 +6,18 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Rounds 1–13 are complete and verified. Nothing is in progress. Git: branch `main` tracks `origin/main`
-> (`https://github.com/tanim-ics/Axon.git`, private). Local commits since the last push are **not pushed**;
-> ask the user before pushing. Next work comes from the Backlog or a new request.
+> **Round 14 in progress** (user at the keyboard, 2026-11-15): VoiceOver test. Git: `main` matches
+> `origin/main` as of commit 6545f93 (pushed with the user's OK); ask before any later push.
+> Next step: the user runs the eight checks below in Safari with VoiceOver and reports what was read aloud.
+> Claude cannot hear VoiceOver, so every finding comes from the user's report. Fix what fails, then re-check.
+
+## Round 14 — VoiceOver test (in progress)
+
+- [ ] 14.1 User runs the checks: hub and HUD, level start, a question, a sort card, a Learn card, the result
+      dialog, the reader, the codex
+- [ ] 14.2 Fix each reported problem, with a test where a rule changes
+- [ ] 14.3 User re-checks the fixed items
+- [ ] 14.4 Docs, commit
 
 ## Planned next (approved)
 
@@ -17,7 +26,6 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Backlog (not started, needs the user's OK)
 
-- [ ] Test with a real screen reader (VoiceOver)
 
 ## Done
 
