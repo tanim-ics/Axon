@@ -243,10 +243,10 @@
       gate: 'post', gateWhy: 'Public posts can\'t be unseen. A human watches the final cut first.',
       stages: [
         S('script', '✍️', 'Write the script', 'hook, story, call to action', 'Claude', ['ChatGPT', 'Gemini', 'Grok']),
-        S('voice', '🎙️', 'Add the voiceover', 'text becomes speech', 'ElevenLabs', ['OpenAI TTS', 'Murf']),
-        S('music', '🎵', 'Add music', 'a soundtrack that fits the mood', 'Suno', ['Udio', 'Epidemic Sound']),
-        S('visuals', '🎞️', 'Generate the clips', 'text becomes video', 'Runway', ['Sora', 'Veo', 'Kling']),
-        S('edit', '✂️', 'Edit and caption', 'cut, sync, subtitles', 'CapCut', ['Descript', 'DaVinci Resolve', 'Premiere Pro']),
+        S('voice', '🎙️', 'Add the voiceover', 'text becomes speech', 'ElevenLabs', ['Murf', 'Amazon Polly']),
+        S('music', '🎵', 'Add music', 'a soundtrack that fits the mood', 'Suno', ['Soundraw', 'Epidemic Sound']),
+        S('visuals', '🎞️', 'Generate the clips', 'text becomes video', 'Runway', ['Veo', 'Kling']),
+        S('edit', '✂️', 'Edit and caption', 'cut, sync, subtitles', 'CapCut', ['Descript', 'DaVinci Resolve', 'Adobe Premiere']),
         S('post', '📲', 'Schedule and post', 'publish everywhere on time', 'Buffer', ['Metricool', 'Later', 'Hootsuite'])
       ] },
     { id: 'm-clips', icon: '📼', title: 'Long Video → Shorts', tag: 'Video editing',
@@ -266,7 +266,7 @@
       key: 'Alert → observe → diagnose → fix as code → roll out → report. Production changes need a human yes.',
       gate: 'rollout', gateWhy: 'A wrong fix in production makes the outage worse. A human approves the rollout.',
       stages: [
-        S('alert', '🚨', 'Catch the alert', 'page whoever is on call', 'PagerDuty', ['Opsgenie', 'Grafana Alerting']),
+        S('alert', '🚨', 'Catch the alert', 'page whoever is on call', 'PagerDuty', ['Jira Service Management', 'Grafana Alerting']),
         S('observe', '📈', 'Read metrics and logs', 'see what the system is doing', 'Grafana', ['Datadog', 'Prometheus']),
         S('diagnose', '🧠', 'Find the root cause', 'reason over the evidence', 'Claude', ['ChatGPT', 'Gemini']),
         S('fix', '📐', 'Write the fix as code', 'infrastructure as code', 'Terraform', ['Ansible', 'Pulumi']),
@@ -291,7 +291,7 @@
       gate: 'share', gateWhy: 'A human reads the report before others rely on it.',
       stages: [
         S('search', '🌐', 'Search the web', 'find fresh sources', 'Tavily', ['Exa', 'Perplexity', 'Brave Search']),
-        S('parse', '📄', 'Parse the documents', 'PDFs become clean text', 'LlamaIndex', ['Unstructured', 'Docling']),
+        S('parse', '📄', 'Parse the documents', 'PDFs become clean text', 'LlamaParse', ['Unstructured', 'Docling']),
         S('store', '🗄️', 'Store for retrieval', 'a vector database', 'Pinecone', ['Chroma', 'pgvector', 'Weaviate']),
         S('write', '✍️', 'Write with citations', 'answer only from the sources', 'Claude', ['ChatGPT', 'Gemini']),
         S('evaluate', '🧐', 'Evaluate the answer', 'trace and score the run', 'LangSmith', ['Langfuse', 'Promptfoo', 'Ragas']),
@@ -303,7 +303,7 @@
       gate: 'refund', gateWhy: 'Money moving is irreversible. A human approves the refund.',
       stages: [
         S('inbox', '📥', 'Receive the ticket', 'the help desk', 'Zendesk', ['Intercom', 'Freshdesk']),
-        S('sort', '🔀', 'Sort by intent', 'a small, fast model routes it', 'Claude Haiku', ['GPT mini', 'Gemini Flash']),
+        S('sort', '🔀', 'Sort by intent', 'a small, fast model routes it', 'Claude Haiku', ['GPT-6 Luna', 'Gemini Flash']),
         S('order', '🧾', 'Find the customer\'s order', 'the store\'s records', 'Shopify', ['Salesforce', 'HubSpot']),
         S('policy', '📖', 'Check the policy for that order', 'the company knowledge base', 'Confluence', ['Notion', 'Guru']),
         S('refund', '💸', 'Issue the refund', 'the payment system', 'Stripe', ['PayPal', 'Adyen'])
@@ -314,7 +314,7 @@
       gate: 'share', gateWhy: 'People act on numbers. A human sanity-checks them first.',
       stages: [
         S('query', '🧮', 'Query the warehouse', 'SQL over company data', 'BigQuery', ['Snowflake', 'PostgreSQL']),
-        S('crunch', '🐼', 'Clean and crunch', 'dataframes in Python', 'pandas', ['Polars', 'DuckDB']),
+        S('crunch', '🐼', 'Clean and crunch', 'dataframes and local SQL in Python', 'pandas', ['Polars', 'DuckDB']),
         S('chart', '📉', 'Chart it', 'a dashboard people can read', 'Tableau', ['Power BI', 'Metabase']),
         S('explain', '✍️', 'Explain the insight', 'plain words, not jargon', 'Claude', ['ChatGPT', 'Gemini']),
         S('share', '📣', 'Share with the team', 'post where people work', 'Slack', ['Microsoft Teams', 'Email'])
@@ -2139,6 +2139,67 @@
       'Evals are the gate.')
   ]);
 
+  /* ---------- tool names: when they were checked, and against which pages ----------
+     Every product named in MISSIONS and TOOLBOX was looked up on the review date. "Popular" is not
+     measured anywhere; this only records that the product exists, is still offered and does the job. */
+  var TOOLS_REVIEW = {
+    reviewed: '2026-11-15',
+    note: 'Each product was looked up on its own site or docs to confirm that it still exists, is still offered and does the job named here. A few could only be confirmed through search results. Nothing here measures how popular a tool is.',
+    generic: ['Email'], /* named in a mission, but not a product */
+    sources: [
+      ['Claude', 'https://claude.com/product/overview'], ['ChatGPT', 'https://chatgpt.com/overview'],
+      ['Gemini', 'https://gemini.google/about/'], ['Grok', 'https://docs.x.ai/docs/overview'],
+      ['GPT', 'https://developers.openai.com/api/docs/models'],
+      ['ElevenLabs', 'https://elevenlabs.io/text-to-speech'], ['Murf', 'https://murf.ai'], ['Amazon Polly', 'https://aws.amazon.com/polly/'],
+      ['Suno', 'https://suno.com'], ['Soundraw', 'https://soundraw.io/'], ['Epidemic Sound', 'https://www.epidemicsound.com'],
+      ['Runway', 'https://runway.com'], ['Veo', 'https://deepmind.google/models/veo/'], ['Kling', 'https://kling.ai'],
+      ['CapCut', 'https://www.capcut.com'], ['Descript', 'https://www.descript.com'],
+      ['DaVinci Resolve', 'https://www.blackmagicdesign.com/products/davinciresolve'],
+      ['Adobe Premiere', 'https://www.adobe.com/products/premiere.html'],
+      ['Buffer', 'https://buffer.com'], ['Metricool', 'https://metricool.com'], ['Later', 'https://later.com'], ['Hootsuite', 'https://www.hootsuite.com'],
+      ['Whisper', 'https://github.com/openai/whisper'], ['AssemblyAI', 'https://www.assemblyai.com'], ['Deepgram', 'https://deepgram.com'],
+      ['OpusClip', 'https://www.opus.pro'], ['Submagic', 'https://www.submagic.co'], ['Captions', 'https://www.captions.ai'],
+      ['Canva', 'https://www.canva.com/create/youtube-thumbnails/'], ['Midjourney', 'https://www.midjourney.com'], ['Figma', 'https://www.figma.com'],
+      ['PagerDuty', 'https://www.pagerduty.com'], ['Jira Service Management', 'https://www.atlassian.com/licensing/opsgenie'],
+      ['Grafana Alerting', 'https://grafana.com/docs/grafana/latest/alerting/'], ['Grafana', 'https://grafana.com/docs/grafana/latest/introduction/'],
+      ['Datadog', 'https://www.datadoghq.com'], ['Prometheus', 'https://prometheus.io'],
+      ['Terraform', 'https://developer.hashicorp.com/terraform'], ['Ansible', 'https://docs.ansible.com'], ['Pulumi', 'https://www.pulumi.com'],
+      ['Kubernetes', 'https://kubernetes.io'], ['Argo CD', 'https://argo-cd.readthedocs.io/en/stable/'], ['GitHub Actions', 'https://docs.github.com/en/actions'],
+      ['Slack', 'https://slack.com'], ['Microsoft Teams', 'https://learn.microsoft.com/en-us/microsoftteams/teams-overview'], ['Notion', 'https://www.notion.com'],
+      ['Linear', 'https://linear.app'], ['Jira', 'https://www.atlassian.com/software/jira'],
+      ['GitHub Issues', 'https://docs.github.com/en/issues/tracking-your-work-with-issues/learning-about-issues/about-issues'],
+      ['Claude Code', 'https://code.claude.com/docs/en/overview'], ['Cursor', 'https://cursor.com'], ['Codex', 'https://learn.chatgpt.com/docs'],
+      ['GitHub Copilot', 'https://docs.github.com/en/copilot/get-started/what-is-github-copilot'],
+      ['pytest', 'https://docs.pytest.org/en/stable/'], ['Jest', 'https://jestjs.io'], ['Playwright', 'https://playwright.dev'],
+      ['GitHub', 'https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests'],
+      ['GitLab', 'https://docs.gitlab.com/ci/'], ['Bitbucket', 'https://bitbucket.org/product'],
+      ['GitLab CI', 'https://docs.gitlab.com/ci/'], ['CircleCI', 'https://circleci.com'],
+      ['Vercel', 'https://vercel.com'], ['Netlify', 'https://www.netlify.com'], ['AWS', 'https://aws.amazon.com/what-is-aws/'],
+      ['Tavily', 'https://www.tavily.com/'], ['Exa', 'https://exa.ai/docs/reference/search-api-guide'],
+      ['Perplexity', 'https://docs.perplexity.ai/changelog/changelog'], ['Brave Search', 'https://api-dashboard.search.brave.com/app/documentation/ai-grounding'],
+      ['LlamaParse', 'https://developers.llamaindex.ai/llamaparse/changelog/2026-08/'], ['Unstructured', 'https://unstructured.io/'],
+      ['Docling', 'https://github.com/docling-project/docling'],
+      ['Pinecone', 'https://www.pinecone.io/'], ['Chroma', 'https://www.trychroma.com/'], ['pgvector', 'https://github.com/pgvector/pgvector'], ['Weaviate', 'https://weaviate.io/'],
+      ['LangSmith', 'https://changelog.langchain.com/'], ['Langfuse', 'https://clickhouse.com/blog/clickhouse-acquires-langfuse-open-source-llm-observability'],
+      ['Promptfoo', 'https://www.promptfoo.dev/'], ['Ragas', 'https://pypi.org/project/ragas/'],
+      ['Google Docs', 'https://workspace.google.com/products/docs/'],
+      ['Zendesk', 'https://www.zendesk.com/'], ['Intercom', 'https://www.intercom.com/'], ['Freshdesk', 'https://support.freshdesk.com/'],
+      ['Claude Haiku', 'https://platform.claude.com/docs/en/models/overview'], ['GPT-6 Luna', 'https://developers.openai.com/api/docs/models'],
+      ['Gemini Flash', 'https://aistudio.google.com/docs/models'],
+      ['Shopify', 'https://www.shopify.com/'], ['Salesforce', 'https://www.salesforce.com/crm/'], ['HubSpot', 'https://www.hubspot.com/'],
+      ['Confluence', 'https://www.atlassian.com/software/confluence'], ['Guru', 'https://www.getguru.com/'],
+      ['Stripe', 'https://docs.stripe.com/refunds'], ['PayPal', 'https://developer.paypal.com/docs/api/payments/v2/'], ['Adyen', 'https://docs.adyen.com/online-payments/refund'],
+      ['BigQuery', 'https://cloud.google.com/bigquery'], ['Snowflake', 'https://docs.snowflake.com/en/user-guide/intro-key-concepts'], ['PostgreSQL', 'https://www.postgresql.org'],
+      ['pandas', 'https://pandas.pydata.org'], ['Polars', 'https://pola.rs'], ['DuckDB', 'https://duckdb.org'],
+      ['Tableau', 'https://help.tableau.com/current/pro/desktop/en-us/default.htm'],
+      ['Power BI', 'https://www.microsoft.com/en-us/power-platform/products/power-bi'], ['Metabase', 'https://www.metabase.com'],
+      ['Claude Agent SDK', 'https://code.claude.com/docs/en/agent-sdk/overview'], ['OpenAI Agents SDK', 'https://developers.openai.com/api/docs/deprecations'],
+      ['LangGraph', 'https://docs.langchain.com/oss/python/langgraph/overview'], ['CrewAI', 'https://www.crewai.com/'],
+      ['MCP (Model Context Protocol)', 'https://modelcontextprotocol.io/'],
+      ['n8n', 'https://n8n.io/'], ['Make', 'https://www.make.com/en'], ['Zapier', 'https://zapier.com/']
+    ].map(function (r) { return { name: r[0], url: r[1] }; })
+  };
+
   /* ---------- journeys: the hub lists these in order ---------- */
   var JOURNEYS = [
     { id: 'academy', icon: '🎓', title: 'Academy', tag: 'How an agent works', unit: 'Level', order: 'linear',
@@ -2154,7 +2215,7 @@
   ];
 
   return {
-    JOURNEYS: JOURNEYS, CONCEPTS: CONCEPTS, BANK: BANK, ADDY: ADDY, LLM: LLM, COURSE: COURSE, MARKET: MARKET,
+    JOURNEYS: JOURNEYS, CONCEPTS: CONCEPTS, BANK: BANK, ADDY: ADDY, LLM: LLM, COURSE: COURSE, MARKET: MARKET, TOOLS_REVIEW: TOOLS_REVIEW,
     MISSIONS: MISSIONS, TOOLBOX: TOOLBOX,
     LEVELS: LEVELS, LOOP: LOOP, TOOLS: TOOLS, TOOL_ROUNDS: TOOL_ROUNDS, PROMPT: PROMPT,
     MEMORY: MEMORY, NODES: NODES, PIPES: PIPES, SHIELDS: SHIELDS, ATTACKS: ATTACKS,

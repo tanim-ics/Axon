@@ -686,3 +686,17 @@ test('course: stored lesson files hold no HTML or script, and match what the rea
   });
   delete global.Course;
 });
+
+test('tools review: every product named in a mission or the toolbox has a dated, checked source', () => {
+  const R = C.TOOLS_REVIEW;
+  assert.match(R.reviewed, /^\d{4}-\d{2}-\d{2}$/);
+  assert.ok(R.note);
+  const byName = new Map(R.sources.map((s) => [s.name, s.url]));
+  assert.equal(byName.size, R.sources.length, 'no product listed twice');
+  R.sources.forEach((s) => assert.match(s.url, /^https:\/\/[^\s"'<>]+$/, s.name));
+  const named = new Set();
+  C.MISSIONS.forEach((m) => m.stages.forEach((st) => [st.tool, ...st.also].forEach((n) => named.add(n))));
+  C.TOOLBOX.forEach((t) => t.tools.forEach((n) => named.add(n)));
+  named.forEach((n) => assert.ok(byName.has(n) || R.generic.includes(n), n + ' has no checked source'));
+  byName.forEach((_, n) => assert.ok(named.has(n), n + ' is in the sources but no longer named anywhere'));
+});

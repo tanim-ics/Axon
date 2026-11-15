@@ -6,22 +6,9 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> **Round 13 in progress** (user said "go" on 2026-11-15). Git: branch `main` tracks `origin/main`
-> (`https://github.com/tanim-ics/Axon.git`, private). Commit verified steps locally; ask before any push.
-> Next step: the first unticked box in "Round 13" below.
-
-## Round 13 — verify the tool names in the Field missions and the toolbox (in progress)
-
-113 unique product names in `Content.MISSIONS` and `Content.TOOLBOX`, written from general knowledge.
-
-- [ ] 13.1 Three background agents check every name against its official site (exists, still offered, does the
-      stated job) and return the official URL. If the session is lost, redo this step
-- [ ] 13.2 Fix names that are renamed, discontinued or wrong in `js/content.js` (each stage keeps one tool and
-      two or more alternatives; tool names stay unique within a mission)
-- [ ] 13.3 `Content.TOOLS_REVIEW` (`reviewed`, `note`, `sources`) + "last reviewed" line and source list in the
-      codex under Playbooks and Builder's toolbox; test: every named tool has an https source
-- [ ] 13.4 Verify: `npm test`; codex at 375px; console clean
-- [ ] 13.5 Docs, commit
+> Rounds 1–13 are complete and verified. Nothing is in progress. Git: branch `main` tracks `origin/main`
+> (`https://github.com/tanim-ics/Axon.git`, private). Local commits since the last push are **not pushed**;
+> ask the user before pushing. Next work comes from the Backlog or a new request.
 
 ## Planned next (approved)
 
@@ -33,6 +20,29 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 - [ ] Test with a real screen reader (VoiceOver)
 
 ## Done
+
+### Round 13 — tool names verified against official sites (complete, verified)
+- [x] Three agents looked up all 113 product names on 2026-11-15 (117 lookups reported: 31 + 44 + 42, with
+      overlaps). Each returned the page it used
+- [x] Fixed in `Content.MISSIONS`: Sora removed (OpenAI shut it down in 2026); OpenAI TTS → Amazon Polly
+      (end-of-life announced); Udio → Soundraw (downloads disabled); Premiere Pro → Adobe Premiere (renamed);
+      Opsgenie → Jira Service Management (end-of-life April 2027, Atlassian's stated migration target);
+      "GPT mini" → GPT-6 Luna (no tier by the old name); LlamaIndex → LlamaParse for document parsing;
+      the data-crunch stage now says "dataframes and local SQL" because DuckDB is a SQL engine
+- [x] `Content.TOOLS_REVIEW`: review date, a note and 111 official pages, shown in the codex under the toolbox.
+      Test: every named product has an https source, and no source is left for a product that is no longer named
+- [x] 50 tests pass; codex checked at 375px
+- Caveats recorded, not fixed:
+  - "Popular" was not measured for any product
+  - Confirmed through search results only, not a fetched vendor page: Exa, Brave Search, Unstructured, Docling,
+    pgvector, Weaviate, LangSmith, Zendesk, Freshdesk, Claude Haiku, Grok. Midjourney's site blocked the check
+  - Jira Service Management and GPT-6 Luna were taken from vendor pages about the products they replace, not
+    checked as products in their own right; Amazon Polly and Soundraw were checked directly
+  - Prometheus is listed under "metrics and logs" but covers metrics only
+  - Whisper and Chroma stay because their open-source versions continue; their hosted services are being retired
+  - Ownership changed but the name is still sold: Tavily (Nebius), Langfuse (ClickHouse), Intercom (Salesforce),
+    Cursor (SpaceX); Promptfoo's sale to OpenAI was announced, closing not confirmed
+  - Redo this review every few months; the date in the codex shows how old it is
 
 ### Round 12 — the project is under git (complete)
 - [x] `git init` on branch `main`, `.gitignore` added, first commit of all 70 files
