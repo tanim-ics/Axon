@@ -6,19 +6,9 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> **Round 17 in progress** (user said "start next task" on 2026-11-15 with an empty backlog; Claude chose the
-> two verification gaps from the Ideas list). Git: `main` matched `origin/main` at commit c08f613 (pushed with
-> the user's OK); ask before any later push. Next step: the first unticked box in "Round 17" below.
-
-## Round 17 — play every level, and a second reader for the questions (in progress)
-
-- [ ] 17.1 Play every level of all four journeys to its result dialog in a real browser at 375px, driven by a
-      script that reads the right answers from `Content`; record failures, page overflow and console errors
-- [ ] 17.2 Fix what the play-through finds
-- [ ] 17.3 A background agent reads every question, boss decision, sort card and lab setting, looking for wrong
-      options that are arguably right. If the session is lost, redo this step
-- [ ] 17.4 Fix what the second reader flags; tests still pass
-- [ ] 17.5 Docs, commit
+> Rounds 1–17 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
+> empty. Git: `main` is ahead of `origin/main` by local commits; ask the user before pushing.
+> Ideas for what could come next are under "Ideas" below; none is approved.
 
 ## Planned next (approved)
 
@@ -35,6 +25,22 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 
 ## Done
+
+### Round 17 — every level played, and a second reader for the questions (complete, verified)
+- [x] Play-through: a script played all 135 levels (8 Academy, 7 missions, 66 Addy, 54 LLM) to their result
+      dialog in the preview browser at 375px, reading the right answers from `Content`. Result: 135 played,
+      0 failed, 0 with page overflow, console clean. The script is kept as `tools/playthrough.js`
+- [x] Second reader (background agent): read 284 questions, 42 boss decisions, 170 sort cards and 16 lab
+      settings. It flagged 12 disputable items and no plain factual error in a keyed answer. All 12 are fixed:
+      reworded questions (`l09-split-2`, `a15-practice-1`, `a12-tiers-1`), a "why" line that contradicted a boss
+      (`guard-data-1` and lab 2), the pull-request stage of the code mission (now "Open a pull request for
+      review"), four sort cards, one lab option, and two boss decisions
+- [x] 52 tests pass after the fixes
+- Limits: the play-through takes the right answer every time, so it proves each level can be completed and
+  renders without overflow; it does not exercise wrong answers, retries or the keyboard. The 12 fixes were made
+  after the play-through and are text-only; the play-through was not repeated. `tools/playthrough.js` was
+  rewritten from the script that ran and has only been syntax-checked in that form. The second reader is one
+  model's judgement, not a subject expert's
 
 ### Round 16 — the run simulator (complete, verified)
 - [x] Engine: `simReady`, `simRun`, `simStars` (first run 3 stars, by the third run 2, later 1)

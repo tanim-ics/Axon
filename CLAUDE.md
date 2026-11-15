@@ -46,6 +46,7 @@ No build step, no dependencies, no network calls. `.claude/launch.json` defines 
 | `js/games/sim.js` | The run simulator (labs): choose a design, run the agent, read the trace, fix what broke |
 | `js/markdown.js` | Pure Markdown parser for the full-read mode (UMD, tested). Returns data, never HTML |
 | `course/addy/` | Bundled course text: `md/NN.md` (downloaded, then cleaned of embedded HTML and scripts), `NN.js` (generated, loaded by the reader), `LICENSE.txt`, `README.md` (source, licence, changes) |
+| `tools/playthrough.js` | Paste into the browser console to play every level to its result dialog and report failures and page overflow. Not loaded by the app |
 | `tools/build-course.js` | Cleans `md/NN.md` in place (removes embedded HTML and scripts) and writes `NN.js`. Not part of the running app |
 | `TASKS.md` | Task list and resume point. Read first |
 | `tests/engine.test.js` | Unit tests |
@@ -168,5 +169,5 @@ Unlocked together once `guard` (Shield Up) is done; playable in any order. Each 
 0. If any `js/` or `css/` file changed, raise the `?v=N` number on every script and style link in `index.html` (all to the same number). Browsers otherwise keep serving old files.
 
 1. `npm test` passes.
-2. Play the changed level to the result dialog in a browser; console is clean.
+2. Play the changed level to the result dialog in a browser; console is clean. After changing a game or a lot of level data, run `tools/playthrough.js` (instructions at the top of the file); a clean run reports 0 failed.
 3. Tab through it with the keyboard.
