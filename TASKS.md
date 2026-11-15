@@ -6,9 +6,10 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Round 19: the lab `p-lab-1` is written, tested (53 pass) and committed. The second reader (step 1) is
-> still running in the background; when its report arrives, apply it (step 3). If the session ended first,
-> rerun the reader as described in step 1. Then step 4 (browser) and step 5 (docs).
+> Round 19: the lab is done and played. The second reader covered topics 01–06 plus the boss and lab; its
+> 12 findings are applied and committed (53 tests pass). It did not reach the last 13 questions
+> (`p06-orchestrate-2` … `p08-watch-2`); a second pass on those is running. When it reports, apply it, then
+> step 4 (replay with `tools/playthrough.js` at 375px) and step 5 (docs, Done, commit).
 > Git: `main` is ahead of `origin/main` by local commits; ask the user before pushing.
 
 ## Round 19 — harden the Python + cloud journey (in progress; user said "next task" 2026-11-15, Claude picked

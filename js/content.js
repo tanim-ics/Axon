@@ -2048,7 +2048,7 @@
     concepts: [['p02-venv', 'Virtual environments'], ['p02-pin', 'Pinned dependencies'], ['p02-secrets', 'Secrets in the environment']],
     apply: { kind: 'sort', icon: '🗂️', title: 'Where does it go?', idea: 'Each line belongs in exactly one place.',
       key: 'Packages in the dependency file. Keys and passwords in the environment. Logic and settings in code.',
-      buckets: [{ id: 'dep', icon: '📌', name: 'Dependency file' }, { id: 'env', icon: '🔑', name: 'Environment (.env)' }, { id: 'code', icon: '🐍', name: 'Source code' }],
+      buckets: [{ id: 'dep', icon: '📌', name: 'Dependency file' }, { id: 'env', icon: '🔑', name: 'Secrets (.env)' }, { id: 'code', icon: '🐍', name: 'Source code' }],
       items: [
         I('a', 'MODEL_API_KEY=sk-live-…', 'env', 'A key is a secret. It is read from the environment and never committed.'),
         I('b', 'requests==2.32.3', 'dep', 'A package and its exact version: that is what the dependency file is for.'),
@@ -2083,7 +2083,7 @@
         I('d', '400 Bad Request', 'fix', 'The body is malformed. Fix the JSON or the parameters.'),
         I('e', '503 Service Unavailable', 'retry', 'The server is overloaded for now. A later retry often works.'),
         I('f', '404 Not Found', 'fix', 'The URL or the model name is wrong. Correct it.'),
-        I('g', '500 Internal Server Error', 'retry', 'The fault is on their side. Retry with backoff, up to a limit.')
+        I('g', '500 Internal Server Error', 'retry', 'Often a passing fault on their side. Retry with backoff, and stop after a few tries.')
       ] }
   });
 
@@ -2093,7 +2093,7 @@
     cards: [
       K('🏷️', 'Hints and docstrings', 'Type hints say what each argument is. The docstring says what the function does. Frameworks turn both into the schema the model reads.',
         ['flow', ['def search(query: str)', '"""Search the docs."""', 'Tool schema'], false]),
-      K('⚡', 'async is for waiting', 'An agent spends most of its time waiting on networks. With async and await, three slow calls wait at the same time instead of one after another.',
+      K('⚡', 'async is for waiting', 'An agent spends most of its time waiting on networks. Start three slow calls together with asyncio.gather and they wait at the same time instead of one after another.',
         ['vs', 'One after another', ['Call A, wait', 'Call B, wait', 'Call C, wait'], 'Together', ['Start A, B and C', 'Wait once', 'All three return']]),
       K('🧯', 'Catch errors and report them', 'Wrap a tool body in try and except. Return a clear error message instead of crashing, so the model can try something else.',
         ['flow', ['Tool fails', 'except', '"Error: city not found"', 'Model adapts'], false]),
@@ -2102,11 +2102,10 @@
     ],
     concepts: [['p04-schema', 'Hints and docstrings become schemas'], ['p04-async', 'async is for waiting'], ['p04-test', 'Testing tools']],
     apply: { kind: 'order', icon: '🛠️', title: 'From function to tool call', idea: 'Follow one tool from your editor to a finished call.',
-      key: 'Write it → describe it → send the schema → the model asks → check the arguments → run → return the result.',
+      key: 'Write and describe it → send the schema → the model asks → check the arguments → run → return the result.',
       why: 'The model can only ask for tools it was told about, so the schema goes out first. Its arguments are untrusted input and are checked before the function runs.',
       steps: [
-        { id: 'write', icon: '⌨️', text: 'Write the function with type hints' },
-        { id: 'doc', icon: '📝', text: 'Add a docstring that says when to use it' },
+        { id: 'write', icon: '⌨️', text: 'Write the function with type hints and a docstring' },
         { id: 'schema', icon: '📐', text: 'Send its schema along with the prompt' },
         { id: 'ask', icon: '🤖', text: 'The model returns a name and arguments' },
         { id: 'check', icon: '🔍', text: 'Validate the arguments' },
@@ -2128,17 +2127,17 @@
       'Whatever follows return is the value the caller receives.'),
     Q('p01-json-1', 'p01-json', 'The model replies with JSON text. Which call turns it into a dict?', 'json.loads', ['json.dumps', 'print'],
       'loads reads a string into Python data. dumps goes the other way.'),
-    Q('p01-json-2', 'p01-json', 'Why does json.loads sometimes raise an error on a model reply?', 'The text is not valid JSON', ['The reply is too short to parse', 'JSON can only be read once per program'],
+    Q('p01-json-2', 'p01-json', 'Why does json.loads sometimes raise an error on a model reply?', 'The text is not valid JSON', ['The reply is longer than json.loads accepts', 'JSON can only be read once per program'],
       'Models can add stray words or drop a bracket. Catch the error and ask again.'),
     Q('p02-venv-1', 'p02-venv', 'What problem does a virtual environment solve?', 'Projects needing different package versions', ['Slow code', 'Running out of disk space'],
       'Each project gets its own packages, so one upgrade cannot break another project.'),
-    Q('p02-venv-2', 'p02-venv', 'How many virtual environments should two unrelated projects share?', 'None: one each', ['One, to save space', 'One, so versions stay in step'],
+    Q('p02-venv-2', 'p02-venv', 'Two unrelated projects need different versions of the same package. How do you set them up?', 'A virtual environment for each', ['One shared environment, to save space', 'No environment: install both system-wide'],
       'Sharing brings back the clash the environment was meant to remove.'),
     Q('p02-pin-1', 'p02-pin', 'Why write exact versions in the dependency file?', 'So every machine installs the same set', ['So installs run faster', 'So the packages can never be upgraded later'],
       'A pinned file makes the install repeatable. You can still raise a version on purpose.'),
     Q('p02-pin-2', 'p02-pin', 'It runs on your laptop but fails on the server with an import error. First suspect?', 'A package missing from the dependency file', ['A bug in Python itself', 'The server is too slow'],
       'You installed it by hand locally and never wrote it down, so the server does not have it.'),
-    Q('p02-secrets-1', 'p02-secrets', 'Where should an API key live?', 'In an environment variable', ['In the source code, near where it is used', 'In a comment, so it is easy to find'],
+    Q('p02-secrets-1', 'p02-secrets', 'Where should an API key live?', 'In an environment variable', ['In the source code, near where it is used', 'In a config file committed with the code'],
       'Code is shared and kept in history. The environment is set per machine.'),
     Q('p02-secrets-2', 'p02-secrets', 'A key was committed to the repository by mistake. What now?', 'Revoke it at once and issue a new key', ['Delete the line in a new commit', 'Make the repository private and carry on'],
       'The key is still in the history and may already be copied. Only replacing it makes it safe.'),
@@ -2160,8 +2159,8 @@
       'The schema is all the model knows about the tool. Make it say what you mean.'),
     Q('p04-async-1', 'p04-async', 'When does async help most?', 'When waiting on networks', ['During heavy maths on one processor', 'When the code has no input or output'],
       'async lets other work continue while a call waits. It does not make calculation faster.'),
-    Q('p04-async-2', 'p04-async', 'Three independent tool calls take 2 seconds each. Awaited together, about how long?', '2 seconds', ['6 seconds', '8 seconds'],
-      'They wait at the same time, so the total is about the slowest one.'),
+    Q('p04-async-2', 'p04-async', 'Three independent network calls take 2 seconds each. Started together with asyncio.gather, about how long?', '2 seconds', ['6 seconds', '8 seconds'],
+      'They wait at the same time, so the total is about the slowest one. Awaiting them one by one would take 6.'),
     Q('p04-test-1', 'p04-test', 'Do you need a model to test a tool function?', 'No, call it directly with known inputs', ['Yes, tools only run inside an agent', 'Yes, but a small one is enough'],
       'A tool is a plain function. Test it alone, then test the agent that uses it.'),
     Q('p04-test-2', 'p04-test', 'What does a pytest test do?', 'Asserts on a result', ['Measures how fast the code runs', 'Formats the code'],
@@ -2189,7 +2188,7 @@
         I('a', 'Run the agent loop when a request arrives', 'cmp', 'Running code is what compute is for.'),
         I('b', 'Keep the PDFs customers upload', 'sto', 'Whole files go in object storage: cheap, durable and fetched by name.'),
         I('c', 'Look up a customer and their open orders', 'db', 'Records you query by field belong in a database.'),
-        I('d', 'Find the five passages most like a question', 'db', 'Similarity search is a query. A vector database answers it.'),
+        I('d', 'Search the stored passages for the five closest to a question', 'db', 'Searching stored records is a query, even when it is by similarity. A vector database answers it.'),
         I('e', 'Archive a year of conversation logs', 'sto', 'Large files that are rarely read are a storage job.'),
         I('f', 'Run the eval set every night', 'cmp', 'A scheduled job is still code that needs somewhere to run.')
       ] }
@@ -2211,13 +2210,13 @@
     concepts: [['p06-image', 'Image and container'], ['p06-dockerfile', 'The Dockerfile'], ['p06-orchestrate', 'Orchestrators']],
     apply: { kind: 'order', icon: '📜', title: 'Write the Dockerfile', idea: 'Package the agent. Put the steps in order.',
       key: 'Base image → dependency file → install → your code → start command → build → push.',
-      why: 'Each line builds on the one before. Dependencies are installed before the code is copied so that a code change reuses the cached install. Only a built image can be pushed.',
+      why: 'Dependencies are installed before the code is copied so that a code change reuses the cached install. The start command comes last by convention, and only a built image can be pushed.',
       steps: [
         { id: 'from', icon: '🧱', text: 'FROM a Python base image' },
         { id: 'deps', icon: '📌', text: 'COPY the dependency file' },
         { id: 'install', icon: '📦', text: 'RUN pip install' },
         { id: 'code', icon: '🐍', text: 'COPY your code' },
-        { id: 'cmd', icon: '▶️', text: 'CMD: set the start command' },
+        { id: 'cmd', icon: '▶️', text: 'CMD: start the code you just copied' },
         { id: 'build', icon: '🔨', text: 'Build the image' },
         { id: 'push', icon: '🏬', text: 'Push it to the registry' }
       ] }
@@ -2228,7 +2227,7 @@
     key: 'Match the runtime to the load. Keep secrets in a secret manager, give each service the least access, and keep state outside the process.',
     cards: [
       K('🧭', 'Three places to run code', 'Choose by how the work arrives and how long it runs.',
-        ['stack', ['Serverless function: short, occasional, scales to zero', 'Container service: steady traffic, long requests', 'Virtual machine: full control, GPUs']]),
+        ['stack', ['Serverless function: short, occasional, scales to zero', 'Container service: steady traffic, long requests', 'Virtual machine: full control, your choice of hardware']]),
       K('🔐', 'Secrets and access', 'In the cloud, keys live in a secret manager and are handed to the service when it starts. Give each service an identity with only the permissions it needs.',
         ['flow', ['Secret manager', 'Service identity', 'Only its own secrets'], false]),
       K('🧊', 'Stateless services', 'Any copy of the service may get the next request, and copies come and go. Keep conversations and memory in a database, not in the process.',
@@ -2237,15 +2236,15 @@
     ],
     concepts: [['p07-runtime', 'Choosing where to run'], ['p07-access', 'Secrets and least access'], ['p07-stateless', 'Stateless services']],
     apply: { kind: 'sort', icon: '🧭', title: 'Where should it run?', idea: 'Match each workload to a runtime.',
-      key: 'Short and occasional: a function. Steady or long-running: a container service. GPUs and full control: a virtual machine.',
+      key: 'Short and occasional: a function. Steady or long-running: a container service. Hardware you choose and full control: a virtual machine.',
       buckets: [{ id: 'fn', icon: '⚡', name: 'Serverless function' }, { id: 'ctr', icon: '🐳', name: 'Container service' }, { id: 'vm', icon: '🖥️', name: 'Virtual machine' }],
       items: [
         I('a', 'A webhook that fires twenty times a day', 'fn', 'Rare, short work suits a function: it costs nothing while idle.'),
         I('b', 'A chat API with steady traffic all day', 'ctr', 'Constant load is cheaper and steadier on containers that stay up.'),
-        I('c', 'Hosting an open model that needs a GPU', 'vm', 'GPU work needs a machine you choose and control.'),
+        I('c', 'Hosting an open model on a GPU machine you set up yourself', 'vm', 'You pick the GPU and install everything yourself. That is a virtual machine.'),
         I('d', 'Make a thumbnail whenever a file is uploaded', 'fn', 'A short job triggered by an event is the classic function.'),
-        I('e', 'An agent worker whose runs last several minutes', 'ctr', 'Functions have short time limits. Long runs need a container.'),
-        I('f', 'A fine-tuning run on hardware you configure', 'vm', 'Training needs GPUs and full control of the machine.')
+        I('e', 'An agent worker whose runs can last an hour', 'ctr', 'Functions have time limits measured in minutes. Long runs need a container.'),
+        I('f', 'A fine-tuning run on hardware you configure', 'vm', 'You asked to configure the hardware yourself. That is what a virtual machine gives you.')
       ] }
   });
 
@@ -2265,11 +2264,11 @@
     concepts: [['p08-pipeline', 'The delivery pipeline'], ['p08-rollout', 'Staged rollout and rollback'], ['p08-watch', 'Logs, metrics, alerts']],
     apply: { kind: 'order', icon: '🛤️', title: 'The path to production', idea: 'One change, from your editor to every user.',
       key: 'Commit → tests and evals → build → staging → a few users → everyone.',
-      why: 'Nothing is built until the tests and evals pass, nothing reaches users before staging, and a small share of users sees it before everyone does.',
+      why: 'Only a commit that passed its tests and evals becomes a release image, nothing reaches users before staging, and a small share of users sees it before everyone does.',
       steps: [
         { id: 'commit', icon: '⌨️', text: 'Push the commit' },
         { id: 'test', icon: '🧪', text: 'The pipeline runs tests and evals' },
-        { id: 'build', icon: '🔨', text: 'Build the image' },
+        { id: 'build', icon: '🔨', text: 'Build the release image from the commit that passed' },
         { id: 'stage', icon: '🎭', text: 'Deploy to staging and check it' },
         { id: 'few', icon: '🪜', text: 'Release to a small share of users' },
         { id: 'all', icon: '🌍', text: 'Release to everyone' }
@@ -2309,10 +2308,10 @@
     'Your support agent works on your laptop. On Monday it must serve real customers. Make the calls.',
     'Pin it, package it, keep secrets out of code, retry sensibly, keep state outside, ship through a pipeline and watch it.', [
       D('p02-pin', 'A colleague cannot run the project: an import fails. What was missing?',
-        'A pinned dependency file', ['A faster laptop', 'A newer model'],
+        'A pinned dependency file', ['A copy of your .env file', 'The same operating system as yours'],
         'You installed a package by hand and never recorded it. A pinned file makes the install repeatable.'),
       D('p02-secrets', 'The API key is a string in agent.py. What comes first?',
-        'Move it to the environment and rotate it', ['Rename the variable so it is harder to find', 'Leave it until launch is over'],
+        'Move it to the environment and rotate it', ['Delete the line in a new commit', 'Leave it until launch is over'],
         'The key is already in the history. Take it out of code and replace it.'),
       D('p03-backoff', 'Under load the model API starts answering 429. What does the code do?',
         'Back off and retry', ['Retry at once, as fast as possible', 'Show every customer an error straight away'],
@@ -2321,10 +2320,10 @@
         'Build one image and run that same image everywhere', ['Install by hand on each server', 'Copy the files over'],
         'One image holds the code and every dependency, so test and production cannot drift apart.'),
       D('p07-runtime', 'Chats arrive all day and one request can last a minute. Where does it run?',
-        'A container service', ['A serverless function with a short time limit', 'A laptop left on in the office'],
+        'A container service', ['A serverless function with a short time limit', 'A virtual machine you patch yourself'],
         'Steady traffic and long requests suit containers that stay up.'),
       D('p07-stateless', 'Two copies run behind a load balancer, and customers lose their chat history. Why?',
-        'History is kept in each process', ['The load balancer deletes old messages on purpose', 'The model forgot'],
+        'History is kept in each process', ['The database is too slow to answer', 'The model forgot'],
         'The next request may reach the other copy, which never saw the chat. Keep history in a database.'),
       D('p08-rollout', 'A new prompt version is ready. How do you release it?',
         'To a small share of users first', ['To everyone at once, at a quiet hour', 'To nobody until every bug is gone'],
@@ -2337,17 +2336,17 @@
   BANK = BANK.concat([
     Q('p05-blocks-1', 'p05-blocks', 'Which kind of service runs your agent code?', 'Compute', ['Storage', 'Database'],
       'Compute runs code. Storage keeps files, and a database answers queries.'),
-    Q('p05-blocks-2', 'p05-blocks', 'Customers upload PDFs that must be kept for a year. Which building block holds them?', 'Storage', ['Compute, kept running all year', 'A larger context window'],
+    Q('p05-blocks-2', 'p05-blocks', 'Customers upload PDFs that must be kept for a year. Which building block holds them?', 'Storage', ['Compute, kept running all year', 'The disk inside the running container'],
       'Files go in object storage: durable, cheap and fetched by name.'),
     Q('p05-managed-1', 'p05-managed', 'What do you give up with a managed service?', 'Some control over how it is run', ['Your data', 'The ability to stop paying'],
       'The provider makes the operating choices. In return it patches, backs up and scales.'),
     Q('p05-managed-2', 'p05-managed', 'A two-person team needs a database tomorrow. Sensible default?', 'A managed database', ['Build and patch their own database servers', 'Keep everything in text files for now'],
       'A small team has no time to run servers. Let the provider do it.'),
     Q('p05-cost-1', 'p05-cost', 'How is cloud usage typically billed?', 'By what you use: seconds, requests, gigabytes', ['A fixed yearly fee', 'Per employee'],
-      'You pay for use, which is why idle resources still cost money.'),
-    Q('p05-cost-2', 'p05-cost', 'What protects you from a forgotten test server running for a month?', 'A budget alert', ['Luck', 'A bigger instance, so it finishes sooner'],
+      'You pay for whatever is switched on, busy or not. A forgotten server keeps billing.'),
+    Q('p05-cost-2', 'p05-cost', 'What protects you from a forgotten test server running for a month?', 'A budget alert', ['The free tier', 'Choosing a cheaper region'],
       'An alert tells you when spending passes a limit, before the bill does.'),
-    Q('p06-image-1', 'p06-image', 'What is a container image?', 'A read-only package of code and its dependencies', ['A running process', 'A screenshot of the server'],
+    Q('p06-image-1', 'p06-image', 'What is a container image?', 'A read-only package of code and its dependencies', ['A running process', 'A whole virtual machine with its own operating system'],
       'The image is the package. A container is a running copy of it.'),
     Q('p06-image-2', 'p06-image', 'How many containers can start from one image?', 'Many', ['Exactly one', 'One per registry'],
       'An image is a template. Start as many copies as the load needs.'),
@@ -2355,7 +2354,7 @@
       'Build steps are cached. If only the code changed, the install step is not run again.'),
     Q('p06-dockerfile-2', 'p06-dockerfile', 'What does the CMD line set?', 'The start command', ['The base image', 'The list of packages to install'],
       'CMD is what runs when a container starts. FROM sets the base image.'),
-    Q('p06-orchestrate-1', 'p06-orchestrate', 'What does an orchestrator such as Kubernetes do?', 'Runs, restarts and scales containers', ['Writes the Dockerfile for you', 'Trains the model'],
+    Q('p06-orchestrate-1', 'p06-orchestrate', 'What does an orchestrator such as Kubernetes do?', 'Runs, restarts and scales containers', ['Builds the image from the Dockerfile', 'Stores images for servers to pull'],
       'It keeps the wanted number of copies running and replaces the ones that fail.'),
     Q('p06-orchestrate-2', 'p06-orchestrate', 'A container crashes at night under an orchestrator. What happens?', 'It is restarted', ['It stays down until someone logs in', 'The image is deleted from the registry'],
       'Restarting failed containers is the main reason to use an orchestrator.'),

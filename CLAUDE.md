@@ -1,6 +1,6 @@
 # Axon
 
-A gamified, hands-on course that teaches beginners how AI agents work, how to design, build and tune one, and how to wire agentic pipelines. It is organised as **journeys** picked from a hub: the Academy (eight short games), Field missions (seven real-world pipelines and their popular tools), the Addy journey (Addy Osmani's "Agent Engineer" course: all 19 lessons, 66 levels) and the LLM journey (tokens, prompting, RAG, fine-tuning, the harness, evals and shipping: 16 topics, 54 levels, weighted by researched job postings) and the Python + cloud journey (the Python an agent is written in and the cloud it runs on: 8 topics, 27 levels). A spaced-review layer brings every learned idea back so it sticks. Almost no reading.
+A gamified, hands-on course that teaches beginners how AI agents work, how to design, build and tune one, and how to wire agentic pipelines. It is organised as **journeys** picked from a hub: the Academy (eight short games), Field missions (seven real-world pipelines and their popular tools), the Addy journey (Addy Osmani's "Agent Engineer" course: all 19 lessons, 66 levels) and the LLM journey (tokens, prompting, RAG, fine-tuning, the harness, evals and shipping: 16 topics, 54 levels, weighted by researched job postings) and the Python + cloud journey (the Python an agent is written in and the cloud it runs on: 8 topics, 28 levels). A spaced-review layer brings every learned idea back so it sticks. Almost no reading.
 
 The app was first called Agentcraft. The `localStorage` key is still `agentcraft.v1` on purpose, so saved progress survives.
 
@@ -98,7 +98,7 @@ Addy Osmani's "Agent Engineer" course (Apache 2.0, `github.com/addyosmani/agent-
 
 ## The Python + cloud journey
 
-- `Content.PY`, journey id `py`, level prefix `p` (`p01-learn` … `p08-master`, `p-mix-1`, `p-mix-2`, `p-boss-1`). Built with the same `lesson()` / `mix()` / `boss()` helpers; `TRACK = track('p', 'Topic', false)` is set before its lessons.
+- `Content.PY`, journey id `py`, level prefix `p` (`p01-learn` … `p08-master`, `p-mix-1`, `p-mix-2`, `p-lab-1`, `p-boss-1`). Built with the same `lesson()` / `mix()` / `boss()` helpers; `TRACK = track('p', 'Topic', false)` is set before its lessons.
 - Topics: 01 Python for agents · 02 Environments and secrets · 03 Calling a model API · 04 Tools, async and tests · 05 Cloud building blocks · 06 Containers · 07 Deploying an agent · 08 Pipelines and operations.
 - No source text and no research behind it: cards are written from general, established practice at beginner level. It names AWS, Azure and Google Cloud, plus Docker, Kubernetes and pytest, but **no individual cloud products** (their names change and are not verified). Keep it that way unless the names are checked and dated like `TOOLS_REVIEW`.
 - Code shown in cards and puzzles is illustrative, not run by the app. Keep snippets to one line and standard-library or generic names.
