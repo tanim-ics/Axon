@@ -6,8 +6,9 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Rounds 1–11 are complete and verified. Nothing is in progress. Next work comes from the Backlog (each item
-> needs the user's OK) or from a new request: add it below as a new round before starting.
+> Rounds 1–12 are complete and verified. Nothing is in progress. The project is under git on branch `main`
+> with the remote `origin` = `https://github.com/tanim-ics/Axon.git` (private, empty). **Nothing has been
+> pushed**: pushing needs the user's explicit OK. Next work comes from the Backlog or a new request.
 
 ## Planned next (approved)
 
@@ -18,9 +19,15 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 - [ ] Verify the "popular tools" lists against live sources and add a "last reviewed" date
 - [ ] Test with a real screen reader (VoiceOver)
-- [ ] Put the project under git
 
 ## Done
+
+### Round 12 — the project is under git (complete)
+- [x] `git init` on branch `main`, `.gitignore` added, first commit of all 70 files
+- [x] Identity set for this project only: name `tanim-ics`, email `tanim-ics@users.noreply.github.com` (the user
+      answered the identity question with their GitHub repository, so no real email is recorded)
+- [x] Remote `origin` added: `https://github.com/tanim-ics/Axon.git` (private and empty when checked on
+      2026-11-15). Not pushed
 
 ### Round 11 — a second evals topic in the LLM journey (complete, verified)
 - [x] New topic 14 "Evals for agents": rubrics for judges, grading the path, repeat runs and checking the judge;

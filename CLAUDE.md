@@ -14,6 +14,10 @@ The app was first called Agentcraft. The `localStorage` key is still `agentcraft
 4. **If you stop mid-step:** write what is half-done and what is left under "Resume here".
 5. **When a round is finished:** move it under "Done" with one line per outcome.
 
+## Git
+
+The project is a git repository on branch `main`; the remote `origin` is `https://github.com/tanim-ics/Axon.git`. Commit after each verified step, with a message that says what changed and why. Never push without the user's explicit OK, and never commit secrets. `.claude/launch.json` is committed on purpose; `.claude/settings.local.json` is ignored.
+
 ## Run and test
 
 ```bash
