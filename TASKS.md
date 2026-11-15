@@ -7,7 +7,7 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 ## Resume here
 
 > Rounds 1–20 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
-> empty. Git: `main` is ahead of `origin/main` by local commits; ask the user before pushing.
+> empty. Git: Rounds 1–20 are pushed to `origin/main` (2026-11-15). Ask the user before pushing anything new.
 > Ideas for what could come next are under "Ideas" below; none is approved.
 
 ## Planned next (approved)
