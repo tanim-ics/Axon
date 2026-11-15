@@ -2,7 +2,7 @@
 
 A gamified, hands-on course that teaches beginners how AI agents work, how to design, build and tune one, and how to wire agentic pipelines. It is organised as **journeys** picked from a hub: the Academy (eight short games), Field missions (seven real-world pipelines and their popular tools), the Addy journey (Addy Osmani's "Agent Engineer" course: all 19 lessons, 68 levels) and the LLM journey (tokens, prompting, RAG, fine-tuning, the harness, evals and shipping: 16 topics, 56 levels, weighted by researched job postings) and the Python + cloud journey (the Python an agent is written in and the cloud it runs on: 8 topics, 30 levels). A spaced-review layer brings every learned idea back so it sticks. Almost no reading.
 
-The app was first called Agentcraft. The `localStorage` key is still `agentcraft.v1` on purpose, so saved progress survives.
+The app was first called Agentcraft. The `localStorage` key is still `agentcraft.v1` on purpose, so saved progress survives. That key belongs to the first profile (`main`); every other profile saves under `agentcraft.v1.<id>`, and the list of profiles is in `agentcraft.profiles`.
 
 ## Task list — do this first, every session
 
@@ -70,6 +70,7 @@ No build step, no dependencies, no network calls. `.claude/launch.json` defines 
 | `#/blitz` | The timed Arena: 60 seconds, best score saved |
 | `#/course`, `#/read/<no>` | Course list and the full-read reader for one lesson |
 | `#/codex` | Codex |
+| `#/profile` | Profiles: switch, add, rename, delete, and reset the active profile's progress |
 
 ## Spaced review (the retention layer)
 
@@ -157,7 +158,8 @@ Unlocked together once `guard` (Shield Up) is done; playable in any order. Each 
 - `localStorage` is untrusted. Everything read from it goes through `Engine.sanitizeState`. New persisted fields need a sanitizer branch and a test.
 - `UI.h()` drops any `href` that is not `#…` or `http(s)://`, and any `src`. Do not work around it.
 - After a game re-renders its screen, move focus to the new content (the question heading, the card), so keyboard and screen-reader users are not sent back to the top of the page.
-- The agent name is the only free-text input. It must pass through `Engine.cleanName` before it is stored or displayed.
+- There are two free-text inputs. The agent name must pass through `Engine.cleanName` and a profile name through `Engine.profileName` before it is stored or displayed.
+- The profile list is untrusted too: read it only through `Engine.sanitizeProfiles`, and build a storage key only with `Engine.profileKey` (it refuses any id that is not `main` or `p<number>`). Profiles are a convenience for sharing one browser, not security: there is no password, and the page says so.
 
 **Architecture**
 - Rules and scoring live in `engine.js` and stay pure. Games only render and call the engine. Add a test for every new rule.
@@ -165,6 +167,12 @@ Unlocked together once `guard` (Shield Up) is done; playable in any order. Each 
 - XP and badges are derived from `state.stars`; never store them. Review sessions give no stars.
 - In a game, use `api.later(fn, ms)` instead of `setTimeout` so timers die on navigation. Call `api.done(stars)` once, with 1–3.
 - Passing arrays of nodes: use `UI.fill(el, …)`, not `el.replaceChildren(array)`.
+
+**Solution, Start over, Show answer**
+- Every level that is not made of questions has a written solution from `Engine.solutionOf(C, L)` (lines of text built from the level's own data). The level frame shows it behind a "Solution" button that asks first. A new game type needs a branch there; a test fails if any level has neither a solution nor questions.
+- Seeing the solution caps the level at one star (`Engine.solvedStars`) until the page is reloaded; the list of peeked levels is kept in memory only, on purpose. "Start over" restarts the level and keeps the cap.
+- Question screens (`Games.recall`: Learn checks, Master, Mix, bosses, daily review, Arena) have "Show answer", which records a miss for that idea. Blitz has neither button: it is a race.
+- A dialog opened with `openOverlay(node, back, focusEl)` and `back = null` closes in place on Escape and returns focus to `overlayReturn`.
 
 **Adding a level**
 0. (Course lesson) Add a `lesson(...)` call and its questions; nothing else is needed.

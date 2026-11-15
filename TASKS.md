@@ -6,22 +6,15 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Round 24 (solution button, start over, profiles) is in progress. Rounds 1–23 are complete; Rounds 1–21
-> are pushed, the rest is committed locally only. Next step: the first unticked box under "Round 24".
+> Rounds 1–24 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
+> empty. Git: Rounds 1–21 are pushed; Rounds 22–24, the README and the landing mock are committed locally
+> only. Ask the user before pushing.
+> Ideas for what could come next are under "Ideas" below; none is approved.
 
 ## Planned next (approved)
 
-### Round 24 — solution button, start over, profiles (asked for 2026-11-15)
-- [ ] Engine + tests: `solutionOf` (a written solution for every level that is not made of questions),
-      `solvedStars` (a level whose solution was seen gives 1 star), profiles (`sanitizeProfiles`,
-      `addProfile`, `renameProfile`, `removeProfile`, `profileKey`, `profileName`)
-- [ ] Level frame: "Solution" (asks first, then lists the solution) and "Start over"; question screens get
-      "Show answer", which counts as a miss
-- [ ] `#/profile`: switch, add, rename, delete, reset progress; HUD link; the codex reset moves there.
-      Storage: the first profile keeps the key `agentcraft.v1`, others use `agentcraft.v1.<id>`
-- [ ] `npm test`; `?v=29`; browser at 375px: a solution on three game types, show answer, start over, two
-      profiles with separate progress, reset; `tools/playthrough.js` reads the active profile
-- [ ] `CLAUDE.md` and README; move the round to Done; commit
+- Nothing further is approved. See the Backlog.
+
 
 ## Ideas (not approved; pick with the user)
 
@@ -31,6 +24,31 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 
 ## Done
+
+### Round 24 — solution button, start over, profiles (complete, verified)
+- [x] Engine: `solutionOf` writes the solution of every level that is not made of questions from the
+      level's own data (124 levels; the other 45 are question levels); `solvedStars`; the profile functions.
+      59 tests pass (4 new)
+- [x] Level frame: "Solution" asks first, then lists the solution and caps the level at one star until the
+      page is reloaded; "Start over" restarts the level. Question screens (Learn checks, Master, Mix, bosses,
+      daily review, Arena) have "Show answer", which counts as a miss. Blitz has neither
+- [x] `#/profile`: up to 6 profiles in this browser, each with its own progress; switch, add, rename,
+      delete, and reset the active profile (two taps). The header shows the active profile's initial. The
+      first profile keeps the key `agentcraft.v1`, so existing progress is untouched. The codex's reset
+      button is now a link to this page
+- [x] Browser at 375px (`?v=31`), in a throwaway profile: the solution dialog on `loop`, a mission, a lab, a
+      debug level, a sort, `pipeline` and `boss` (fits the screen, Escape closes it, focus returns to the
+      button); `loop` finished after peeking: 1 star; Start over cleared the steps; Show answer marked the
+      right option and changed the review schedule; rename (a name with markup was cleaned), reset, switch
+      and delete. `tools/playthrough.js` now reads the active profile and played 8 levels with the new
+      buttons present. Console clean, no page overflow
+- [x] Fixed on the way: the edit script duplicated 509 lines of `js/app.js` (the app still ran, because a
+      later function replaces an earlier one); found, removed and checked that each view is defined once.
+      On phones the XP bar is hidden so the header fits its five items
+- Limits: the cap is easy to get around (reload, then replay), by design. Solutions are plain text, not an
+  animation of the moves. Not tab-walked by keyboard (focus was checked by script). The storage event for
+  profiles changed in another tab was not exercised. The other 161 levels were not replayed after this
+  round. Profiles are not accounts: nothing stops one person opening another's profile
 
 ### Round 23 — the landing design applied to the app (complete, verified)
 - [x] Fonts: IBM Plex Mono 500 and 600 and Inter (variable), latin woff2 from Fontsource via jsDelivr

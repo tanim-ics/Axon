@@ -51,6 +51,10 @@ after the answer.
   one comes back tomorrow.
 - **Arena** is a random, untimed mix of everything learned.
 - **Blitz** is the Arena against a 60-second clock, with a best score.
+- Stuck on a level? **Solution** shows how it is solved (the level then gives one star), **Start over**
+  restarts it, and question screens have **Show answer**, which counts as a miss.
+- **Profiles** let several people share one browser, each with their own progress. A profile's
+  progress can be reset from the profile page. There are no accounts or passwords.
 - The **codex** shows a mastery map, saved playbooks, the toolbox, and the job-posting tally with its
   sources.
 
