@@ -43,6 +43,7 @@ No build step, no dependencies, no network calls. `.claude/launch.json` defines 
 | `js/games/recall.js` | `Games.recall` (questions with "why" feedback: daily review, Arena) and `Games.quiz` (a level made of questions: Master and Mix levels), `Games.case` (boss scenarios) |
 | `js/games/learn.js` | Key-lesson cards with a diagram each, then one question per idea |
 | `js/games/sort.js`, `js/games/order.js` | Data-driven puzzles: send cards to buckets; tap steps in order |
+| `js/games/blitz.js` | Blitz, the timed Arena: clock, score, streak, quick feedback |
 | `js/games/fix.js` | "Fix the trace": tap the first wrong step of a broken run, then pick the repair |
 | `js/games/sim.js` | The run simulator (labs): choose a design, run the agent, read the trace, fix what broke |
 | `js/markdown.js` | Pure Markdown parser for the full-read mode (UMD, tested). Returns data, never HTML |
@@ -64,6 +65,7 @@ No build step, no dependencies, no network calls. `.claude/launch.json` defines 
 | `#/journey/<id>` | That journey's trail |
 | `#/level/<id>` | A level (back goes to its journey) |
 | `#/review`, `#/arena` | Recall sessions from the concept bank |
+| `#/blitz` | The timed Arena: 60 seconds, best score saved |
 | `#/course`, `#/read/<no>` | Course list and the full-read reader for one lesson |
 | `#/codex` | Codex |
 
@@ -75,6 +77,7 @@ No build step, no dependencies, no network calls. `.claude/launch.json` defines 
 - `Engine.masteryOf` lists every learned idea with a status (`due`, `new`, `learning`, `strong`); the codex shows it as the Mastery map.
 - A finished session goes through `Engine.touchSession`, which counts it as a learning day and returns any new badge. Do not change `state.streak` in the app.
 - Daily review asks what is due, weakest first. Arena is a random mix of everything learned. Neither gives stars or XP.
+- Blitz (`#/blitz`, `viewBlitz` in `app.js`, `Games.blitz`) is the Arena against a clock. `Engine.BLITZ` holds the round length and the seconds a wrong answer costs; `Engine.recordBlitz` keeps the best score in `state.blitz` (sanitised on load, only ever goes up). Answers are recorded with the same `recordReview` rules as the Arena, the clock pauses while feedback is shown, and the end panel lists each missed question once with its "why". It gives no stars or XP. Keep the untimed Arena: a clock is a barrier for some learners.
 - **Every new level must add its concepts and questions to the bank.** Field missions are the exception: their three concepts and six questions each are generated from the mission's stages, gate and tools at the end of `content.js`, so adding a mission needs no questions written by hand.
 - Wrong options must be plausible misconceptions, never jokes, and the right answer must not stand out by length. A test fails if the right answer is the longest, the shortest or the middle-length option in more than 45% of questions.
 
@@ -92,7 +95,7 @@ Addy Osmani's "Agent Engineer" course (Apache 2.0, `github.com/addyosmani/agent-
 
 `lab(n, icon, title, idea, key, sim)` adds a lab (`game: 'sim'`). `sim.slots` are design choices built with `SL(id, icon, label, concept, [[optionId, text], …])`; `sim.steps` are the agent's run built with `P(kind, text)` or `P(kind, text, slot, okId, { optionId: [whatHappens, why] })`. Rules the tests enforce: each slot decides exactly one step, each wrong option has what-happens and why, exactly one design wins, the right option is not always first, the last step shows the result, and each slot's concept is taught earlier in that journey (or is an Academy concept). Rules live in `Engine.simRun`; the game only plays the result.
 
-`fix(n, icon, title, idea, key, cases)` adds a debug level (`game: 'fix'`, id `<prefix>-fix-<n>`). A case is `X(concept, ask, steps, bug, rightFix, [wrongFixes], why)`; steps are `T(kind, text)` and exactly one `B(kind, text)`, the first step that went wrong. The learner taps the bad step, then picks the fix; a wrong tap or a wrong fix is a slip (`Engine.fixStars`), and the fix answer is recorded for the case's concept. Rules the tests enforce: three or more cases, one concept per case and taught earlier in that journey, exactly one bad step and never the first, the bad step not always in the same position, distinct options. Write the bad step as the first decision that is wrong, not the first place the damage shows.
+`fix(n, icon, title, idea, key, cases)` adds a debug level (`game: 'fix'`, id `<prefix>-fix-<n>`). A case is `X(concept, ask, steps, bug, rightFix, [wrongFixes], why)`; steps are `T(kind, text)` and exactly one `B(kind, text)`, the first step that went wrong. The learner taps the bad step, then picks the fix; a wrong tap or a wrong fix is a slip (`Engine.fixStars`), and the fix answer is recorded for the case's concept. Rules the tests enforce: three or more cases, one concept per case and taught earlier in that journey, exactly one bad step and never the first, the bad step not always in the same position, distinct options. Write the bad step as the first decision that is wrong, not the first place the damage shows. Bad input (a malformed model reply, a poisoned page) is never the bad step: the agent's mistake is what it does with it, and the game asks for "the first step where the agent made a mistake".
 
 - Cards and questions are written in this app's own words from the lesson's ideas. The lesson's own text is only shown in the reader, with credit and a link to the original.
 - **Full read:** `tools/build-course.js` removes the lessons' embedded HTML widgets and inline scripts and wraps the text as `Course.add("NN", "...")`. The reader adds that one `<script src>` on demand, `Markdown.parse` turns the text into data, and `app.js` builds DOM from it with `UI.h()`. Never render lesson text as HTML, and do not add `connect-src` to the CSP. After changing or re-downloading anything in `course/addy/md/`, run `node tools/build-course.js` before anything else: it also removes the embedded HTML and scripts from the stored file. A test fails if a stored lesson contains HTML or differs from its `NN.js`.

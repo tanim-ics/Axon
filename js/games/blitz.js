@@ -77,7 +77,7 @@
           streak = 0;
           left -= B.penalty * 1000;
           var good = q.options.filter(function (x) { return x.correct; })[0];
-          misses.push({ q: q.q, a: good.text, why: q.why });
+          if (!misses.some(function (m) { return m.q === q.q; })) misses.push({ q: q.q, a: good.text, why: q.why }); /* list each missed question once */
           api.sfx('bad');
           api.say('−' + B.penalty + ' seconds. The green one was right.', 'oops');
         }

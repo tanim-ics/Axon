@@ -6,27 +6,14 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Round 21, step 5: Blitz is written (engine + tests, `js/games/blitz.js`, `viewBlitz` in `js/app.js`, styles)
-> but not yet played in a browser. Next: play a round at 375px (step 5). The second reader for the 12 debug
-> runs (step 4) may still be running; apply its report when it arrives, or rerun it if the session ended.
-> Git: Rounds 1–20 are pushed. Ask the user before pushing anything new.
+> Rounds 1–21 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
+> empty. Git: Rounds 1–20 are pushed; Round 21 is committed locally only. Ask the user before pushing.
+> Ideas for what could come next are under "Ideas" below; none is approved.
 
-## Round 21 — timed Arena ("Blitz") and a second reader for the debug runs (in progress; user said
-## "next task" 2026-11-15, Claude picked timed Arena from Ideas and added the reader to close Round 20's limit)
+## Planned next (approved)
 
-Blitz: 60 seconds, one question after another from everything learned. A right answer scores a point, a wrong
-one costs 3 seconds and shows the right answer briefly. The best score is saved. Misses are listed with their
-"why" at the end and come back in tomorrow's review. The untimed Arena stays as it is.
+- Nothing further is approved. See the Backlog.
 
-- [x] 1. Engine: `BLITZ = { seconds: 60, penalty: 3 }`, `state.blitz` (best score, sanitized), `recordBlitz`
-      (pure, returns state + whether it is a record); tests
-- [x] 2. Game: `js/games/blitz.js` (timer bar, score, streak, quick feedback, clock paused during feedback)
-- [x] 3. App: route `#/blitz`, entry buttons on the hub review card and the Arena end panel, end summary with
-      the missed questions; styles; script tag; `?v=`
-- [x] 4. Second reader over the 12 debug runs in `a-fix-1`, `l-fix-1`, `p-fix-1`; apply findings
-- [ ] 5. Verify at 375px: play a Blitz round (right, wrong, time running out, record saved, misses listed,
-      Go again); console clean; `npm test`
-- [ ] 6. Docs (`CLAUDE.md`: routes, review section, layout), move the round to Done, commit
 
 ## Ideas (not approved; pick with the user)
 
@@ -37,6 +24,23 @@ one costs 3 seconds and shows the right answer briefly. The best score is saved.
 
 
 ## Done
+
+### Round 21 — Blitz (timed Arena) and a second reader for the debug runs (complete, verified)
+- [x] Engine: `BLITZ` (60 seconds, 3-second penalty), `state.blitz` (best score, sanitised, carried through
+      `awardLevel`), `recordBlitz`; 55 tests pass
+- [x] `js/games/blitz.js` and `viewBlitz` (`#/blitz`): clock bar, score, streak, quick right/wrong feedback
+      with the clock paused, end panel with the score, the record and each missed question once with its why.
+      Entry: a Blitz button on the hub review card. The untimed Arena is unchanged
+- [x] Second reader over the 12 debug runs: 7 findings, all applied. The prompt now asks for "the first step
+      where the agent made a mistake" (bad input is not the agent's error); one trace that contradicted
+      itself is fixed; three joke options replaced
+- [x] Browser at 375px: two Blitz rounds. Four right answers then wrong ones: score, streak, 3-second
+      penalty, paused clock, new record saved (2 → 4), 16 review entries written, misses listed. Second round:
+      the clock ran out on its own after the bar turned red; the best stayed 4; "Go again" returned to the
+      start panel. No page overflow, console clean
+- Limits: Blitz was driven by script clicks, not by keyboard, and there is no keyboard shortcut for the
+  answers. The debug-run fixes are text-only and were not replayed in a browser afterwards (tests pass). The
+  reader is a model, not a subject expert
 
 ### Round 20 — "fix the trace" game (complete, verified)
 - [x] New game `js/games/fix.js` (`game: 'fix'`): a broken run is shown as a trace; tap the first wrong step,
