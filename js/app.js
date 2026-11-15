@@ -514,6 +514,20 @@
       UI.stars(n));
   }
 
+  /* When the tool names in the playbooks and toolbox were last checked, and against which pages. */
+  function toolsReview() {
+    var R = C.TOOLS_REVIEW;
+    if (!R) return null;
+    return [
+      h('p', { class: 'section-sub market-caveat', text: 'Tool names last reviewed ' + R.reviewed + '. ' + R.note }),
+      h('details', { class: 'card market-sources' },
+        h('summary', { text: 'Official pages checked (' + R.sources.length + ')' }),
+        h('ol', null, R.sources.map(function (src) {
+          return h('li', null, h('a', { href: src.url, target: '_blank', rel: 'noopener noreferrer' }, src.name + ' ↗'));
+        })))
+    ];
+  }
+
   /* Mastery map: every idea learned so far, weakest first, grouped by journey. */
   var STATUS = { due: ['Due today', '⏰'], 'new': ['Not reviewed yet', '🆕'], learning: ['Learning', '🌱'], strong: ['Strong', '💪'] };
 
@@ -626,6 +640,7 @@
       h('h2', { class: 'section-title', text: 'Builder\'s toolbox' }),
       h('p', { class: 'section-sub', text: 'What agents themselves are built with.' }),
       h('ul', { class: 'card toolbox' }, toolbox),
+      toolsReview(),
       mastery(),
       market(),
       h('h2', { class: 'section-title', text: 'Badges' }),
