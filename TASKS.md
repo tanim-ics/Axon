@@ -6,24 +6,14 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Round 19: the lab is done and played. The second reader covered topics 01–06 plus the boss and lab; its
-> 12 findings are applied and committed (53 tests pass). It did not reach the last 13 questions
-> (`p06-orchestrate-2` … `p08-watch-2`); a second pass on those is running. When it reports, apply it, then
-> step 4 (replay with `tools/playthrough.js` at 375px) and step 5 (docs, Done, commit).
-> Git: `main` is ahead of `origin/main` by local commits; ask the user before pushing.
+> Rounds 1–19 are complete (Round 14 was dropped by the user). Nothing is in progress and the Backlog is
+> empty. Git: `main` is ahead of `origin/main` by local commits; ask the user before pushing.
+> Ideas for what could come next are under "Ideas" below; none is approved.
 
-## Round 19 — harden the Python + cloud journey (in progress; user said "next task" 2026-11-15, Claude picked
-## this from Ideas because it closes the limits recorded for Round 18)
+## Planned next (approved)
 
-- [ ] 1. Second reader: a fresh agent reads every p-card, puzzle item, question and boss decision in
-      `js/content.js` (the block between "Python + cloud journey" and "what employers ask for") and reports
-      factual errors, ambiguous keyed answers and wrong options that are also defensible
-- [x] 2. Lab `p-lab-1` "launch week" before the capstone: 4 settings (key, retry, state, release), each tied
-      to a taught concept; extend the labs test and the py order test
-- [ ] 3. Apply the reader's findings
-- [ ] 4. Verify: `npm test`; raise `?v=`; play the lab (one wrong choice, then the fix) and replay the 27
-      levels with `tools/playthrough.js` at 375px; console clean
-- [ ] 5. Docs, move the round to Done, commit
+- Nothing further is approved. See the Backlog.
+
 
 ## Ideas (not approved; pick with the user)
 
@@ -35,6 +25,22 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 
 ## Done
+
+### Round 19 — the Python + cloud journey hardened (complete, verified)
+- [x] Lab `p-lab-1` "launch week" before the capstone: 4 settings (key, retry, state, release), each tied to
+      a taught concept, 8 distinct failures. The journey is now 28 levels
+- [x] Second reader, two passes by fresh agents: 36 cards, 25 sort items, 26 order steps, all 48 questions,
+      8 boss decisions and the lab. No keyed answer was wrong. 20 findings, all applied: three over-claims in
+      cards or "why" lines (GPU work needs a VM; `async`/`await` alone runs calls together; a "why" that
+      contradicted itself on idle cost), eight disputable keys, orders or options, and joke or give-away
+      options in about a dozen questions
+- [x] 53 tests pass (labs test and `py` order test extended)
+- [x] Browser at 375px: the lab played with one wrong choice (the run stopped at step 4 with its reason) and
+      then fixed; after all text fixes `tools/playthrough.js` replayed all 28 levels: 28 played, 0 failed,
+      0 with page overflow, console clean
+- Limits: the readers are models, not subject experts, and the first pass was given a line range that ended
+  13 questions early (the second pass covered them). The lab was played by mouse only. No cloud products
+  are named
 
 ### Round 18 — Python + cloud journey (complete, verified)
 - [x] Fifth journey `py` (`Content.PY`): 8 topics x Learn, Apply, Master, two Mix levels and a capstone boss
