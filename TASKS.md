@@ -6,10 +6,22 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Rounds 1–12 are complete and verified. Nothing is in progress. The project is under git on branch `main`,
-> tracking `origin/main` at `https://github.com/tanim-ics/Axon.git` (private). It was first pushed on
-> 2026-11-15 with the user's OK. That OK covered that push only: ask again before any later push.
-> Next work comes from the Backlog or a new request.
+> **Round 13 in progress** (user said "go" on 2026-11-15). Git: branch `main` tracks `origin/main`
+> (`https://github.com/tanim-ics/Axon.git`, private). Commit verified steps locally; ask before any push.
+> Next step: the first unticked box in "Round 13" below.
+
+## Round 13 — verify the tool names in the Field missions and the toolbox (in progress)
+
+113 unique product names in `Content.MISSIONS` and `Content.TOOLBOX`, written from general knowledge.
+
+- [ ] 13.1 Three background agents check every name against its official site (exists, still offered, does the
+      stated job) and return the official URL. If the session is lost, redo this step
+- [ ] 13.2 Fix names that are renamed, discontinued or wrong in `js/content.js` (each stage keeps one tool and
+      two or more alternatives; tool names stay unique within a mission)
+- [ ] 13.3 `Content.TOOLS_REVIEW` (`reviewed`, `note`, `sources`) + "last reviewed" line and source list in the
+      codex under Playbooks and Builder's toolbox; test: every named tool has an https source
+- [ ] 13.4 Verify: `npm test`; codex at 375px; console clean
+- [ ] 13.5 Docs, commit
 
 ## Planned next (approved)
 
@@ -18,7 +30,6 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Backlog (not started, needs the user's OK)
 
-- [ ] Verify the "popular tools" lists against live sources and add a "last reviewed" date
 - [ ] Test with a real screen reader (VoiceOver)
 
 ## Done
