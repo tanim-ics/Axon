@@ -42,7 +42,9 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 - [x] Test: every Academy and lesson level has a scope and three distinct lines. 65 tests pass. Right answer is
       the longest option in 41% and the shortest in 22%; no option is more than twice another's length
 - [x] Browser at 375px (`?v=39`): The Loop intro shows scope and three lines, no page overflow, console clean
-- Limits: no second reader for the rewrites; the writers flagged a few weaker distractors (loop-cycle-2,
+- [x] Blind check: five fresh readers answered all 290 questions without the key; 290 of 290 matched. 25 minor flags; two
+      real ambiguities fixed (`p05-cost-1` now says virtual machine, `l06-ground-1` option reworded)
+- Limits: the readers are models, not subject experts; most flags (e.g. `a12-tiers-1`, `a15-practice-1`) are course-specific facts; the writers flagged a few weaker distractors (loop-cycle-2,
   a12-tiers-2) and light rewording of three Academy questions. `tools/playthrough.js` was not re-run, and no
   question was answered wrong in the browser. Longest-is-right (41%) is close to the 45% test limit
 
