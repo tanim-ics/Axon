@@ -6,7 +6,7 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Rounds 1-30 are complete (Round 30 is committed, not pushed). Nothing is in progress and nothing further is
+> Rounds 1-30 are complete (Round 30's first commit is pushed; its two follow-up commits are not). Nothing is in progress and nothing further is
 > approved. See "Ideas". Git: Rounds 1-29 are pushed; Round 30 is not. Ask the user before pushing.
 
 ## Planned next (approved)
@@ -44,6 +44,10 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 - [x] Browser at 375px (`?v=39`): The Loop intro shows scope and three lines, no page overflow, console clean
 - [x] Blind check: five fresh readers answered all 290 questions without the key; 290 of 290 matched. 25 minor flags; two
       real ambiguities fixed (`p05-cost-1` now says virtual machine, `l06-ground-1` option reworded)
+- [x] Line-by-line read of all 290 by the main session: every keyed answer holds. Eight wording fixes: a vague answer
+      and a fragment "why" (`a10-inject-1`), a "why" that contradicted `a03-count-1` (`tools-least-2`), an invented
+      product claim (`l12-fw-1`), over-claims in three "why" lines (`l11-perm-2`, `l15-latency-2`, `mem-limit-1`), and an
+      unclear "why" (`a16-risk-1`). `?v=41`
 - Limits: the readers are models, not subject experts; most flags (e.g. `a12-tiers-1`, `a15-practice-1`) are course-specific facts; the writers flagged a few weaker distractors (loop-cycle-2,
   a12-tiers-2) and light rewording of three Academy questions. `tools/playthrough.js` was not re-run, and no
   question was answered wrong in the browser. Longest-is-right (41%) is close to the 45% test limit
