@@ -6,10 +6,10 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Round 31, step 3: `vercel.json` and `.vercelignore` are committed and checked locally (a server applying the same
-> headers and ignore list: app files 200, dev files 404, a level, the reader and Blitz work, console clean).
-> Next: deploy. The user must sign in to Vercel; pick Git import or the CLI with them.
-> Git: Rounds 1-30 are pushed; Round 31's commits are not. Ask the user before pushing.
+> Round 31, step 3: the config is pushed to GitHub (1f306e2). The user chose Git import: they sign in at
+> vercel.com/new, import `tanim-ics/Axon` (preset Other, root ./, no build) and deploy. Then find the URL with
+> `gh api repos/tanim-ics/Axon/deployments` (Vercel posts statuses there) and do step 4 with curl and the browser.
+> Git: everything up to 1f306e2 is pushed; this TASKS.md edit is local. Ask the user before pushing.
 
 ## Round 31 - host the app on Vercel (in progress; the user asked "make the app in vercel", 2026-11-18)
 
