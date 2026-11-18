@@ -6,8 +6,23 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 
 ## Resume here
 
-> Rounds 1-30 are complete (Round 30's first commit is pushed; its two follow-up commits are not). Nothing is in progress and nothing further is
-> approved. See "Ideas". Git: Rounds 1-29 are pushed; Round 30 is not. Ask the user before pushing.
+> Round 31, step 3: `vercel.json` and `.vercelignore` are committed and checked locally (a server applying the same
+> headers and ignore list: app files 200, dev files 404, a level, the reader and Blitz work, console clean).
+> Next: deploy. The user must sign in to Vercel; pick Git import or the CLI with them.
+> Git: Rounds 1-30 are pushed; Round 31's commits are not. Ask the user before pushing.
+
+## Round 31 - host the app on Vercel (in progress; the user asked "make the app in vercel", 2026-11-18)
+
+The app is a static folder (no build step), so Vercel serves it as-is. Vercel can send real HTTP headers,
+which a `<meta>` CSP cannot: `frame-ancestors` (no framing), `X-Content-Type-Options`, `Permissions-Policy`.
+
+- [x] 1. `vercel.json`: no build, security headers on every path (CSP = the meta CSP + `frame-ancestors 'none'`).
+      `.vercelignore`: keep only what the app loads (index.html, css, js, fonts, course/addy/*.js + licences)
+- [x] 2. Local check: serve the folder with the same headers and the same ignore list; play a level, open the
+      reader, run a Blitz round; console clean (no CSP errors)
+- [ ] 3. Deploy: the user signs in to Vercel (Git import of `tanim-ics/Axon`, or the CLI); production URL works
+- [ ] 4. Live check: headers present, `/tests/`, `/tools/`, `/design/`, `/TASKS.md` return 404, a level plays
+- [ ] 5. Docs: README (live link, how it is hosted), CLAUDE.md (hosting section), Done, commit
 
 ## Planned next (approved)
 

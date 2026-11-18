@@ -1,0 +1,17 @@
+# Vercel serves this folder as-is. Upload only what the app loads in the browser.
+# Development files, tests, audit notes and the landing-page mock (which uses remote fonts) stay out.
+.claude
+.git
+.gitignore
+.nojekyll
+node_modules
+tests
+tools
+docs
+design
+course/addy/md
+CLAUDE.md
+TASKS.md
+package.json
+*.log
+.DS_Store
