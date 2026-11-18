@@ -61,7 +61,7 @@
 *, *::before, *::after { box-sizing: border-box; }
 html { color-scheme: dark; -webkit-text-size-adjust: 100%; }
 body {
-  margin: 0; min-height: 100vh;
+  margin: 0; min-height: calc(100vh / var(--zoom, 1));
   font: 400 1.0625rem/1.47 var(--font); letter-spacing: -0.012em;
   color: var(--text); background: var(--bg);
   -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
@@ -324,7 +324,7 @@ a.node:active .node-disc { transform: scale(0.94); }
 .level-tools .btn, .reveal { min-height: 44px; color: var(--muted); background: transparent; }
 .reveal-row { display: flex; justify-content: center; margin-top: var(--s3); }
 .reveal[hidden] { display: none; }
-.modal.solution { justify-items: stretch; text-align: left; max-width: 520px; padding: var(--s6) var(--s5) var(--s5); max-height: calc(100vh - 2 * var(--s4)); overflow-y: auto; }
+.modal.solution { justify-items: stretch; text-align: left; max-width: 520px; padding: var(--s6) var(--s5) var(--s5); max-height: calc(100vh / var(--zoom, 1) - 2 * var(--s4)); overflow-y: auto; }
 .modal.solution h2 { font-size: 1.75rem; }
 .solution-body { display: grid; gap: var(--s3); }
 .solution-list { display: grid; gap: var(--s2); padding: var(--s4); background: var(--well); border: 1px solid var(--line); border-radius: var(--r-md); list-style: none; }
@@ -798,3 +798,29 @@ button.ostep:active { transform: scale(0.98); }
 /* ---------- notice: shown once when progress cannot be saved ---------- */
 .notice { width: calc(100% - 2 * var(--s4)); max-width: 980px; margin: var(--s4) auto 0; padding: var(--s3) var(--s4); background: var(--tint-orange); border: 1px solid var(--orange); border-radius: var(--r-md); font-size: 0.9375rem; }
 .notice[hidden] { display: none; }
+
+/* ---------- site footer (every page) ---------- */
+.site-foot {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--s1) var(--s5);
+  max-width: 1168px; margin: 0 auto; padding: var(--s5) var(--s5) var(--s6);
+  border-top: 1px solid var(--line); font-size: 0.875rem; color: var(--muted);
+}
+.site-foot a { display: inline-flex; align-items: center; min-height: 44px; text-underline-offset: 3px; border-radius: var(--r-sm); }
+.site-foot a:hover { color: var(--text); text-decoration-color: var(--blue); }
+@media (max-width: 560px) { .site-foot { padding: var(--s4) var(--s4) var(--s5); gap: 0 var(--s4); } }
+
+/* ---------- large screens ----------
+   The layout is sized for a 1440px-wide window. On bigger screens (a 4K or ultrawide monitor at
+   native scale) everything is enlarged as one, so text, buttons and the trail keep their proportions
+   instead of sitting small in the middle. The height check stops a short ultrawide from zooming so far
+   that a level no longer fits. A tall portrait screen keeps its width, so it is not zoomed: its extra
+   height simply shows more of the page. Viewport units are not divided by zoom, so anything sized in
+   vh divides by --zoom itself. */
+@media (min-width: 1800px) and (min-height: 1000px) { html { zoom: 1.25; --zoom: 1.25; } }
+@media (min-width: 2300px) and (min-height: 1250px) { html { zoom: 1.5; --zoom: 1.5; } }
+@media (min-width: 3000px) and (min-height: 1600px) { html { zoom: 2; --zoom: 2; } }
+@media (min-width: 4600px) and (min-height: 2400px) { html { zoom: 2.5; --zoom: 2.5; } }
+/* The footer sits at the bottom of the window on short pages too. */
+body { display: flex; flex-direction: column; }
+body > main { flex: 1 0 auto; width: 100%; }
+body > .site-foot { width: 100%; }

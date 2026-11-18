@@ -9,7 +9,8 @@ Rules are in `CLAUDE.md` → "Task list". Tick a box the moment a step is verifi
 > Round 31, step 3: the config is pushed to GitHub (1f306e2). The user chose Git import: they sign in at
 > vercel.com/new, import `tanim-ics/Axon` (preset Other, root ./, no build) and deploy. Then find the URL with
 > `gh api repos/tanim-ics/Axon/deployments` (Vercel posts statuses there) and do step 4 with curl and the browser.
-> Git: everything up to 1f306e2 is pushed; this TASKS.md edit is local. Ask the user before pushing.
+> Git: everything up to 1f306e2 is pushed; later commits (Round 32) are local. Ask the user before pushing
+> (a push redeploys the live site once it is imported).
 
 ## Round 31 - host the app on Vercel (in progress; the user asked "make the app in vercel", 2026-11-18)
 
@@ -47,6 +48,17 @@ which a `<meta>` CSP cannot: `frame-ancestors` (no framing), `X-Content-Type-Opt
 
 
 ## Done
+
+### Round 32 - footer, MIT licence, large monitors (complete, verified; the user asked 2026-11-18)
+
+- `LICENSE` (MIT, © 2026 tanim-ics); `package.json` gains `license` and `author`; README licence section updated.
+- Footer on every page (`.site-foot` in `index.html`): © 2026 tanim-ics (GitHub link), source link, MIT License link.
+  `body` is a flex column so it sits at the bottom of short pages.
+- Large screens: `html { zoom }` steps 1.25 / 1.5 / 2 / 2.5 by width *and* height, with `--zoom` set alongside so
+  `100vh` rules divide by it (vh is not zoom-corrected). Portrait screens are not zoomed.
+- Checked 3840x2160, 3440x1440, 1440x2560, 375x812 on 7 routes: no horizontal scroll, footer at the page end,
+  The Loop played to its result at 4K with real clicks, console clean. 65 tests pass. `?v=42`.
+
 
 ### Round 30 - harder questions and a summary on every lesson (complete, verified)
 - [x] All 290 hand-written bank questions rewritten by six parallel writers as scenarios, failures to diagnose or

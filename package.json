@@ -2,6 +2,8 @@
   "name": "axon",
   "version": "1.0.0",
   "private": true,
+  "license": "MIT",
+  "author": "tanim-ics (https://github.com/tanim-ics)",
   "description": "A hands-on, gamified course for learning to design, build and tune AI agents. Zero dependencies.",
   "scripts": {
     "start": "python3 -m http.server 4173 --bind 127.0.0.1",

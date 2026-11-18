@@ -53,6 +53,7 @@ No build step, no dependencies, no network calls. `.claude/launch.json` defines 
 | `TASKS.md` | Task list and resume point. Read first |
 | `design/landing.html` | A standalone landing-page design mock (remote fonts, inline CSS). Not loaded by the app and exempt from its CSP rules; do not copy its fonts or inline styles into the app |
 | `docs/` | Dated audit reports (`audit-YYYY-MM-DD.md`). A record of findings at one commit, with a status section added when they are fixed |
+| `LICENSE` | MIT licence for the project's own code and content |
 | `README.md` | For people: what it is, how to run it, sources and limits. Update its counts when levels or questions are added |
 | `tests/engine.test.js` | Unit tests |
 
@@ -193,6 +194,8 @@ Unlocked together once `guard` (Shield Up) is done; playable in any order. Each 
 - Colour roles: `--line` is the hairline of a panel; `--edge` is the border of anything that can be pressed (3:1 or better); `--muted` is secondary text and must stay at 4.5:1 or better on every surface and tint; `--red-hi` is red text on a red tint. Type sizes are in rem.
 - Every control is a real `<button>` or `<a>`, at least 44px tall, with a visible focus ring. State is never shown by color alone. Respect `prefers-reduced-motion`.
 - Check at 375px wide: no horizontal page scroll.
+- Large monitors: the layout is designed at 1440px and enlarged as one with `html { zoom }` media steps at the end of `styles.css` (width and height both gate each step; portrait screens are not zoomed). Each step also sets `--zoom`: viewport units are not corrected for zoom, so any `vh` size must divide by `var(--zoom, 1)`. Check 3840x2160 and 1440x2560 after layout changes.
+- Every page ends with the static footer in `index.html` (`.site-foot`): © tanim-ics, the GitHub source link and the MIT License. The project code is MIT (`LICENSE`); the fonts (OFL) and `course/addy/` (Apache 2.0) keep their own licences.
 
 ## Verify before calling a change done
 
